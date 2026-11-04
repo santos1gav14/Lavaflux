@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lavaflux</title>
+<meta name="theme-color" content="#0b5cab">
+<style>
+:root{--bg:#f3f7fb;--card:#fff;--ink:#0f1e2e;--mute:#5d6f82;--line:#dbe4ee;--pri:#0b5cab;--pri-ink:#fff;--ok:#178a4c;--danger:#c0392b;--soft:#e7f0fa}
+@media (prefers-color-scheme:dark){:root{--bg:#0c141d;--card:#142130;--ink:#e6eef6;--mute:#93a6b9;--line:#24364a;--pri:#4ea1ff;--pri-ink:#04192e;--ok:#3fcf86;--danger:#ff6b5b;--soft:#17304a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto;padding:16px 16px 48px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.02em}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--pri);display:grid;place-items:center;color:var(--pri-ink);font-size:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+h1,h2,h3{margin:0 0 6px;letter-spacing:-.01em}
+p{margin:0 0 8px}
+.mute{color:var(--mute);font-size:14px}
+input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit;margin-bottom:10px}
+input:focus{outline:2px solid var(--pri);border-color:transparent}
+label{font-size:13px;color:var(--mute);display:block;margin:0 0 4px 2px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>*{flex:1 1 0}
+button,.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;font-size:15px;padding:11px 14px;border-radius:12px;cursor:pointer;text-decoration:none;text-align:center;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+button.pri,.btn.pri{background:var(--pri);border-color:var(--pri);color:var(--pri-ink)}
+button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+button.ghost{background:transparent;border-color:transparent;color:var(--mute);padding:8px 10px}
+button.danger{color:var(--danger)}
+button:disabled{opacity:.45;cursor:default}
+.tabs{display:flex;background:var(--soft);border-radius:12px;padding:4px;margin:4px 0 12px}
+.tabs button{flex:1;border:0;background:transparent;padding:9px;font-size:14px}
+.tabs button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.placa{display:inline-block;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;letter-spacing:.08em;border:2px solid var(--ink);border-radius:6px;padding:2px 8px;font-size:15px;background:var(--card)}
+.v-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.segs{display:flex;gap:4px;margin:10px 0 6px}
+.segs i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.segs i.d{background:var(--pri)}
+.segs.fim i{background:var(--ok)}
+.status{font-weight:700}
+.acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.acts .grow{flex:1 1 180px}
+.vazio{text-align:center;padding:32px 16px;color:var(--mute)}
+.banner{background:#fff4d6;color:#6b4a00;border-radius:12px;padding:10px 14px;font-size:14px;margin-bottom:12px}
+@media (prefers-color-scheme:dark){.banner{background:#3a2e10;color:#ffd98a}}
+.erro{color:var(--danger);font-size:14px;min-height:20px}
+/* cliente */
+.hero{text-align:center;padding:24px 16px}
+.hero .ic{font-size:52px;line-height:1;margin-bottom:8px}
+.hero .st{font-size:26px;font-weight:800;margin-bottom:4px}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:flex;gap:12px;position:relative;padding:0 0 18px}
+.tl li:last-child{padding-bottom:0}
+.tl li:not(:last-child)::before{content:"";position:absolute;left:13px;top:28px;bottom:2px;width:2px;background:var(--line)}
+.tl li.d:not(:last-child)::before{background:var(--pri)}
+.dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:var(--card);flex:none;display:grid;place-items:center;font-size:13px;color:var(--pri-ink);font-weight:800}
+.tl li.d .dot{background:var(--pri);border-color:var(--pri)}
+.tl li.c .dot{border-color:var(--pri);box-shadow:0 0 0 0 var(--pri);animation:pulse 1.8s infinite}
+.tl li.c .dot::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--pri)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(78,161,255,.55)}70%{box-shadow:0 0 0 12px rgba(78,161,255,0)}100%{box-shadow:0 0 0 0 rgba(78,161,255,0)}}
+.tl .nm{font-weight:600;padding-top:3px}
+.tl li:not(.d):not(.c) .nm{color:var(--mute)}
+.tl .hr{font-size:13px;color:var(--mute)}
+.pronto{background:var(--ok);color:#fff;border-color:var(--ok)}
+.pronto .mute{color:#e8fff1}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(5,12,20,.55);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.modal.on{display:flex}
+.sheet{background:var(--card);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+@media(min-width:600px){.modal{align-items:center}.sheet{border-radius:20px}}
+#qr{display:flex;justify-content:center;margin:14px 0;padding:12px;background:#fff;border-radius:12px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== VISÃO DO CLIENTE ===== -->
+  <section id="vCliente" class="hidden">
+    <header class="top"><div class="brand"><div class="logo">💧</div><span class="nomeLJ"></span></div>
+      <button id="btVoltarPainel" class="ghost hidden">← Painel</button></header>
+    <div id="cliente"><div class="card vazio">Carregando…</div></div>
+  </section>
+
+  <!-- ===== LOGIN DA EQUIPE ===== -->
+  <section id="vLogin" class="hidden">
+    <header class="top"><div class="brand"><div class="logo">💧</div><span class="nomeLJ"></span></div></header>
+    <form id="fLogin" class="card">
+      <h2>Acesso da equipe</h2>
+      <p class="mute">Entre para atualizar o andamento dos veículos.</p>
+      <label>E-mail</label><input id="lEmail" type="email" autocomplete="username" required>
+      <label>Senha</label><input id="lSenha" type="password" autocomplete="current-password" required>
+      <div class="erro" id="lErro"></div>
+      <button class="pri" style="width:100%">Entrar</button>
+    </form>
+  </section>
+
+  <!-- ===== PAINEL DA EQUIPE ===== -->
+  <section id="vPainel" class="hidden">
+    <header class="top"><div class="brand"><div class="logo">💧</div><span class="nomeLJ"></span></div>
+      <button id="btSair" class="ghost">Sair</button></header>
+    <div id="demoAviso" class="banner hidden">Modo demonstração — os dados ficam só nesta tela. Configure o Firebase (veja o LEIA-ME) para usar de verdade.</div>
+
+    <form id="fNovo" class="card">
+      <h3>Novo veículo</h3>
+      <div class="row">
+        <div><label>Placa *</label><input id="nPlaca" required maxlength="8" placeholder="ABC1D23" style="text-transform:uppercase"></div>
+        <div><label>Modelo</label><input id="nModelo" placeholder="Onix prata"></div>
+      </div>
+      <div class="row">
+        <div><label>Nome do cliente</label><input id="nNome" placeholder="Ana"></div>
+        <div><label>WhatsApp</label><input id="nTel" inputmode="tel" placeholder="(51) 99999-0000"></div>
+      </div>
+      <div class="erro" id="nErro"></div>
+      <button class="pri" style="width:100%">Registrar e gerar link</button>
+    </form>
+
+    <div class="tabs"><button data-tab="ativos" class="on">Em andamento <span id="cA"></span></button><button data-tab="fim">Concluídos <span id="cF"></span></button></div>
+    <div id="lista"></div>
+  </section>
+</div>
+
+<!-- ===== COMPARTILHAR ===== -->
+<div class="modal" id="mShare"><div class="sheet">
+  <div class="v-head"><div><h3>Link do cliente</h3><p class="mute" id="shInfo"></p></div><button class="ghost" data-close>✕</button></div>
+  <input id="shLink" readonly onclick="this.select()">
+  <div class="row"><button id="shCopiar">Copiar link</button><a id="shWpp" class="btn pri" target="_blank" rel="noopener">Enviar no WhatsApp</a></div>
+  <div id="qr"></div>
+  <p class="mute" style="text-align:center">O cliente também pode escanear o QR code no balcão.</p>
+  <button id="shVer" style="width:100%">Ver como o cliente vê</button>
+</div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* ================== CONFIGURAÇÃO ================== */
+const NOME_LAVAJATO = "Lavaflux";
+const firebaseConfig = {
+  apiKey: "COLE_AQUI",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+/* ================================================= */
+
+const ETAPAS = [
+  {nome:"Em espera",       ic:"⏳", txt:"Seu veículo está na fila e logo será atendido."},
+  {nome:"Lavagem",         ic:"🧽", txt:"Seu veículo está sendo lavado."},
+  {nome:"Secagem",         ic:"💨", txt:"Estamos secando seu veículo."},
+  {nome:"Limpeza interna", ic:"🧹", txt:"Cuidando do interior do seu veículo."},
+  {nome:"Finalização",     ic:"✨", txt:"Últimos detalhes e acabamento."}
+];
+const DEMO = firebaseConfig.apiKey.startsWith("COLE");
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const hora = ms => ms ? new Date(ms).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "";
+const show = id => ["vCliente","vLogin","vPainel"].forEach(v => $("#"+v).classList.toggle("hidden", v !== id));
+document.querySelectorAll(".nomeLJ").forEach(e => e.textContent = NOME_LAVAJATO);
+document.title = NOME_LAVAJATO;
+
+// Código do link: 20 caracteres aleatórios — impossível de adivinhar,
+// então cada cliente só consegue abrir o próprio veículo.
+function token(){
+  const a = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+  return [...crypto.getRandomValues(new Uint8Array(20))].map(x => a[x % a.length]).join("");
+}
+const linkCliente = id => location.origin + location.pathname + "?c=" + id;
+
+/* ---------- Armazenamento (Firebase ou demonstração) ---------- */
+let store;
+if (DEMO) {
+  const db = new Map(), subs = new Set(), docSubs = new Map();
+  const todos = () => [...db.values()].sort((a,b) => b.criadoEm - a.criadoEm);
+  const emit = () => { subs.forEach(f => f(todos())); docSubs.forEach((fs,id) => fs.forEach(f => f(db.get(id) || null))); };
+  store = {
+    onAuth: cb => cb({email:"demo"}), entrar: async()=>{}, sair: async()=>{},
+    lista(cb){ subs.add(cb); cb(todos()); return () => subs.delete(cb); },
+    um(id, cb){ if(!docSubs.has(id)) docSubs.set(id,new Set()); docSubs.get(id).add(cb); cb(db.get(id)||null); return () => docSubs.get(id).delete(cb); },
+    async criar(d){ const id = token(); db.set(id,{...d,id}); emit(); return id; },
+    async atualizar(id,p){ db.set(id,{...db.get(id),...p}); emit(); },
+    async remover(id){ db.delete(id); emit(); }
+  };
+} else {
+  firebase.initializeApp(firebaseConfig);
+  const fs = firebase.firestore(), au = firebase.auth(), col = fs.collection("lavagens");
+  store = {
+    onAuth: cb => au.onAuthStateChanged(cb),
+    entrar: (e,s) => au.signInWithEmailAndPassword(e,s),
+    sair: () => au.signOut(),
+    lista: (cb,err) => col.orderBy("criadoEm","desc").limit(200).onSnapshot(s => cb(s.docs.map(d => ({id:d.id,...d.data()}))), err),
+    um: (id,cb,err) => col.doc(id).onSnapshot(d => cb(d.exists ? {id:d.id,...d.data()} : null), err),
+    async criar(d){ const id = token(); await col.doc(id).set(d); return id; },
+    atualizar: (id,p) => col.doc(id).update(p),
+    remover: id => col.doc(id).delete()
+  };
+}
+
+/* ---------- Visão do cliente ---------- */
+let pararCliente = null;
+function abrirCliente(id, doPainel){
+  show("vCliente");
+  $("#btVoltarPainel").classList.toggle("hidden", !doPainel);
+  if (pararCliente) pararCliente();
+  pararCliente = store.um(id, renderCliente, () => renderCliente(null));
+}
+function renderCliente(v){
+  const el = $("#cliente");
+  if (!v){ el.innerHTML = `<div class="card vazio"><h2>Link não encontrado</h2><p>Confira o link com a equipe do ${esc(NOME_LAVAJATO)}.</p></div>`; return; }
+  const atual = v.concluido ? ETAPAS.length : v.etapa, t = v.tempos || {};
+  const e = ETAPAS[Math.min(atual, ETAPAS.length-1)];
+  const hero = v.concluido
+    ? `<div class="card hero pronto"><div class="ic">✅</div><div class="st">Pronto para retirada!</div><p class="mute">Concluído às ${hora(t.fim)}. Obrigado pela preferência.</p></div>`
+    : `<div class="card hero"><div class="ic">${e.ic}</div><div class="st">${e.nome}</div><p class="mute">${e.txt}</p><p class="mute">Etapa ${atual+1} de ${ETAPAS.length}</p></div>`;
+  const passos = ETAPAS.map((s,i) => {
+    const cls = i < atual ? "d" : (i === atual ? "c" : "");
+    return `<li class="${cls}"><div class="dot">${i < atual ? "✓" : ""}</div><div><div class="nm">${s.nome}</div><div class="hr">${t[i] != null && i <= atual ? "Iniciada às " + hora(t[i]) : ""}</div></div></li>`;
+  }).join("");
+  el.innerHTML = `
+    <div class="card"><div class="v-head"><div>${v.nome ? `<p>Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute">${esc(v.modelo) || "Seu veículo"}</p></div><span class="placa">${esc(v.placa)}</span></div></div>
+    ${hero}
+    <div class="card"><ul class="tl">${passos}</ul></div>
+    <p class="mute" style="text-align:center">Esta página se atualiza sozinha.</p>`;
+}
+$("#btVoltarPainel").onclick = () => { if (pararCliente) pararCliente(); history.replaceState(null,"",location.pathname); show("vPainel"); };
+
+/* ---------- Painel da equipe ---------- */
+let lista = [], aba = "ativos", pararLista = null;
+
+function iniciarPainel(){
+  show("vPainel");
+  $("#demoAviso").classList.toggle("hidden", !DEMO);
+  $("#btSair").classList.toggle("hidden", DEMO);
+  if (pararLista) pararLista();
+  pararLista = store.lista(l => { lista = l; renderLista(); },
+    e => { $("#lista").innerHTML = `<div class="card vazio">Sem permissão para ver os veículos. Confira se seu usuário está na coleção <b>equipe</b> (veja o LEIA-ME).</div>`; console.error(e); });
+}
+
+function renderLista(){
+  const ativos = lista.filter(v => !v.concluido), fim = lista.filter(v => v.concluido);
+  $("#cA").textContent = ativos.length ? `(${ativos.length})` : "";
+  $("#cF").textContent = fim.length ? `(${fim.length})` : "";
+  const itens = aba === "ativos" ? ativos : fim;
+  if (!itens.length){ $("#lista").innerHTML = `<div class="card vazio">${aba === "ativos" ? "Nenhum veículo em andamento." : "Nenhum veículo concluído."}</div>`; return; }
+  $("#lista").innerHTML = itens.map(v => {
+    const ult = v.etapa === ETAPAS.length - 1;
+    const segs = ETAPAS.map((_,i) => `<i class="${(v.concluido || i <= v.etapa) ? "d" : ""}"></i>`).join("");
+    const status = v.concluido ? `✅ Concluído às ${hora(v.tempos?.fim)}` : `${ETAPAS[v.etapa].ic} ${ETAPAS[v.etapa].nome} <span class="mute">· desde ${hora(v.tempos?.[v.etapa])}</span>`;
+    const principal = v.concluido ? "" :
+      `<button class="${ult ? "ok" : "pri"} grow" data-act="avancar" data-id="${v.id}">${ult ? "Concluir ✓" : "Avançar → " + ETAPAS[v.etapa+1].nome}</button>`;
+    return `<div class="card">
+      <div class="v-head"><div><span class="placa">${esc(v.placa)}</span><p class="mute" style="margin-top:6px">${esc(v.modelo)}${v.modelo && v.nome ? " · " : ""}${esc(v.nome)}</p></div>
+        <button class="ghost" data-act="share" data-id="${v.id}">🔗 Link</button></div>
+      <div class="segs ${v.concluido ? "fim" : ""}">${segs}</div>
+      <div class="status">${status}</div>
+      <div class="acts">${principal}
+        <button data-act="voltar" data-id="${v.id}" ${(!v.concluido && v.etapa === 0) ? "disabled" : ""}>↶ Voltar</button>
+        <button class="ghost danger" data-act="remover" data-id="${v.id}">Remover</button></div>
+    </div>`;
+  }).join("");
+}
+
+$("#lista").onclick = async ev => {
+  const b = ev.target.closest("[data-act]"); if (!b) return;
+  const v = lista.find(x => x.id === b.dataset.id); if (!v) return;
+  const t = {...(v.tempos || {})};
+  try {
+    if (b.dataset.act === "avancar"){
+      if (v.etapa < ETAPAS.length - 1){ const n = v.etapa + 1; t[n] = Date.now(); await store.atualizar(v.id,{etapa:n, tempos:t}); }
+      else { t.fim = Date.now(); await store.atualizar(v.id,{concluido:true, tempos:t}); }
+    } else if (b.dataset.act === "voltar"){
+      if (v.concluido){ delete t.fim; await store.atualizar(v.id,{concluido:false, tempos:t}); }
+      else if (v.etapa > 0){ delete t[v.etapa]; await store.atualizar(v.id,{etapa:v.etapa-1, tempos:t}); }
+    } else if (b.dataset.act === "remover"){
+      if (confirm(`Remover ${v.placa}? O link do cliente deixará de funcionar.`)) await store.remover(v.id);
+    } else if (b.dataset.act === "share") abrirShare(v);
+  } catch(e){ alert("Não foi possível salvar: " + e.message); }
+};
+
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  aba = b.dataset.tab;
+  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+  renderLista();
+});
+
+$("#fNovo").onsubmit = async ev => {
+  ev.preventDefault();
+  const placa = $("#nPlaca").value.toUpperCase().replace(/[^A-Z0-9]/g,"");
+  if (placa.length < 7){ $("#nErro").textContent = "Placa inválida."; return; }
+  $("#nErro").textContent = "";
+  const d = { placa, modelo: $("#nModelo").value.trim(), nome: $("#nNome").value.trim(),
+              telefone: $("#nTel").value.replace(/\D/g,""), etapa: 0, concluido: false,
+              tempos: {0: Date.now()}, criadoEm: Date.now() };
+  try {
+    const id = await store.criar(d);
+    ev.target.reset();
+    abrirShare({...d, id});
+  } catch(e){ $("#nErro").textContent = "Erro ao registrar: " + e.message; }
+};
+
+/* ---------- Compartilhar ---------- */
+let shareAtual = null;
+function abrirShare(v){
+  shareAtual = v;
+  const link = linkCliente(v.id);
+  $("#shInfo").textContent = `${v.placa}${v.nome ? " · " + v.nome : ""}`;
+  $("#shLink").value = link;
+  const msg = `Olá${v.nome ? " " + v.nome : ""}! Acompanhe a lavagem do seu veículo (${v.placa}) no ${NOME_LAVAJATO}: ${link}`;
+  let tel = v.telefone || ""; if (tel && tel.length <= 11) tel = "55" + tel;
+  $("#shWpp").href = `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`;
+  $("#qr").innerHTML = "";
+  if (window.QRCode) new QRCode($("#qr"), {text: link, width: 200, height: 200});
+  $("#mShare").classList.add("on");
+}
+$("#mShare").onclick = e => { if (e.target.id === "mShare" || e.target.closest("[data-close]")) $("#mShare").classList.remove("on"); };
+$("#shCopiar").onclick = async () => {
+  try { await navigator.clipboard.writeText($("#shLink").value); } catch { $("#shLink").select(); document.execCommand("copy"); }
+  $("#shCopiar").textContent = "Copiado ✓"; setTimeout(() => $("#shCopiar").textContent = "Copiar link", 1500);
+};
+$("#shVer").onclick = () => { $("#mShare").classList.remove("on"); abrirCliente(shareAtual.id, true); };
+
+/* ---------- Login ---------- */
+$("#fLogin").onsubmit = async ev => {
+  ev.preventDefault(); $("#lErro").textContent = "";
+  try { await store.entrar($("#lEmail").value.trim(), $("#lSenha").value); }
+  catch { $("#lErro").textContent = "E-mail ou senha incorretos."; }
+};
+$("#btSair").onclick = () => store.sair();
+
+/* ---------- Início ---------- */
+const codigo = new URLSearchParams(location.search).get("c");
+if (codigo) abrirCliente(codigo, false);
+else store.onAuth(u => u ? iniciarPainel() : show("vLogin"));
+</script>
+</body>
+</html>

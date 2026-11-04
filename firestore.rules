@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Membro da equipe = usuário logado cujo UID está na coleção "equipe"
+    function ehEquipe() {
+      return request.auth != null &&
+             exists(/databases/$(database)/documents/equipe/$(request.auth.uid));
+    }
+
+    match /lavagens/{id} {
+      // Cliente: pode abrir SOMENTE o documento cujo código ele tem no link.
+      // "get" permite ler um documento pelo ID; "list" (listar todos) fica bloqueado.
+      allow get: if true;
+      allow list, create, update, delete: if ehEquipe();
+    }
+
+    match /equipe/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false; // cadastre a equipe pelo console do Firebase
+    }
+  }
+}
