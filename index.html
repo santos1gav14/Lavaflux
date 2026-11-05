@@ -117,6 +117,17 @@ h2{font:800 clamp(36px,5vw,56px)/1 var(--cond);margin:0 0 18px;letter-spacing:-.
 .fala small{display:block;color:var(--cinza);font-size:13px}
 @media(max-width:820px){.dor .box{grid-template-columns:1fr;gap:28px}}
 
+/* situações típicas: antes x depois */
+.sit-cab{display:grid;grid-template-columns:1fr 1fr;gap:40px;font:700 20px/1 var(--cond);color:var(--cinza);padding-bottom:12px;border-bottom:4px solid var(--noite)}
+.sit-cab span:last-child{color:var(--agua)}
+.sit{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:24px 0;border-bottom:1px solid var(--linha)}
+.sit p{margin:0}
+.sit .antes{font-size:19px}
+.sit .depois{color:var(--cinza);padding-left:22px;border-left:3px solid var(--agua)}
+.sit .depois b{color:var(--tinta)}
+.sit-nota{margin:18px 0 0;font-size:15px;color:var(--cinza)}
+@media(max-width:760px){.sit-cab{display:none}.sit{grid-template-columns:1fr;gap:12px}.sit .antes::before{content:"Sem o Lavaflux";display:block;font:700 16px/1.4 var(--cond);color:var(--cinza)}.sit .depois::before{content:"Com o Lavaflux";display:block;font:700 16px/1.4 var(--cond);color:var(--agua)}}
+
 /* passos (sequência real) */
 .passos{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:p;border-top:4px solid var(--noite)}
 .passos li{counter-increment:p;padding:26px 24px 8px 0;position:relative}
@@ -242,6 +253,31 @@ footer a:hover{color:#fff}
         <div class="fala">Falta muito pro meu carro? <small>11:15</small></div>
         <div class="fala">Posso ir buscar agora? <small>11:31</small></div>
       </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-sit">
+    <div class="box">
+      <h2 id="t-sit">Situações que todo lava jato conhece</h2>
+      <p class="intro">E o que muda quando o cliente acompanha tudo pelo link.</p>
+      <div class="sit-cab" aria-hidden="true"><span>Sem o Lavaflux</span><span>Com o Lavaflux</span></div>
+      <div class="sit">
+        <p class="antes">O cliente liga três vezes em uma hora para saber se o carro já está pronto, e alguém para a lavagem para atender.</p>
+        <p class="depois"><b>Ele abre o link e vê a etapa atual.</b> O telefone fica quieto e a equipe segue trabalhando.</p>
+      </div>
+      <div class="sit">
+        <p class="antes">O carro fica pronto ao meio-dia, mas o dono só aparece no fim da tarde porque ninguém avisou.</p>
+        <p class="depois"><b>Ao concluir, o aviso sai pelo WhatsApp</b> com o horário em que o lava jato fecha. O pátio libera mais cedo.</p>
+      </div>
+      <div class="sit">
+        <p class="antes">O cliente chega para buscar e o carro ainda está na secagem. Fica esperando no balcão, impaciente.</p>
+        <p class="depois"><b>Ele vê quantas etapas faltam</b> antes de sair de casa e chega na hora certa.</p>
+      </div>
+      <div class="sit">
+        <p class="antes">O cliente reclama que pediu aspiração e ninguém sabe dizer quem fez o quê nem a que horas.</p>
+        <p class="depois"><b>Cada etapa fica registrada</b> com o nome do funcionário e o horário. A resposta está no histórico.</p>
+      </div>
+      <p class="sit-nota">Situações ilustrativas do dia a dia de um lava jato, não são depoimentos de clientes.</p>
     </div>
   </section>
 
