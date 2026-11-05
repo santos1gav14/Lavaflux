@@ -348,7 +348,8 @@ const HORARIO_PADRAO = {
   3:{aberto:true, abre:"08:00", fecha:"18:00"}, 4:{aberto:true, abre:"08:00", fecha:"18:00"},
   5:{aberto:true, abre:"08:00", fecha:"18:00"}, 6:{aberto:true, abre:"08:00", fecha:"13:00"}
 };
-const DIAS_TESTE = 15, DIAS_MES = 30, DIA = 864e5;
+const DIAS_TESTE = 15, DIAS_MES = 30, DIA = 864e5, DIAS_GUARDA = 90;
+const mesChave = ms => { const d = new Date(ms); return "m" + d.getFullYear() + String(d.getMonth()+1).padStart(2,"0"); };
 const PRECO_PADRAO = "49,90";
 const DEMO = firebaseConfig.apiKey.startsWith("COLE");
 
@@ -440,9 +441,13 @@ if (DEMO) {
     criarConta: async()=>{},
     est: (uid, cb) => sub(() => cb(ests.get(uid) || null)),
     salvarEst: async (uid, o) => { ests.set(uid, {...ests.get(uid), ...o}); emit(); },
-    lista: (uid, cb) => sub(() => cb([...lav.values()].filter(v => v.est === uid).sort((a,b) => b.criadoEm - a.criadoEm))),
+    lista: (uid, cb) => sub(() => cb([...lav.values()].filter(v => v.est === uid && (!v.concluido || v.criadoEm >= Date.now() - 2*DIA)).sort((a,b) => b.criadoEm - a.criadoEm))),
+    anteriores: async (uid, antesDe, n) => [...lav.values()].filter(v => v.est === uid && v.criadoEm < antesDe).sort((a,b) => b.criadoEm - a.criadoEm).slice(0, n),
+    ts: ms => ms,
     um: (id, cb) => sub(() => cb(lav.get(id) || null)),
-    async criar(d){ const id = token(); lav.set(id, {...d, id}); emit(); return id; },
+    async criar(d){ const id = token(); lav.set(id, {...d, id, expiraEm: d.criadoEm + DIAS_GUARDA*DIA});
+      const e = ests.get(d.est) || {}, u = e.uso || {}; ests.set(d.est, {...e, uso: {...u, total: (u.total||0)+1, ultimo: d.criadoEm, [mesChave(d.criadoEm)]: (u[mesChave(d.criadoEm)]||0)+1}});
+      emit(); return id; },
     async atualizar(id,p,ev){ const a = lav.get(id); lav.set(id, {...a, ...p, ...(ev ? {historico:[...(a.historico||[]), {...ev, por:quem(), em:Date.now()}]} : {})}); emit(); },
     async remover(id){ lav.delete(id); emit(); },
     contas: cb => sub(() => cb([...contas].map(([uid,c]) => ({uid, ...c})))),
@@ -450,12 +455,14 @@ if (DEMO) {
     salvarConfig: async o => { cfgPlat = {...cfgPlat, ...o}; emit(); },
     atualizarConta: async (uid, patch) => { contas.set(uid, {...contas.get(uid), ...patch}); emit(); },
     ests: cb => sub(() => cb(Object.fromEntries(ests))),
-    todasLavagens: cb => sub(() => cb([...lav.values()])),
   };
 } else {
   firebase.initializeApp(firebaseConfig);
   const fs = firebase.firestore(), au = firebase.auth();
+  // Cache no aparelho: ao reabrir o app, só o que mudou é lido de novo
+  fs.enablePersistence({synchronizeTabs: true}).catch(() => {});
   au.languageCode = "pt-BR";
+  const FV = firebase.firestore.FieldValue;
   const col = n => fs.collection(n);
   const snapDoc = (ref, cb, err) => ref.onSnapshot(d => cb(d.exists ? d.data() : null), err || (() => cb(null)));
   store = {
@@ -472,15 +479,30 @@ if (DEMO) {
     },
     est: (uid, cb) => snapDoc(col("estabelecimentos").doc(uid), cb),
     salvarEst: (uid, o) => col("estabelecimentos").doc(uid).set(o, {merge: true}),
-    lista: (uid, cb, err) => col("lavagens").where("est","==",uid).orderBy("criadoEm","desc").limit(300)
-      .onSnapshot(s => cb(s.docs.map(d => ({id:d.id, ...d.data()}))), err),
+    // Painel: só veículos em andamento + os registrados nas últimas 48 h
+    lista(uid, cb, err){
+      let ativos = new Map(), recentes = new Map();
+      const conv = s => new Map(s.docs.map(d => [d.id, {id: d.id, ...d.data()}]));
+      const out = () => cb([...new Map([...recentes, ...ativos]).values()].sort((a,b) => b.criadoEm - a.criadoEm));
+      const u1 = col("lavagens").where("est","==",uid).where("concluido","==",false).onSnapshot(s => { ativos = conv(s); out(); }, err);
+      const u2 = col("lavagens").where("est","==",uid).where("criadoEm",">=",Date.now() - 2*DIA).orderBy("criadoEm","desc").onSnapshot(s => { recentes = conv(s); out(); }, err);
+      return () => { u1(); u2(); };
+    },
+    anteriores: async (uid, antesDe, n) => (await col("lavagens").where("est","==",uid).where("criadoEm","<",antesDe).orderBy("criadoEm","desc").limit(n).get())
+      .docs.map(d => ({id: d.id, ...d.data()})),
+    ts: ms => firebase.firestore.Timestamp.fromMillis(ms),
     um: (id, cb, err) => col("lavagens").doc(id).onSnapshot(d => cb(d.exists ? {id:d.id, ...d.data()} : null), err),
-    async criar(d){ const id = token(); await col("lavagens").doc(id).set(d); return id; },
-    atualizar: (id,p,ev) => col("lavagens").doc(id).update(ev ? {...p, historico: firebase.firestore.FieldValue.arrayUnion({...ev, por: quem(), em: Date.now()})} : p),
+    // Registra o veículo e atualiza os contadores de uso do estabelecimento (uma operação só)
+    async criar(d){
+      const id = token(), b = fs.batch(), inc = FV.increment(1);
+      b.set(col("lavagens").doc(id), {...d, expiraEm: firebase.firestore.Timestamp.fromMillis(d.criadoEm + DIAS_GUARDA*DIA)});
+      b.set(col("estabelecimentos").doc(d.est), {uso: {total: inc, ultimo: d.criadoEm, [mesChave(d.criadoEm)]: inc}}, {merge: true});
+      await b.commit(); return id;
+    },
+    atualizar: (id,p,ev) => col("lavagens").doc(id).update(ev ? {...p, historico: FV.arrayUnion({...ev, por: quem(), em: Date.now()})} : p),
     remover: id => col("lavagens").doc(id).delete(),
     contas: (cb, err) => col("contas").onSnapshot(s => cb(s.docs.map(d => ({uid: d.id, ...d.data()}))), err),
     ests: cb => col("estabelecimentos").onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = d.data()); cb(o); }, () => cb({})),
-    todasLavagens: cb => col("lavagens").onSnapshot(s => cb(s.docs.map(d => d.data())), () => cb([])),
     config: cb => snapDoc(col("config").doc("plataforma"), cb),
     salvarConfig: o => col("config").doc("plataforma").set(o, {merge: true}),
     atualizarConta: (uid, patch, pagamento) => col("contas").doc(uid).update(pagamento ? {...patch, pagamentos: firebase.firestore.FieldValue.arrayUnion(pagamento)} : patch)
@@ -506,7 +528,7 @@ function abrirCliente(id, doPainel){
 function renderCliente(){
   const v = cliV, el = $("#cliente");
   if (!cliCarregado) return;
-  if (!v || !v.placa){ el.innerHTML = `<div class="card vazio"><h2>Link não encontrado</h2><p>Confira o link com o estabelecimento.</p></div>`; return; }
+  if (!v || !v.placa){ el.innerHTML = `<div class="card vazio"><h2>Link não encontrado</h2><p>Este link expirou ou não existe. Os acompanhamentos ficam disponíveis por ${DIAS_GUARDA} dias após o serviço.</p></div>`; return; }
   const nomeEst = (cliEst && cliEst.nome) || "", hor = (cliEst && cliEst.horario) || HORARIO_PADRAO;
   document.title = nomeEst || "Acompanhe seu veículo";
   const et = etapasDe(v), ch = checksDe(v), feitas = et.filter(e => ch[e.id]).length, pct = Math.round(100 * feitas / et.length);
@@ -605,7 +627,20 @@ $("#fCad").onsubmit = async ev => {
 };
 
 /* ---------- Painel do estabelecimento ---------- */
-let painelAtivo = false, pararPainel = [], lista = [], aba = "ativos";
+let painelAtivo = false, pararPainel = [], lista = [], listaVivo = [], antigos = [], semMaisAntigos = false, aba = "ativos";
+function juntarLista(){
+  const m = new Map(antigos.map(v => [v.id, v])); listaVivo.forEach(v => m.set(v.id, v));
+  lista = [...m.values()].sort((a,b) => b.criadoEm - a.criadoEm); renderLista();
+}
+async function carregarAnteriores(bt){
+  bt.disabled = true; bt.textContent = "Carregando…";
+  const antesDe = lista.length ? Math.min(...lista.map(v => v.criadoEm)) : Date.now();
+  try {
+    const l = await store.anteriores(usuario.uid, antesDe, 30);
+    if (l.length < 30) semMaisAntigos = true;
+    antigos = antigos.concat(l); juntarLista();
+  } catch(e){ bt.disabled = false; bt.textContent = "Erro ao carregar. Tentar de novo"; }
+}
 let estDados = {}, etapasCfg = ETAPAS_PADRAO, horarioCfg = HORARIO_PADRAO;
 const nomeEst = () => estDados.nome || "Lava jato";
 
@@ -619,7 +654,8 @@ function iniciarPainel(){
     $("#painelNome").textContent = nomeEst(); document.title = nomeEst();
     renderNovoChecks();
   }));
-  pararPainel.push(store.lista(uid, l => { lista = l; renderLista(); },
+  antigos = []; semMaisAntigos = false;
+  pararPainel.push(store.lista(uid, l => { listaVivo = l; juntarLista(); },
     e => { $("#lista").innerHTML = `<div class="card vazio">Não foi possível carregar os veículos. Se acabou de ser aprovado, aguarde alguns minutos e recarregue.</div>`; console.error(e); }));
   renderBanner();
   if (!lerLS(LS_FUNC) && !funcMem) pedirNome(true);
@@ -672,7 +708,9 @@ function renderLista(){
   $("#cA").textContent = ativos.length ? `(${ativos.length})` : "";
   $("#cF").textContent = fim.length ? `(${fim.length})` : "";
   const itens = aba === "ativos" ? ativos : fim;
-  if (!itens.length){ $("#lista").innerHTML = `<div class="card vazio">${aba === "ativos" ? "Nenhum veículo em andamento." : "Nenhum veículo concluído."}</div>`; return; }
+  const rodape = aba === "fim" ? `<div style="text-align:center;margin:8px 0 4px">${semMaisAntigos ? `<p class="mute">Não há mais veículos anteriores.</p>` : `<button id="btAnteriores">Carregar dias anteriores</button>`}
+      <p class="mute" style="margin-top:8px">Os veículos são apagados automaticamente ${DIAS_GUARDA} dias após a conclusão.</p></div>` : "";
+  if (!itens.length){ $("#lista").innerHTML = `<div class="card vazio">${aba === "ativos" ? "Nenhum veículo em andamento." : "Nenhum veículo concluído recentemente."}</div>${rodape}`; return; }
   $("#lista").innerHTML = itens.map(v => {
     const et = etapasDe(v), ch = checksDe(v), feitas = et.filter(e => ch[e.id]).length, tudo = feitas === et.length;
     const status = v.concluido ? `✅ Concluído às ${hora(v.fimEm)}`
@@ -693,10 +731,11 @@ function renderLista(){
       <div class="acts">${acoes}<button class="ghost danger" data-act="remover" data-id="${v.id}">Remover</button></div>
       ${histHtml(v)}
     </div>`;
-  }).join("");
+  }).join("") + rodape;
 }
 
 $("#lista").onclick = async ev => {
+  if (ev.target.closest("#btAnteriores")){ carregarAnteriores(ev.target.closest("#btAnteriores")); return; }
   const b = ev.target.closest("[data-act]"); if (!b) return;
   const v = lista.find(x => x.id === b.dataset.id); if (!v) return;
   const act = b.dataset.act;
@@ -711,7 +750,7 @@ $("#lista").onclick = async ev => {
       const faltam = etapasDe(v).filter(e => !checksDe(v)[e.id]).map(e => e.nome);
       if (faltam.length && !confirm(`Ainda não marcadas: ${faltam.join(", ")}.\nConcluir mesmo assim?`)) return;
       const fimEm = Date.now();
-      await store.atualizar(v.id, {concluido: true, fimEm}, {acao: "concluiu"});
+      await store.atualizar(v.id, {concluido: true, fimEm, expiraEm: store.ts(fimEm + DIAS_GUARDA*DIA)}, {acao: "concluiu"});
       abrirShare({...v, fimEm}, true);
     } else if (act === "reabrir") await store.atualizar(v.id, {concluido: false, fimEm: null}, {acao: "reabriu"});
     else if (act === "editar") abrirEdit(v);
@@ -864,13 +903,12 @@ $("#shCopiar").onclick = async () => {
 $("#shVer").onclick = () => { fechar("mShare"); abrirCliente(shareAtual.id, true); };
 
 /* ---------- Administrador ---------- */
-let pararAdmin = [], aContas = [], aEsts = {}, aLav = [], aFiltro = "pendente";
+let pararAdmin = [], aContas = [], aEsts = {}, aFiltro = "pendente";
 function iniciarAdmin(){
   show("vAdmin"); document.title = "Lavaflux · Admin";
   pararAdmin.push(store.config(c => { cfgPlat = c || {}; }));
   pararAdmin.push(store.contas(l => { aContas = l; renderAdmin(); }, e => { $("#adminLista").innerHTML = `<div class="card vazio">Erro ao carregar contas: ${esc(e.message)}</div>`; }));
   pararAdmin.push(store.ests(o => { aEsts = o; renderAdmin(); }));
-  pararAdmin.push(store.todasLavagens(l => { aLav = l; renderAdmin(); }));
 }
 const ROTULO = {pendente: ["pe","Aguardando aprovação"], ativo: ["ab","Ativa"], inativo: ["fe","Desativada"]};
 const vencendo = c => c.status === "ativo" && c.venceEm && diasAte(c.venceEm) <= 3;
@@ -893,14 +931,13 @@ function renderAdmin(){
   $("#tTeste").textContent = ativas.filter(c => c.plano !== "assinante" && !vencida(c)).length;
   $("#tAss").textContent = ativas.filter(c => c.plano === "assinante" && !vencida(c)).length;
   $("#tVenc").textContent = aContas.filter(vencendo).length;
-  const agora = Date.now(), d30 = agora - 30*864e5, stats = {};
-  aLav.forEach(v => { const s = stats[v.est] = stats[v.est] || {total:0, mes:0, ultimo:0};
-    s.total++; if (v.criadoEm >= d30) s.mes++; if (v.criadoEm > s.ultimo) s.ultimo = v.criadoEm; });
+  const agora = Date.now(), mk = mesChave(agora);
   const l = aContas.filter(c => aFiltro === "todas" || (aFiltro === "vencendo" ? vencendo(c) : c.status === aFiltro))
     .sort((a,b) => aFiltro === "vencendo" ? a.venceEm - b.venceEm : (b.criadoEm||0) - (a.criadoEm||0));
   if (!l.length){ $("#adminLista").innerHTML = `<div class="card vazio">Nenhuma conta ${({pendente:"aguardando aprovação", vencendo:"vencendo nos próximos 3 dias", ativo:"ativa", inativo:"desativada"})[aFiltro] || ""}.</div>`; return; }
   $("#adminLista").innerHTML = l.map(c => {
-    const nome = (aEsts[c.uid] && aEsts[c.uid].nome) || c.nome, s = stats[c.uid] || {total:0, mes:0, ultimo:0};
+    const u = (aEsts[c.uid] && aEsts[c.uid].uso) || {}, s = {total: u.total || 0, mes: u[mk] || 0, ultimo: u.ultimo || 0};
+    const nome = (aEsts[c.uid] && aEsts[c.uid].nome) || c.nome;
     const [cls, txt] = ROTULO[c.status] || ["pe", c.status];
     const base = Math.max(s.ultimo || 0, c.aprovadoEm || c.criadoEm || 0);
     const semUso = c.status === "ativo" && base < agora - 14*864e5;
@@ -912,7 +949,7 @@ function renderAdmin(){
     return `<div class="card">
       <div class="v-head" style="margin-bottom:4px"><div><h3 style="margin:0">${esc(nome)}</h3><p class="mute" style="margin:2px 0 0">${esc(c.email)}</p></div><span class="pill ${cls}">${txt}</span></div>
       ${planoHtml(c)}
-      <div class="stats"><span>WhatsApp: <b>${esc(c.whatsapp || "—")}</b></span><span>Cadastro: <b>${data(c.criadoEm)}</b></span><span>Veículos: <b>${s.total}</b></span><span>Últimos 30 dias: <b>${s.mes}</b></span><span>Último uso: <b>${s.ultimo ? data(s.ultimo) : "nunca"}</b></span></div>
+      <div class="stats"><span>WhatsApp: <b>${esc(c.whatsapp || "—")}</b></span><span>Cadastro: <b>${data(c.criadoEm)}</b></span><span>Veículos: <b>${s.total}</b></span><span>Este mês: <b>${s.mes}</b></span><span>Último uso: <b>${s.ultimo ? data(s.ultimo) : "nunca"}</b></span></div>
       ${semUso ? `<p class="mute" style="color:var(--warn);margin:6px 0 0">⚠️ Sem uso há mais de 14 dias</p>` : ""}
       <div class="acts">${bts}</div></div>`;
   }).join("");
