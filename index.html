@@ -263,7 +263,7 @@ footer.rod svg{width:18px;height:18px}
     <div class="seg"><label><input type="radio" name="eTipo" value="carro" checked>🚗 Carro</label><label><input type="radio" name="eTipo" value="moto">🏍️ Moto</label></div>
     <div class="row">
       <div><label class="f">Placa *</label><input id="ePlaca" required maxlength="8" style="text-transform:uppercase"></div>
-      <div><label class="f">Modelo</label><input id="eModelo"></div>
+      <div><label class="f">Modelo</label><input id="eModelo" placeholder="Onix prata"></div>
     </div>
     <div class="row">
       <div><label class="f">Nome do cliente</label><input id="eNome"></div>
@@ -799,12 +799,22 @@ $("#fNovo").onsubmit = async ev => {
   } catch(e){ $("#nErro").textContent = "Erro ao registrar: " + e.message; }
 };
 
+/* ---------- Exemplo de modelo conforme carro/moto ---------- */
+const EXEMPLO_MODELO = {carro: "Onix prata", moto: "CG 150 vermelha"};
+function ajustarExemplo(radioName, inputSel){
+  const r = document.querySelector(`input[name=${radioName}]:checked`);
+  $(inputSel).placeholder = EXEMPLO_MODELO[r ? r.value : "carro"];
+}
+document.querySelectorAll("input[name=nTipo]").forEach(r => r.addEventListener("change", () => ajustarExemplo("nTipo", "#nModelo")));
+document.querySelectorAll("input[name=eTipo]").forEach(r => r.addEventListener("change", () => ajustarExemplo("eTipo", "#eModelo")));
+$("#fNovo").addEventListener("reset", () => setTimeout(() => ajustarExemplo("nTipo", "#nModelo"), 0));
+
 /* ---------- Editar veículo ---------- */
 let editAtual = null, editLista = [];
 function abrirEdit(v){
   editAtual = v;
   document.querySelector(`input[name=eTipo][value=${moto(v) ? "moto" : "carro"}]`).checked = true;
-  $("#ePlaca").value = v.placa; $("#eModelo").value = v.modelo || ""; $("#eNome").value = v.nome || ""; $("#eTel").value = v.telefone || "";
+  $("#ePlaca").value = v.placa; $("#eModelo").value = v.modelo || ""; ajustarExemplo("eTipo", "#eModelo"); $("#eNome").value = v.nome || ""; $("#eTel").value = v.telefone || "";
   const atuais = etapasDe(v), ids = new Set(atuais.map(e => e.id));
   editLista = [...atuais, ...etapasCfg.filter(e => !ids.has(e.id))];
   renderChecks($("#eEtapas"), editLista, ids);
