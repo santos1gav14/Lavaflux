@@ -7,14 +7,16 @@
 <meta name="theme-color" content="#0a4fb5">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <style>
-:root{--bg:#f2f6fc;--card:#fff;--ink:#0c1b33;--mute:#5a6b85;--line:#d9e3f2;--pri:#1668e3;--pri2:#0a4fb5;--pri-ink:#fff;--soft:#e6efff;--ok:#12915a;--danger:#c63a2f}
-@media (prefers-color-scheme:dark){:root{--bg:#0a1220;--card:#111d31;--ink:#e6eefb;--mute:#93a5c2;--line:#22334f;--pri:#4b95ff;--pri2:#2f7cf0;--pri-ink:#03142e;--soft:#16294a;--ok:#35cf88;--danger:#ff6b5b}}
+:root{--bg:#f2f6fc;--card:#fff;--ink:#0c1b33;--mute:#5a6b85;--line:#d9e3f2;--pri:#1668e3;--pri2:#0a4fb5;--soft:#e6efff;--ok:#12915a;--danger:#c63a2f;--warn:#b7791f}
+@media (prefers-color-scheme:dark){:root{--bg:#0a1220;--card:#111d31;--ink:#e6eefb;--mute:#93a5c2;--line:#22334f;--pri:#4b95ff;--pri2:#2f7cf0;--soft:#16294a;--ok:#35cf88;--danger:#ff6b5b;--warn:#f6c560}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 .wrap{max-width:640px;margin:0 auto;padding:16px 16px 48px}
-header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 18px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:-.03em}
+.wrap.wide{max-width:860px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:-.03em;min-width:0}
 .brand svg{width:38px;height:38px;flex:none;filter:drop-shadow(0 3px 6px rgba(10,79,181,.25))}
+.brand .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .brand .fx{color:var(--pri)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
 h2,h3{margin:0 0 6px;letter-spacing:-.01em}
@@ -32,8 +34,9 @@ button.ghost{background:transparent;border-color:transparent;color:var(--mute);p
 button.danger{color:var(--danger)}
 button:disabled{opacity:.45;cursor:default}
 .w100{width:100%}
+.linkbtn{background:none;border:0;color:var(--pri);font-weight:600;font-size:14px;padding:8px 0;cursor:pointer}
 .tabs{display:flex;background:var(--soft);border-radius:12px;padding:4px;margin:4px 0 12px}
-.tabs button{flex:1;border:0;background:transparent;padding:9px;font-size:14px}
+.tabs button{flex:1;border:0;background:transparent;padding:9px 6px;font-size:14px}
 .tabs button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .placa{display:inline-block;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;letter-spacing:.08em;border:2px solid var(--ink);border-radius:6px;padding:2px 8px;font-size:15px;background:var(--card)}
 .v-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
@@ -48,10 +51,36 @@ button:disabled{opacity:.45;cursor:default}
 .acts .grow{flex:1 1 160px}
 .vazio{text-align:center;padding:32px 16px;color:var(--mute)}
 .erro{color:var(--danger);font-size:14px;min-height:20px}
+.okmsg{color:var(--ok);font-size:14px}
 .cks{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
 .cks label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px 6px 8px;font-size:14px;cursor:pointer;background:var(--bg)}
 .cks input{width:18px;height:18px;accent-color:var(--pri);margin:0}
-.toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 0 8px}
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:4px;margin:0 0 12px}
+.seg label{flex:1;text-align:center;padding:9px;border-radius:9px;cursor:pointer;font-weight:600;font-size:15px}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);color:var(--pri)}
+.hor{width:100%;border-collapse:collapse;font-size:15px}
+.hor td{padding:7px 0;border-bottom:1px solid var(--line)}
+.hor tr:last-child td{border-bottom:0}
+.hor td:last-child{text-align:right}
+.hor tr.hoje td{font-weight:700;color:var(--pri)}
+.pill{display:inline-block;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:700;white-space:nowrap}
+.pill.ab{background:#dff6ea;color:#0d7a4a}.pill.fe{background:#fde4e1;color:#a8322a}.pill.pe{background:#fff1d6;color:#8a5a00}
+@media (prefers-color-scheme:dark){.pill.ab{background:#0f3a28;color:#5fe0a2}.pill.fe{background:#3d1714;color:#ff8f84}.pill.pe{background:#3a2c0c;color:#f6c560}}
+.hr-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.hr-row .dia{width:72px;font-weight:600}
+.hr-row label{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mute)}
+.hr-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--pri)}
+.hr-row input[type=time]{padding:7px 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:15px}
+.hr-row .hs{display:flex;align-items:center;gap:6px;margin-left:auto}
+.hr-row.off .hs{opacity:.35;pointer-events:none}
+.sec{font-size:17px;margin:18px 0 4px}
+details.hist{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;font-weight:600;list-style:none}
+details.hist summary::-webkit-details-marker{display:none}
+details.hist ul{list-style:none;margin:8px 0 0;padding:0;font-size:14px}
+details.hist li{padding:5px 0;border-bottom:1px dashed var(--line)}
+details.hist li:last-child{border-bottom:0}
 /* cliente */
 .hero{text-align:center;padding:24px 16px}
 .hero .ic{font-size:52px;line-height:1;margin-bottom:8px}
@@ -67,8 +96,17 @@ button:disabled{opacity:.45;cursor:default}
 .cl .nm{flex:1;font-weight:600}
 .cl li:not(.d) .nm{color:var(--mute)}
 .cl .hr{font-size:13px;color:var(--mute)}
+.est-hero{text-align:center;margin:8px 0 16px}
+.est-hero .en{font-size:26px;font-weight:800;letter-spacing:-.02em}
 footer.rod{text-align:center;margin-top:20px;color:var(--mute);font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px}
 footer.rod svg{width:18px;height:18px}
+/* admin */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.tile b{display:block;font-size:26px;letter-spacing:-.02em}
+.tile span{font-size:13px;color:var(--mute)}
+.stats{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--mute);margin:6px 0 2px}
+.stats b{color:var(--ink)}
 /* modal */
 .modal{position:fixed;inset:0;background:rgba(5,12,25,.55);display:none;align-items:flex-end;justify-content:center;z-index:10}
 .modal.on{display:flex}
@@ -78,34 +116,6 @@ footer.rod svg{width:18px;height:18px}
 .et-row{display:flex;gap:6px;align-items:center;margin-bottom:8px}
 .et-row input{margin:0;flex:1}
 .et-row button{padding:9px 11px}
-.seg{display:flex;background:var(--soft);border-radius:12px;padding:4px;margin:0 0 12px}
-.seg label{flex:1;text-align:center;padding:9px;border-radius:9px;cursor:pointer;font-weight:600;font-size:15px}
-.seg input{position:absolute;opacity:0;pointer-events:none}
-.seg label:has(input:checked){background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);color:var(--pri)}
-.hor{width:100%;border-collapse:collapse;font-size:15px}
-.hor td{padding:7px 0;border-bottom:1px solid var(--line)}
-.hor tr:last-child td{border-bottom:0}
-.hor td:last-child{text-align:right}
-.hor tr.hoje td{font-weight:700;color:var(--pri)}
-.pill{display:inline-block;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:700}
-.pill.ab{background:#dff6ea;color:#0d7a4a}.pill.fe{background:#fde4e1;color:#a8322a}
-@media (prefers-color-scheme:dark){.pill.ab{background:#0f3a28;color:#5fe0a2}.pill.fe{background:#3d1714;color:#ff8f84}}
-.hr-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.hr-row .dia{width:72px;font-weight:600}
-.hr-row label{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mute)}
-.hr-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--pri)}
-.hr-row input[type=time]{padding:7px 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:15px}
-.hr-row .hs{display:flex;align-items:center;gap:6px;margin-left:auto}
-.hr-row.off .hs{opacity:.35;pointer-events:none}
-.sec{font-size:17px;margin:18px 0 4px}
-details.hist{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
-details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;font-weight:600;list-style:none}
-details.hist summary::-webkit-details-marker{display:none}
-details.hist ul{list-style:none;margin:8px 0 0;padding:0;font-size:14px}
-details.hist li{padding:5px 0;border-bottom:1px dashed var(--line)}
-details.hist li:last-child{border-bottom:0}
-.linkbtn{background:none;border:0;color:var(--pri);font-weight:600;font-size:14px;padding:8px 0;cursor:pointer}
-.okmsg{color:var(--ok);font-size:14px}
 .hidden{display:none!important}
 </style>
 </head>
@@ -122,21 +132,20 @@ details.hist li:last-child{border-bottom:0}
     </symbol>
   </defs>
 </svg>
-<div class="wrap">
+<div class="wrap" id="wrap">
 
-  <!-- ===== VISÃO DO CLIENTE ===== -->
+  <!-- ===== CLIENTE ===== -->
   <section id="vCliente" class="hidden">
-    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nomeLJ"></span></div>
-      <button id="btVoltarPainel" class="ghost hidden">← Painel</button></header>
+    <header class="top"><button id="btVoltarPainel" class="ghost hidden">← Painel</button></header>
     <div id="cliente"><div class="card vazio">Carregando…</div></div>
   </section>
 
-  <!-- ===== LOGIN DA EQUIPE ===== -->
+  <!-- ===== LOGIN ===== -->
   <section id="vLogin" class="hidden">
-    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nomeLJ"></span></div></header>
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span></span></div></header>
     <form id="fLogin" class="card">
-      <h2>Acesso da equipe</h2>
-      <p class="mute">Entre para atualizar o andamento dos veículos.</p>
+      <h2>Entrar</h2>
+      <p class="mute">Acesso do estabelecimento.</p>
       <label class="f">E-mail</label><input id="lEmail" type="email" autocomplete="username" required>
       <label class="f">Senha</label><input id="lSenha" type="password" autocomplete="current-password" required>
       <div class="erro" id="lErro"></div>
@@ -144,12 +153,40 @@ details.hist li:last-child{border-bottom:0}
       <button class="pri w100">Entrar</button>
       <div style="text-align:center"><button type="button" class="linkbtn" id="btEsqueci">Esqueci minha senha</button></div>
     </form>
+    <div class="card" style="text-align:center">
+      <p style="margin-bottom:4px"><b>Tem um lava jato?</b></p>
+      <p class="mute">Cadastre seu estabelecimento. Após a aprovação, é só começar a usar.</p>
+      <button class="w100" id="btIrCadastro">Criar conta do estabelecimento</button>
+    </div>
   </section>
 
-  <!-- ===== PAINEL DA EQUIPE ===== -->
+  <!-- ===== CADASTRO ===== -->
+  <section id="vCadastro" class="hidden">
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span></span></div>
+      <button class="ghost" id="btVoltarLogin">← Entrar</button></header>
+    <form id="fCad" class="card">
+      <h2>Criar conta do estabelecimento</h2>
+      <p class="mute">O nome aparece para os seus clientes e nas mensagens do WhatsApp.</p>
+      <label class="f">Nome do estabelecimento *</label><input id="cNome" maxlength="40" required placeholder="Ex.: Lava Jato do Zé">
+      <label class="f">E-mail *</label><input id="cEmail" type="email" autocomplete="username" required>
+      <label class="f">Senha * (mínimo 6 caracteres)</label><input id="cSenha" type="password" autocomplete="new-password" required minlength="6">
+      <label class="f">Repita a senha *</label><input id="cSenha2" type="password" autocomplete="new-password" required minlength="6">
+      <div class="erro" id="cErro"></div>
+      <button class="pri w100">Criar conta</button>
+    </form>
+  </section>
+
+  <!-- ===== AGUARDANDO / DESATIVADA ===== -->
+  <section id="vEspera" class="hidden">
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span></span></div>
+      <button class="ghost" data-sair>Sair</button></header>
+    <div class="card" style="text-align:center;padding:32px 20px" id="esperaBox"></div>
+  </section>
+
+  <!-- ===== PAINEL DO ESTABELECIMENTO ===== -->
   <section id="vPainel" class="hidden">
-    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nomeLJ"></span></div>
-      <div style="text-align:right"><button id="btNome" class="ghost">👤</button><button id="btEtapas" class="ghost">⚙️ Ajustes</button><button id="btSair" class="ghost">Sair</button></div></header>
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm" id="painelNome"></span></div>
+      <div style="text-align:right;margin-left:auto"><button id="btNome" class="ghost">👤</button><button id="btAjustes" class="ghost">⚙️ Ajustes</button><button class="ghost" data-sair>Sair</button></div></header>
 
     <form id="fNovo" class="card">
       <h3>Novo veículo</h3>
@@ -168,8 +205,23 @@ details.hist li:last-child{border-bottom:0}
       <button class="pri w100">Registrar e gerar link</button>
     </form>
 
-    <div class="tabs"><button data-tab="ativos" class="on">Em andamento <span id="cA"></span></button><button data-tab="fim">Concluídos <span id="cF"></span></button></div>
+    <div class="tabs" id="tabsV"><button data-tab="ativos" class="on">Em andamento <span id="cA"></span></button><button data-tab="fim">Concluídos <span id="cF"></span></button></div>
     <div id="lista"></div>
+  </section>
+
+  <!-- ===== ADMINISTRADOR ===== -->
+  <section id="vAdmin" class="hidden">
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span> <span class="mute" style="font-weight:600;font-size:15px">· Admin</span></span></div>
+      <button class="ghost" data-sair>Sair</button></header>
+    <div class="tiles">
+      <div class="tile"><b id="tPend">0</b><span>Aguardando</span></div>
+      <div class="tile"><b id="tAtv">0</b><span>Ativas</span></div>
+      <div class="tile"><b id="tIna">0</b><span>Desativadas</span></div>
+    </div>
+    <div class="tabs" id="tabsA">
+      <button data-f="pendente" class="on">Aguardando</button><button data-f="ativo">Ativas</button><button data-f="inativo">Desativadas</button><button data-f="todas">Todas</button>
+    </div>
+    <div id="adminLista"></div>
   </section>
 </div>
 
@@ -204,20 +256,22 @@ details.hist li:last-child{border-bottom:0}
   </form>
 </div></div>
 
-<!-- ===== NOME DO FUNCIONÁRIO ===== -->
+<!-- ===== NOME DO FUNCIONÁRIO (por aparelho) ===== -->
 <div class="modal" id="mNome"><div class="sheet">
   <form id="fNome">
-    <div class="v-head"><div><h3>Seu nome</h3><p class="mute">É assim que você aparece no histórico de cada veículo (quem marcou cada etapa).</p></div><button type="button" class="ghost" data-close id="nomeFechar">✕</button></div>
+    <div class="v-head"><div><h3>Quem está usando este celular?</h3><p class="mute">Seu nome aparece no histórico de cada veículo (quem marcou cada etapa). Fica salvo neste aparelho.</p></div><button type="button" class="ghost" data-close id="nomeFechar">✕</button></div>
     <input id="nomeInput" maxlength="30" placeholder="Ex.: Carlos" required>
-    <div class="erro" id="nomeErro"></div>
     <button class="pri w100">Salvar</button>
   </form>
 </div></div>
 
-<!-- ===== CONFIGURAR ETAPAS ===== -->
+<!-- ===== AJUSTES ===== -->
 <div class="modal" id="mCfg"><div class="sheet">
   <div class="v-head"><h3>Ajustes do estabelecimento</h3><button class="ghost" data-close>✕</button></div>
-  <h3 class="sec" style="margin-top:0">Etapas</h3>
+  <h3 class="sec" style="margin-top:0">Nome do estabelecimento</h3>
+  <p class="mute">Aparece na tela do cliente e nas mensagens do WhatsApp.</p>
+  <input id="cfgNome" maxlength="40">
+  <h3 class="sec">Etapas</h3>
   <p class="mute">Serviços pelos quais os veículos passam. A equipe marca cada um quando é feito, em qualquer ordem.</p>
   <div id="cfgLista"></div>
   <button id="cfgAdd" class="w100" style="margin:4px 0 12px">+ Adicionar etapa</button>
@@ -235,7 +289,6 @@ details.hist li:last-child{border-bottom:0}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 /* ================== CONFIGURAÇÃO ================== */
-const NOME_LAVAJATO = "Lavaflux";
 const firebaseConfig = {
   apiKey: "AIzaSyCxUaPVTFyp0zaxOmLJjlTB2QXrBllp0DM",
   authDomain: "lavaflux-1da77.firebaseapp.com",
@@ -246,7 +299,6 @@ const firebaseConfig = {
 };
 /* ================================================= */
 
-// Etapas usadas até o estabelecimento cadastrar as suas
 const ETAPAS_PADRAO = ["Lavagem externa","Secagem","Limpeza interna","Finalização"].map((nome,i) => ({id:"p"+i, nome}));
 const DIAS = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 const HORARIO_PADRAO = {
@@ -260,16 +312,12 @@ const DEMO = firebaseConfig.apiKey.startsWith("COLE");
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const hora = ms => ms ? new Date(ms).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "";
-const show = id => ["vCliente","vLogin","vPainel"].forEach(v => $("#"+v).classList.toggle("hidden", v !== id));
+const data = ms => ms ? new Date(ms).toLocaleDateString("pt-BR") : "—";
+const VIEWS = ["vCliente","vLogin","vCadastro","vEspera","vPainel","vAdmin"];
+const show = id => { VIEWS.forEach(v => $("#"+v).classList.toggle("hidden", v !== id)); $("#wrap").classList.toggle("wide", id === "vAdmin"); };
 const fechar = id => $("#"+id).classList.remove("on");
 const abrir = id => $("#"+id).classList.add("on");
-document.querySelectorAll(".nomeLJ").forEach(e => {
-  const m = NOME_LAVAJATO.match(/^(.*?)(flux)$/i);
-  e.innerHTML = m ? `${esc(m[1])}<span class="fx">${esc(m[2])}</span>` : esc(NOME_LAVAJATO);
-});
-document.title = NOME_LAVAJATO;
 
-// Código aleatório e impossível de adivinhar: cada cliente só abre o próprio veículo.
 function token(n = 20){
   const a = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
   return [...crypto.getRandomValues(new Uint8Array(n))].map(x => a[x % a.length]).join("");
@@ -279,15 +327,20 @@ const placaLimpa = s => s.toUpperCase().replace(/[^A-Z0-9]/g,"");
 const etapasDe = v => Array.isArray(v.etapas) && v.etapas.length ? v.etapas : ETAPAS_PADRAO;
 const checksDe = v => v.checks || {};
 const tsDe = x => (x && typeof x === "object") ? x.em : x;
-let usuarioAtual = null;
-const quem = () => (usuarioAtual && (usuarioAtual.displayName || (usuarioAtual.email || "").split("@")[0])) || "?";
 const moto = v => v.tipo === "moto";
 const seuVeic = v => moto(v) ? "sua moto" : "seu carro";
 const prontoV = v => moto(v) ? "pronta" : "pronto";
 const iconeV = v => moto(v) ? "🏍️" : "🚗";
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
-/* ---------- Horário de funcionamento ---------- */
+// Nome do funcionário: salvo no aparelho (o login é do estabelecimento)
+const LS_FUNC = "lavaflux_funcionario";
+const lerLS = k => { try { return localStorage.getItem(k) || ""; } catch { return ""; } };
+const gravarLS = (k,v) => { try { localStorage.setItem(k, v); } catch {} };
+let funcMem = "";
+const quem = () => funcMem || lerLS(LS_FUNC) || "Equipe";
+
+/* ---------- Horário ---------- */
 const minutos = t => { const [a,b] = String(t).split(":").map(Number); return a*60 + (b||0); };
 const fmtH = t => { const [a,b] = String(t).split(":"); return `${+a}h${b && b !== "00" ? b : ""}`; };
 function situacao(hor, agora = new Date()){
@@ -313,130 +366,213 @@ function cardHorario(hor){
   return `<div class="card"><div class="v-head" style="margin-bottom:6px"><h3 style="margin:0">Horário de funcionamento</h3>${pill}</div><table class="hor">${linhas}</table></div>`;
 }
 
-/* ---------- Armazenamento (Firebase ou demonstração) ---------- */
-// Etapas e horário do estabelecimento ficam no documento "lavagens/_config".
+/* ---------- Armazenamento ----------
+   contas/{uid}           privado: e-mail e status (pendente | ativo | inativo)
+   estabelecimentos/{uid} público: nome, etapas, horário
+   lavagens/{código}      veículo, com "est" = uid do estabelecimento
+   admins/{uid}           administradores da plataforma                       */
 let store;
 if (DEMO) {
-  const db = new Map(), subs = new Set(), docSubs = new Map(), cfgSubs = new Set(); let cfg = null;
-  const todos = () => [...db.values()].sort((a,b) => b.criadoEm - a.criadoEm);
-  const emit = () => { subs.forEach(f => f(todos())); docSubs.forEach((fs,id) => fs.forEach(f => f(db.get(id) || null))); };
+  // Modo de teste local: ?papel=admin | pendente | inativo (padrão: estabelecimento ativo)
+  const papel = new URLSearchParams(location.search).get("papel") || "ativo";
+  const U = {uid: "est1", email: "demo@lavajato.com"};
+  const contas = new Map([["est1",{email:U.email, nome:"Lava Jato Demo", status: papel === "admin" ? "ativo" : papel, criadoEm: Date.now()-864e5*20}],
+    ["est2",{email:"zé@exemplo.com", nome:"Lava Jato do Zé", status:"pendente", criadoEm: Date.now()-36e5}],
+    ["est3",{email:"brilho@exemplo.com", nome:"Brilho Car", status:"inativo", criadoEm: Date.now()-864e5*60}]]);
+  const ests = new Map([["est1",{nome:"Lava Jato Demo"}],["est2",{nome:"Lava Jato do Zé"}],["est3",{nome:"Brilho Car"}]]);
+  const lav = new Map(); const subs = new Set();
+  const emit = () => subs.forEach(f => f());
+  const sub = f => { subs.add(f); f(); return () => subs.delete(f); };
   store = {
-    onAuth: cb => cb({email:"demo@demo", displayName:"Demo"}), entrar: async()=>{}, sair: async()=>{}, esqueci: async()=>{}, definirNome: async n => { usuarioAtual.displayName = n; },
-    lista(cb){ subs.add(cb); cb(todos()); return () => subs.delete(cb); },
-    um(id, cb){ if(!docSubs.has(id)) docSubs.set(id,new Set()); docSubs.get(id).add(cb); cb(db.get(id)||null); return () => docSubs.get(id).delete(cb); },
-    async criar(d){ const id = token(); db.set(id,{...d,id}); emit(); return id; },
-    async atualizar(id,p,ev){ const a = db.get(id); db.set(id,{...a,...p, ...(ev ? {historico:[...(a.historico||[]), {...ev, por:quem(), em:Date.now()}]} : {})}); emit(); },
-    async remover(id){ db.delete(id); emit(); },
-    config(cb){ cfgSubs.add(cb); cb(cfg); return () => cfgSubs.delete(cb); },
-    async salvarConfig(o){ cfg = {...(cfg||{}), ...o}; cfgSubs.forEach(f => f(cfg)); }
+    onAuth: cb => cb(U), entrar: async()=>{}, sair: async()=>{}, esqueci: async()=>{},
+    cadastrar: async()=>{}, souAdmin: async()=> papel === "admin",
+    conta: (uid, cb) => sub(() => cb(contas.get(uid) || null)),
+    criarConta: async()=>{},
+    est: (uid, cb) => sub(() => cb(ests.get(uid) || null)),
+    salvarEst: async (uid, o) => { ests.set(uid, {...ests.get(uid), ...o}); emit(); },
+    lista: (uid, cb) => sub(() => cb([...lav.values()].filter(v => v.est === uid).sort((a,b) => b.criadoEm - a.criadoEm))),
+    um: (id, cb) => sub(() => cb(lav.get(id) || null)),
+    async criar(d){ const id = token(); lav.set(id, {...d, id}); emit(); return id; },
+    async atualizar(id,p,ev){ const a = lav.get(id); lav.set(id, {...a, ...p, ...(ev ? {historico:[...(a.historico||[]), {...ev, por:quem(), em:Date.now()}]} : {})}); emit(); },
+    async remover(id){ lav.delete(id); emit(); },
+    contas: cb => sub(() => cb([...contas].map(([uid,c]) => ({uid, ...c})))),
+    ests: cb => sub(() => cb(Object.fromEntries(ests))),
+    todasLavagens: cb => sub(() => cb([...lav.values()])),
+    setStatus: async (uid, status) => { contas.set(uid, {...contas.get(uid), status}); emit(); }
   };
 } else {
   firebase.initializeApp(firebaseConfig);
-  const fs = firebase.firestore(), au = firebase.auth(), col = fs.collection("lavagens");
+  const fs = firebase.firestore(), au = firebase.auth();
   au.languageCode = "pt-BR";
+  const col = n => fs.collection(n);
+  const snapDoc = (ref, cb, err) => ref.onSnapshot(d => cb(d.exists ? d.data() : null), err || (() => cb(null)));
   store = {
     onAuth: cb => au.onAuthStateChanged(cb),
     entrar: (e,s) => au.signInWithEmailAndPassword(e,s),
     sair: () => au.signOut(),
     esqueci: e => au.sendPasswordResetEmail(e, {url: location.origin + location.pathname}),
-    definirNome: n => au.currentUser.updateProfile({displayName: n}),
-    lista: (cb,err) => col.orderBy("criadoEm","desc").limit(300).onSnapshot(s => cb(s.docs.map(d => ({id:d.id,...d.data()})).filter(v => v.placa)), err),
-    um: (id,cb,err) => col.doc(id).onSnapshot(d => cb(d.exists ? {id:d.id,...d.data()} : null), err),
-    async criar(d){ const id = token(); await col.doc(id).set(d); return id; },
-    atualizar: (id,p,ev) => col.doc(id).update(ev ? {...p, historico: firebase.firestore.FieldValue.arrayUnion({...ev, por: quem(), em: Date.now()})} : p),
-    remover: id => col.doc(id).delete(),
-    config: cb => col.doc("_config").onSnapshot(d => cb(d.exists ? d.data() : null), () => cb(null)),
-    salvarConfig: o => col.doc("_config").set(o, {merge: true})
+    cadastrar: (e,s) => au.createUserWithEmailAndPassword(e,s),
+    souAdmin: async uid => { try { return (await col("admins").doc(uid).get()).exists; } catch { return false; } },
+    conta: (uid, cb, err) => snapDoc(col("contas").doc(uid), cb, err),
+    async criarConta(uid, email, nome){
+      await col("contas").doc(uid).set({email, nome, status: "pendente", criadoEm: Date.now()});
+      await col("estabelecimentos").doc(uid).set({nome, etapas: ETAPAS_PADRAO, horario: HORARIO_PADRAO}, {merge: true});
+    },
+    est: (uid, cb) => snapDoc(col("estabelecimentos").doc(uid), cb),
+    salvarEst: (uid, o) => col("estabelecimentos").doc(uid).set(o, {merge: true}),
+    lista: (uid, cb, err) => col("lavagens").where("est","==",uid).orderBy("criadoEm","desc").limit(300)
+      .onSnapshot(s => cb(s.docs.map(d => ({id:d.id, ...d.data()}))), err),
+    um: (id, cb, err) => col("lavagens").doc(id).onSnapshot(d => cb(d.exists ? {id:d.id, ...d.data()} : null), err),
+    async criar(d){ const id = token(); await col("lavagens").doc(id).set(d); return id; },
+    atualizar: (id,p,ev) => col("lavagens").doc(id).update(ev ? {...p, historico: firebase.firestore.FieldValue.arrayUnion({...ev, por: quem(), em: Date.now()})} : p),
+    remover: id => col("lavagens").doc(id).delete(),
+    contas: (cb, err) => col("contas").onSnapshot(s => cb(s.docs.map(d => ({uid: d.id, ...d.data()}))), err),
+    ests: cb => col("estabelecimentos").onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = d.data()); cb(o); }, () => cb({})),
+    todasLavagens: cb => col("lavagens").onSnapshot(s => cb(s.docs.map(d => d.data())), () => cb([])),
+    setStatus: (uid, status) => col("contas").doc(uid).update({status, [status === "ativo" ? "aprovadoEm" : "alteradoEm"]: Date.now()})
   };
 }
 
-/* ---------- Visão do cliente ---------- */
-let pararCliente = null, pararCfgCli = null, cliV, cliHor = HORARIO_PADRAO, cliCarregado = false;
+/* ---------- Cliente ---------- */
+let pararCli = [], cliV = null, cliEst = null, cliCarregado = false;
+const pararTudo = arr => { arr.forEach(f => f && f()); arr.length = 0; };
 function abrirCliente(id, doPainel){
   show("vCliente");
   $("#btVoltarPainel").classList.toggle("hidden", !doPainel);
-  if (pararCliente) pararCliente();
-  if (pararCfgCli) pararCfgCli();
-  cliCarregado = false;
-  pararCfgCli = store.config(d => { cliHor = (d && d.horario) || HORARIO_PADRAO; if (cliCarregado) renderCliente(cliV); });
-  pararCliente = store.um(id, v => { cliCarregado = true; renderCliente(v); }, () => { cliCarregado = true; renderCliente(null); });
+  pararTudo(pararCli); cliEst = null; cliCarregado = false; let estAtual = null;
+  pararCli.push(store.um(id, v => {
+    cliCarregado = true; cliV = v;
+    if (v && v.est && v.est !== estAtual){
+      estAtual = v.est;
+      pararCli.push(store.est(v.est, e => { cliEst = e; renderCliente(); }));
+    }
+    renderCliente();
+  }, () => { cliCarregado = true; cliV = null; renderCliente(); }));
 }
-function renderCliente(v){
-  cliV = v;
-  const el = $("#cliente");
-  if (!v || !v.placa){ el.innerHTML = `<div class="card vazio"><h2>Link não encontrado</h2><p>Confira o link com a equipe do ${esc(NOME_LAVAJATO)}.</p></div>`; return; }
+function renderCliente(){
+  const v = cliV, el = $("#cliente");
+  if (!cliCarregado) return;
+  if (!v || !v.placa){ el.innerHTML = `<div class="card vazio"><h2>Link não encontrado</h2><p>Confira o link com o estabelecimento.</p></div>`; return; }
+  const nomeEst = (cliEst && cliEst.nome) || "", hor = (cliEst && cliEst.horario) || HORARIO_PADRAO;
+  document.title = nomeEst || "Acompanhe seu veículo";
   const et = etapasDe(v), ch = checksDe(v), feitas = et.filter(e => ch[e.id]).length, pct = Math.round(100 * feitas / et.length);
   let hero;
-  if (v.concluido) hero = `<div class="card hero pronto"><div class="ic">✅</div><div class="st">Pronto para retirada!</div><p class="mute">Concluído às ${hora(v.fimEm)}. ${esc(lembrete(cliHor))}</p><p class="mute" style="margin:0">Obrigado pela preferência!</p></div>`;
+  if (v.concluido) hero = `<div class="card hero pronto"><div class="ic">✅</div><div class="st">Pronto para retirada!</div><p class="mute">Concluído às ${hora(v.fimEm)}. ${esc(lembrete(hor))}</p><p class="mute" style="margin:0">Obrigado pela preferência!</p></div>`;
   else if (!feitas) hero = `<div class="card hero"><div class="ic">⏳</div><div class="st">Na fila</div><p class="mute">${cap(seuVeic(v))} foi recebid${moto(v) ? "a" : "o"} e logo será atendid${moto(v) ? "a" : "o"}.</p></div>`;
   else hero = `<div class="card hero"><div class="ic">🧽</div><div class="st">Em andamento</div><p class="mute">${feitas} de ${et.length} etapas concluídas</p><div class="bar"><i style="width:${pct}%"></i></div></div>`;
   const itens = et.map(e => `<li class="${ch[e.id] ? "d" : ""}"><div class="dot">${ch[e.id] ? "✓" : ""}</div><div class="nm">${esc(e.nome)}</div><div class="hr">${ch[e.id] ? hora(tsDe(ch[e.id])) : ""}</div></li>`).join("");
   el.innerHTML = `
+    ${nomeEst ? `<div class="est-hero"><div class="en">${esc(nomeEst)}</div><div class="mute">Acompanhe ${seuVeic(v)} em tempo real</div></div>` : ""}
     <div class="card"><div class="v-head" style="margin:0"><div>${v.nome ? `<p>Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute" style="margin:0">${iconeV(v)} ${esc(v.modelo) || cap(seuVeic(v))}</p></div><span class="placa">${esc(v.placa)}</span></div></div>
     ${hero}
     <div class="card"><h3 style="margin-bottom:4px">Serviços</h3><ul class="cl">${itens}</ul></div>
-    ${cardHorario(cliHor)}
-    <footer class="rod"><svg><use href="#logo"/></svg>Esta página se atualiza sozinha.</footer>`;
+    ${cardHorario(hor)}
+    <footer class="rod"><svg><use href="#logo"/></svg>Atualiza sozinho · Lavaflux</footer>`;
 }
-$("#btVoltarPainel").onclick = () => { if (pararCliente) pararCliente(); history.replaceState(null,"",location.pathname); show("vPainel"); };
+$("#btVoltarPainel").onclick = () => { pararTudo(pararCli); history.replaceState(null,"",location.pathname); show("vPainel"); };
 
-/* ---------- Etapas do estabelecimento ---------- */
-let etapasCfg = ETAPAS_PADRAO;
-function renderChecks(box, lista, marcados){
-  box.innerHTML = lista.map(e => `<label><input type="checkbox" value="${esc(e.id)}" ${marcados.has(e.id) ? "checked" : ""}>${esc(e.nome)}</label>`).join("")
-    || `<span class="mute">Nenhuma etapa cadastrada. Use ⚙️ Etapas.</span>`;
+/* ---------- Sessão ---------- */
+let usuario = null, pararSessao = [], cadastrando = null;
+function iniciarSessao(u){
+  pararTudo(pararSessao); pararTudo(pararPainel); pararTudo(pararAdmin);
+  usuario = u;
+  if (!u){ show("vLogin"); return; }
+  store.souAdmin(u.uid).then(adm => {
+    if (usuario !== u) return;
+    if (adm) { iniciarAdmin(); return; }
+    pararSessao.push(store.conta(u.uid, c => {
+      if (!c){
+        if (cadastrando) return;   // cadastro sendo gravado
+        espera("semconta"); return;
+      }
+      if (c.status === "ativo") { if (!painelAtivo) iniciarPainel(); }
+      else { pararTudo(pararPainel); painelAtivo = false; espera(c.status, c); }
+    }, () => espera("erro")));
+  });
 }
-const lerChecks = (box, lista) => { const ids = new Set([...box.querySelectorAll("input:checked")].map(i => i.value)); return lista.filter(e => ids.has(e.id)); };
-const renderNovoChecks = () => renderChecks($("#nEtapas"), etapasCfg, new Set(etapasCfg.map(e => e.id)));
+function espera(tipo, c){
+  show("vEspera");
+  const box = $("#esperaBox");
+  if (tipo === "pendente") box.innerHTML = `<div style="font-size:48px">⏳</div><h2>Cadastro recebido!</h2><p><b>${esc(c.nome)}</b> está aguardando aprovação.</p><p class="mute">Esta tela abre o painel sozinha assim que a conta for aprovada.</p>`;
+  else if (tipo === "inativo") box.innerHTML = `<div style="font-size:48px">🔒</div><h2>Conta desativada</h2><p class="mute">O acesso de <b>${esc(c.nome)}</b> está desativado. Entre em contato com o suporte do Lavaflux.</p>`;
+  else if (tipo === "semconta") box.innerHTML = `<div style="font-size:48px">📝</div><h2>Conclua o cadastro</h2><p class="mute">Informe o nome do estabelecimento.</p>
+      <input id="fimNome" maxlength="40" placeholder="Ex.: Lava Jato do Zé"><div class="erro" id="fimErro"></div><button class="pri w100" id="fimBt">Enviar para aprovação</button>`;
+  else box.innerHTML = `<div style="font-size:48px">⚠️</div><h2>Não foi possível carregar</h2><p class="mute">Verifique a internet e tente de novo.</p>`;
+  const bt = $("#fimBt");
+  if (bt) bt.onclick = async () => {
+    const n = $("#fimNome").value.trim(); if (!n) return;
+    try { await store.criarConta(usuario.uid, usuario.email, n); } catch(e){ $("#fimErro").textContent = "Erro: " + e.message; }
+  };
+}
+document.querySelectorAll("[data-sair]").forEach(b => b.onclick = () => store.sair());
 
-let cfgEdit = [], horEdit = {}, horarioCfg = HORARIO_PADRAO;
-function renderHor(){
-  $("#horLista").innerHTML = [1,2,3,4,5,6,0].map(d => { const h = horEdit[d];
-    return `<div class="hr-row ${h.aberto ? "" : "off"}" data-d="${d}"><span class="dia">${DIAS[d]}</span>
-      <label><input type="checkbox" data-k="aberto" ${h.aberto ? "checked" : ""}>Aberto</label>
-      <span class="hs"><input type="time" data-k="abre" value="${h.abre}"> às <input type="time" data-k="fecha" value="${h.fecha}"></span></div>`; }).join("");
-}
-$("#horLista").onchange = e => {
-  const r = e.target.closest(".hr-row"), k = e.target.dataset.k; if (!r || !k) return;
-  const h = horEdit[r.dataset.d];
-  if (k === "aberto"){ h.aberto = e.target.checked; r.classList.toggle("off", !h.aberto); } else h[k] = e.target.value;
+/* ---------- Login / cadastro ---------- */
+$("#fLogin").onsubmit = async ev => {
+  ev.preventDefault(); $("#lErro").textContent = ""; $("#lMsg").textContent = "";
+  try { await store.entrar($("#lEmail").value.trim(), $("#lSenha").value); }
+  catch { $("#lErro").textContent = "E-mail ou senha incorretos."; }
 };
-function renderCfg(){
-  $("#cfgLista").innerHTML = cfgEdit.map((e,i) => `<div class="et-row">
-      <input value="${esc(e.nome)}" data-i="${i}" placeholder="Nome da etapa" maxlength="40">
-      <button type="button" data-mv="-1" data-i="${i}" ${i===0?"disabled":""} aria-label="Subir">↑</button>
-      <button type="button" data-mv="1" data-i="${i}" ${i===cfgEdit.length-1?"disabled":""} aria-label="Descer">↓</button>
-      <button type="button" class="danger" data-rm="${i}" aria-label="Remover">✕</button></div>`).join("");
-}
-$("#btEtapas").onclick = () => { cfgEdit = etapasCfg.map(e => ({...e})); horEdit = JSON.parse(JSON.stringify(horarioCfg)); $("#cfgErro").textContent = ""; renderCfg(); renderHor(); abrir("mCfg"); };
-$("#cfgLista").oninput = e => { if (e.target.dataset.i != null) cfgEdit[+e.target.dataset.i].nome = e.target.value; };
-$("#cfgLista").onclick = e => {
-  const b = e.target.closest("button"); if (!b) return;
-  if (b.dataset.rm != null) cfgEdit.splice(+b.dataset.rm, 1);
-  else { const i = +b.dataset.i, j = i + +b.dataset.mv; [cfgEdit[i], cfgEdit[j]] = [cfgEdit[j], cfgEdit[i]]; }
-  renderCfg();
+$("#btEsqueci").onclick = async () => {
+  const em = $("#lEmail").value.trim(); $("#lMsg").textContent = "";
+  if (!em){ $("#lErro").textContent = "Digite seu e-mail no campo acima e toque de novo em \"Esqueci minha senha\"."; $("#lEmail").focus(); return; }
+  try {
+    await store.esqueci(em);
+    $("#lErro").textContent = "";
+    $("#lMsg").textContent = `Se ${em} estiver cadastrado, enviamos um e-mail com o link para criar uma nova senha. Confira também a caixa de spam.`;
+  } catch(e){ $("#lErro").textContent = e.code === "auth/invalid-email" ? "E-mail inválido." : "Não foi possível enviar agora. Tente novamente em instantes."; }
 };
-$("#cfgAdd").onclick = () => { cfgEdit.push({id: "e" + token(6), nome: ""}); renderCfg(); const ins = $("#cfgLista").querySelectorAll("input"); ins[ins.length-1].focus(); };
-$("#cfgSalvar").onclick = async () => {
-  const l = cfgEdit.map(e => ({id: e.id, nome: e.nome.trim()})).filter(e => e.nome);
-  if (!l.length){ $("#cfgErro").textContent = "Cadastre pelo menos uma etapa."; return; }
-  for (const d of [1,2,3,4,5,6,0]){ const h = horEdit[d];
-    if (h.aberto && (!h.abre || !h.fecha || minutos(h.abre) >= minutos(h.fecha))){ $("#cfgErro").textContent = `Confira o horário de ${DIAS[d]}: o fechamento deve ser depois da abertura.`; return; } }
-  try { await store.salvarConfig({etapas: l, horario: horEdit}); fechar("mCfg"); } catch(e){ $("#cfgErro").textContent = "Erro ao salvar: " + e.message; }
+$("#btIrCadastro").onclick = () => { $("#cErro").textContent = ""; show("vCadastro"); };
+$("#btVoltarLogin").onclick = () => show("vLogin");
+$("#fCad").onsubmit = async ev => {
+  ev.preventDefault();
+  const nome = $("#cNome").value.trim(), email = $("#cEmail").value.trim(), s1 = $("#cSenha").value, s2 = $("#cSenha2").value;
+  if (s1 !== s2){ $("#cErro").textContent = "As senhas não são iguais."; return; }
+  $("#cErro").textContent = ""; cadastrando = {nome};
+  try {
+    const r = await store.cadastrar(email, s1);
+    await store.criarConta(r.user.uid, email, nome);
+  } catch(e){
+    $("#cErro").textContent = ({ "auth/email-already-in-use": "Este e-mail já tem conta. Volte e entre, ou use \"Esqueci minha senha\".",
+      "auth/weak-password": "Senha fraca: use pelo menos 6 caracteres.", "auth/invalid-email": "E-mail inválido." })[e.code] || "Erro ao criar conta: " + e.message;
+  } finally { cadastrando = null; }
 };
 
-/* ---------- Painel da equipe ---------- */
-let lista = [], aba = "ativos", pararLista = null, pararCfg = null;
+/* ---------- Painel do estabelecimento ---------- */
+let painelAtivo = false, pararPainel = [], lista = [], aba = "ativos";
+let estDados = {}, etapasCfg = ETAPAS_PADRAO, horarioCfg = HORARIO_PADRAO;
+const nomeEst = () => estDados.nome || "Lava jato";
 
 function iniciarPainel(){
-  show("vPainel");
-  $("#btSair").classList.toggle("hidden", DEMO);
-  if (pararLista) pararLista();
-  if (pararCfg) pararCfg();
-  pararCfg = store.config(d => { etapasCfg = (d && d.etapas && d.etapas.length) ? d.etapas : ETAPAS_PADRAO; horarioCfg = (d && d.horario) || HORARIO_PADRAO; renderNovoChecks(); });
-  pararLista = store.lista(l => { lista = l; renderLista(); },
-    e => { $("#lista").innerHTML = `<div class="card vazio">Sem permissão para ver os veículos. Confira se o seu e-mail está na lista da equipe nas regras do Firestore.</div>`; console.error(e); });
+  painelAtivo = true; show("vPainel"); mostrarNome();
+  const uid = usuario.uid;
+  pararPainel.push(store.est(uid, d => {
+    estDados = d || {};
+    etapasCfg = (estDados.etapas && estDados.etapas.length) ? estDados.etapas : ETAPAS_PADRAO;
+    horarioCfg = estDados.horario || HORARIO_PADRAO;
+    $("#painelNome").textContent = nomeEst(); document.title = nomeEst();
+    renderNovoChecks();
+  }));
+  pararPainel.push(store.lista(uid, l => { lista = l; renderLista(); },
+    e => { $("#lista").innerHTML = `<div class="card vazio">Não foi possível carregar os veículos. Se acabou de ser aprovado, aguarde alguns minutos e recarregue.</div>`; console.error(e); }));
+  if (!lerLS(LS_FUNC) && !funcMem) pedirNome(true);
 }
+
+function renderChecks(box, l, marcados){
+  box.innerHTML = l.map(e => `<label><input type="checkbox" value="${esc(e.id)}" ${marcados.has(e.id) ? "checked" : ""}>${esc(e.nome)}</label>`).join("")
+    || `<span class="mute">Nenhuma etapa cadastrada. Use ⚙️ Ajustes.</span>`;
+}
+const lerChecks = (box, l) => { const ids = new Set([...box.querySelectorAll("input:checked")].map(i => i.value)); return l.filter(e => ids.has(e.id)); };
+const renderNovoChecks = () => renderChecks($("#nEtapas"), etapasCfg, new Set(etapasCfg.map(e => e.id)));
+
+const histAbertos = new Set();
+const ACOES = {registrou:"registrou o veículo", concluiu:"concluiu o serviço", reabriu:"reabriu o serviço", editou:"editou o cadastro"};
+function histHtml(v){
+  const h = (v.historico || []).slice().sort((a,b) => b.em - a.em);
+  if (!h.length) return "";
+  const itens = h.map(x => `<li><span class="mute">${hora(x.em)}</span> · <b>${esc(x.por || "?")}</b> ${x.acao === "marcou" ? "marcou ✓ " + esc(x.etapa) : x.acao === "desmarcou" ? "desmarcou " + esc(x.etapa) : esc(ACOES[x.acao] || x.acao)}</li>`).join("");
+  return `<details class="hist" data-hid="${v.id}" ${histAbertos.has(v.id) ? "open" : ""}><summary>📋 Histórico (${h.length})</summary><ul>${itens}</ul></details>`;
+}
+$("#lista").addEventListener("toggle", e => { const d = e.target; if (d.dataset && d.dataset.hid) d.open ? histAbertos.add(d.dataset.hid) : histAbertos.delete(d.dataset.hid); }, true);
 
 function renderLista(){
   const ativos = lista.filter(v => !v.concluido), fim = lista.filter(v => v.concluido);
@@ -451,7 +587,7 @@ function renderLista(){
       : `🧽 Em andamento <span class="mute">· ${feitas} de ${et.length}</span>`;
     const chips = et.map(e => `<button class="chip ${ch[e.id] ? "on" : ""}" title="${ch[e.id] && ch[e.id].por ? "Marcado por " + esc(ch[e.id].por) + " às " + hora(tsDe(ch[e.id])) : ""}" data-act="check" data-id="${v.id}" data-e="${esc(e.id)}" ${v.concluido ? "disabled" : ""}>${ch[e.id] ? "✓ " : ""}${esc(e.nome)}</button>`).join("");
     const acoes = v.concluido
-      ? `<button class="ok grow" data-act="avisar" data-id="${v.id}">📲 Avisar que está pronto</button>
+      ? `<button class="ok grow" data-act="avisar" data-id="${v.id}">📲 Avisar que está ${prontoV(v)}</button>
          <button data-act="reabrir" data-id="${v.id}">↶ Reabrir</button>`
       : `<button class="${tudo ? "ok" : ""} grow" data-act="concluir" data-id="${v.id}">Concluir ✓</button>
          <button data-act="editar" data-id="${v.id}">✏️ Editar</button>`;
@@ -467,16 +603,6 @@ function renderLista(){
   }).join("");
 }
 
-const histAbertos = new Set();
-const ACOES = {registrou:"registrou o veículo", concluiu:"concluiu o serviço", reabriu:"reabriu o serviço", editou:"editou o cadastro"};
-function histHtml(v){
-  const h = (v.historico || []).slice().sort((a,b) => b.em - a.em);
-  if (!h.length) return "";
-  const itens = h.map(x => `<li><span class="mute">${hora(x.em)}</span> · <b>${esc(x.por || "?")}</b> ${x.acao === "marcou" ? "marcou ✓ " + esc(x.etapa) : x.acao === "desmarcou" ? "desmarcou " + esc(x.etapa) : esc(ACOES[x.acao] || x.acao)}</li>`).join("");
-  return `<details class="hist" data-hid="${v.id}" ${histAbertos.has(v.id) ? "open" : ""}><summary>📋 Histórico (${h.length})</summary><ul>${itens}</ul></details>`;
-}
-$("#lista").addEventListener("toggle", e => { const d = e.target; if (d.dataset && d.dataset.hid) d.open ? histAbertos.add(d.dataset.hid) : histAbertos.delete(d.dataset.hid); }, true);
-
 $("#lista").onclick = async ev => {
   const b = ev.target.closest("[data-act]"); if (!b) return;
   const v = lista.find(x => x.id === b.dataset.id); if (!v) return;
@@ -489,7 +615,7 @@ $("#lista").onclick = async ev => {
       else { ch[e] = {em: Date.now(), por: quem()}; evt = {acao: "marcou", etapa}; }
       await store.atualizar(v.id, {checks: ch}, evt);
     } else if (act === "concluir"){
-      const et = etapasDe(v), ch = checksDe(v), faltam = et.filter(e => !ch[e.id]).map(e => e.nome);
+      const faltam = etapasDe(v).filter(e => !checksDe(v)[e.id]).map(e => e.nome);
       if (faltam.length && !confirm(`Ainda não marcadas: ${faltam.join(", ")}.\nConcluir mesmo assim?`)) return;
       const fimEm = Date.now();
       await store.atualizar(v.id, {concluido: true, fimEm}, {acao: "concluiu"});
@@ -502,20 +628,21 @@ $("#lista").onclick = async ev => {
   } catch(e){ alert("Não foi possível salvar: " + e.message); }
 };
 
-document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+$("#tabsV").onclick = e => {
+  const b = e.target.closest("button"); if (!b) return;
   aba = b.dataset.tab;
-  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+  $("#tabsV").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
   renderLista();
-});
+};
 
 $("#fNovo").onsubmit = async ev => {
   ev.preventDefault();
-  const placa = placaLimpa($("#nPlaca").value);
-  const etapas = lerChecks($("#nEtapas"), etapasCfg);
+  const placa = placaLimpa($("#nPlaca").value), etapas = lerChecks($("#nEtapas"), etapasCfg);
   if (placa.length < 7){ $("#nErro").textContent = "Placa inválida."; return; }
   if (!etapas.length){ $("#nErro").textContent = "Selecione pelo menos uma etapa."; return; }
   $("#nErro").textContent = "";
-  const d = { tipo: document.querySelector("input[name=nTipo]:checked").value, placa, modelo: $("#nModelo").value.trim(), nome: $("#nNome").value.trim(),
+  const d = { est: usuario.uid, tipo: document.querySelector("input[name=nTipo]:checked").value, placa,
+              modelo: $("#nModelo").value.trim(), nome: $("#nNome").value.trim(),
               telefone: $("#nTel").value.replace(/\D/g,""), etapas, checks: {},
               concluido: false, criadoEm: Date.now(), historico: [{acao: "registrou", por: quem(), em: Date.now()}] };
   try {
@@ -545,26 +672,88 @@ $("#fEdit").onsubmit = async ev => {
   const ch = {}, velho = checksDe(editAtual);
   etapas.forEach(e => { if (velho[e.id]) ch[e.id] = velho[e.id]; });
   try {
-    await store.atualizar(editAtual.id, { tipo: document.querySelector("input[name=eTipo]:checked").value, placa, modelo: $("#eModelo").value.trim(), nome: $("#eNome").value.trim(),
+    await store.atualizar(editAtual.id, { tipo: document.querySelector("input[name=eTipo]:checked").value, placa,
+      modelo: $("#eModelo").value.trim(), nome: $("#eNome").value.trim(),
       telefone: $("#eTel").value.replace(/\D/g,""), etapas, checks: ch }, {acao: "editou"});
     fechar("mEdit");
   } catch(e){ $("#eErro").textContent = "Erro ao salvar: " + e.message; }
+};
+
+/* ---------- Funcionário ---------- */
+const mostrarNome = () => $("#btNome").textContent = "👤 " + quem();
+function pedirNome(obrigatorio){
+  $("#nomeInput").value = lerLS(LS_FUNC) || funcMem;
+  $("#nomeFechar").classList.toggle("hidden", obrigatorio);
+  $("#mNome").dataset.obrig = obrigatorio ? "1" : "";
+  abrir("mNome"); setTimeout(() => $("#nomeInput").focus(), 50);
+}
+$("#btNome").onclick = () => pedirNome(false);
+$("#fNome").onsubmit = ev => {
+  ev.preventDefault();
+  const n = $("#nomeInput").value.trim(); if (!n) return;
+  funcMem = n; gravarLS(LS_FUNC, n); mostrarNome();
+  $("#mNome").dataset.obrig = ""; fechar("mNome");
+};
+
+/* ---------- Ajustes ---------- */
+let cfgEdit = [], horEdit = {};
+function renderCfg(){
+  $("#cfgLista").innerHTML = cfgEdit.map((e,i) => `<div class="et-row">
+      <input value="${esc(e.nome)}" data-i="${i}" placeholder="Nome da etapa" maxlength="40">
+      <button type="button" data-mv="-1" data-i="${i}" ${i===0?"disabled":""} aria-label="Subir">↑</button>
+      <button type="button" data-mv="1" data-i="${i}" ${i===cfgEdit.length-1?"disabled":""} aria-label="Descer">↓</button>
+      <button type="button" class="danger" data-rm="${i}" aria-label="Remover">✕</button></div>`).join("");
+}
+function renderHor(){
+  $("#horLista").innerHTML = [1,2,3,4,5,6,0].map(d => { const h = horEdit[d];
+    return `<div class="hr-row ${h.aberto ? "" : "off"}" data-d="${d}"><span class="dia">${DIAS[d]}</span>
+      <label><input type="checkbox" data-k="aberto" ${h.aberto ? "checked" : ""}>Aberto</label>
+      <span class="hs"><input type="time" data-k="abre" value="${h.abre}"> às <input type="time" data-k="fecha" value="${h.fecha}"></span></div>`; }).join("");
+}
+$("#btAjustes").onclick = () => {
+  $("#cfgNome").value = estDados.nome || "";
+  cfgEdit = etapasCfg.map(e => ({...e}));
+  horEdit = JSON.parse(JSON.stringify(horarioCfg));
+  $("#cfgErro").textContent = ""; renderCfg(); renderHor(); abrir("mCfg");
+};
+$("#cfgLista").oninput = e => { if (e.target.dataset.i != null) cfgEdit[+e.target.dataset.i].nome = e.target.value; };
+$("#cfgLista").onclick = e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.rm != null) cfgEdit.splice(+b.dataset.rm, 1);
+  else { const i = +b.dataset.i, j = i + +b.dataset.mv; [cfgEdit[i], cfgEdit[j]] = [cfgEdit[j], cfgEdit[i]]; }
+  renderCfg();
+};
+$("#cfgAdd").onclick = () => { cfgEdit.push({id: "e" + token(6), nome: ""}); renderCfg(); const ins = $("#cfgLista").querySelectorAll("input"); ins[ins.length-1].focus(); };
+$("#horLista").onchange = e => {
+  const r = e.target.closest(".hr-row"), k = e.target.dataset.k; if (!r || !k) return;
+  const h = horEdit[r.dataset.d];
+  if (k === "aberto"){ h.aberto = e.target.checked; r.classList.toggle("off", !h.aberto); } else h[k] = e.target.value;
+};
+$("#cfgSalvar").onclick = async () => {
+  const nome = $("#cfgNome").value.trim();
+  if (!nome){ $("#cfgErro").textContent = "Informe o nome do estabelecimento."; return; }
+  const l = cfgEdit.map(e => ({id: e.id, nome: e.nome.trim()})).filter(e => e.nome);
+  if (!l.length){ $("#cfgErro").textContent = "Cadastre pelo menos uma etapa."; return; }
+  for (const d of [1,2,3,4,5,6,0]){ const h = horEdit[d];
+    if (h.aberto && (!h.abre || !h.fecha || minutos(h.abre) >= minutos(h.fecha))){ $("#cfgErro").textContent = `Confira o horário de ${DIAS[d]}: o fechamento deve ser depois da abertura.`; return; } }
+  try { await store.salvarEst(usuario.uid, {nome, etapas: l, horario: horEdit}); fechar("mCfg"); }
+  catch(e){ $("#cfgErro").textContent = "Erro ao salvar: " + e.message; }
 };
 
 /* ---------- Compartilhar / avisar ---------- */
 let shareAtual = null;
 function abrirShare(v, pronto){
   shareAtual = v;
-  const link = linkCliente(v.id);
-  $("#shTit").textContent = pronto ? "✅ Avisar que está pronto" : "Link do cliente";
+  const link = linkCliente(v.id), loja = nomeEst();
+  $("#shTit").textContent = pronto ? "✅ Avisar que está " + prontoV(v) : "Link do cliente";
   $("#shInfo").textContent = `${v.placa}${v.nome ? " · " + v.nome : ""}`;
   $("#shLink").value = link;
   $("#shLinkBox").classList.toggle("hidden", !!pronto);
   document.querySelectorAll("#mShare .shSo").forEach(e => e.classList.toggle("hidden", !!pronto));
   $("#shSemTel").textContent = (pronto && !v.telefone) ? "Sem WhatsApp cadastrado: o WhatsApp vai abrir para você escolher o contato." : "";
   const msg = pronto
-    ? `Olá${v.nome ? " " + v.nome : ""}! ${cap(seuVeic(v))} (${v.placa}) está ${prontoV(v)} para retirada no ${NOME_LAVAJATO}. ${lembrete(horarioCfg)} Obrigado pela preferência! ${iconeV(v)}✨`.replace(/  +/g," ")
-    : `Olá${v.nome ? " " + v.nome : ""}! Acompanhe a lavagem d${moto(v) ? "a sua moto" : "o seu carro"} (${v.placa}) no ${NOME_LAVAJATO}: ${link}`;
+    ? `Olá${v.nome ? " " + v.nome : ""}! ${cap(seuVeic(v))} (${v.placa}) está ${prontoV(v)} para retirada no ${loja}. ${lembrete(horarioCfg)} Obrigado pela preferência! ${iconeV(v)}✨`.replace(/  +/g," ")
+    : `Olá${v.nome ? " " + v.nome : ""}! Acompanhe a lavagem d${moto(v) ? "a sua moto" : "o seu carro"} (${v.placa}) no ${loja}: ${link}`;
   let tel = v.telefone || ""; if (tel && tel.length <= 11) tel = "55" + tel;
   $("#shWpp").href = `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`;
   $("#qr").innerHTML = "";
@@ -581,46 +770,55 @@ $("#shCopiar").onclick = async () => {
 };
 $("#shVer").onclick = () => { fechar("mShare"); abrirCliente(shareAtual.id, true); };
 
-/* ---------- Login ---------- */
-$("#fLogin").onsubmit = async ev => {
-  ev.preventDefault(); $("#lErro").textContent = "";
-  try { await store.entrar($("#lEmail").value.trim(), $("#lSenha").value); }
-  catch { $("#lErro").textContent = "E-mail ou senha incorretos."; }
-};
-$("#btSair").onclick = () => store.sair();
-$("#btEsqueci").onclick = async () => {
-  const em = $("#lEmail").value.trim(); $("#lMsg").textContent = "";
-  if (!em){ $("#lErro").textContent = "Digite seu e-mail no campo acima e toque de novo em \"Esqueci minha senha\"."; $("#lEmail").focus(); return; }
-  try {
-    await store.esqueci(em);
-    $("#lErro").textContent = "";
-    $("#lMsg").textContent = `Se ${em} estiver cadastrado, enviamos um e-mail com o link para criar uma nova senha. Confira também a caixa de spam.`;
-  } catch(e){ $("#lErro").textContent = e.code === "auth/invalid-email" ? "E-mail inválido." : "Não foi possível enviar agora. Tente novamente em instantes."; }
-};
-const mostrarNome = () => $("#btNome").textContent = "👤 " + quem();
-function pedirNome(obrigatorio){
-  $("#nomeInput").value = (usuarioAtual && usuarioAtual.displayName) || ""; $("#nomeErro").textContent = "";
-  $("#nomeFechar").classList.toggle("hidden", obrigatorio);
-  $("#mNome").dataset.obrig = obrigatorio ? "1" : "";
-  abrir("mNome"); setTimeout(() => $("#nomeInput").focus(), 50);
+/* ---------- Administrador ---------- */
+let pararAdmin = [], aContas = [], aEsts = {}, aLav = [], aFiltro = "pendente";
+function iniciarAdmin(){
+  show("vAdmin"); document.title = "Lavaflux · Admin";
+  pararAdmin.push(store.contas(l => { aContas = l; renderAdmin(); }, e => { $("#adminLista").innerHTML = `<div class="card vazio">Erro ao carregar contas: ${esc(e.message)}</div>`; }));
+  pararAdmin.push(store.ests(o => { aEsts = o; renderAdmin(); }));
+  pararAdmin.push(store.todasLavagens(l => { aLav = l; renderAdmin(); }));
 }
-$("#btNome").onclick = () => pedirNome(false);
-$("#fNome").onsubmit = async ev => {
-  ev.preventDefault();
-  const n = $("#nomeInput").value.trim(); if (!n) return;
-  try { await store.definirNome(n); mostrarNome(); $("#mNome").dataset.obrig = ""; fechar("mNome"); }
-  catch(e){ $("#nomeErro").textContent = "Erro ao salvar: " + e.message; }
+const ROTULO = {pendente: ["pe","Aguardando aprovação"], ativo: ["ab","Ativa"], inativo: ["fe","Desativada"]};
+function renderAdmin(){
+  const cont = s => aContas.filter(c => c.status === s).length;
+  $("#tPend").textContent = cont("pendente"); $("#tAtv").textContent = cont("ativo"); $("#tIna").textContent = cont("inativo");
+  const agora = Date.now(), d30 = agora - 30*864e5, stats = {};
+  aLav.forEach(v => { const s = stats[v.est] = stats[v.est] || {total:0, mes:0, ultimo:0};
+    s.total++; if (v.criadoEm >= d30) s.mes++; if (v.criadoEm > s.ultimo) s.ultimo = v.criadoEm; });
+  const l = aContas.filter(c => aFiltro === "todas" || c.status === aFiltro).sort((a,b) => (b.criadoEm||0) - (a.criadoEm||0));
+  if (!l.length){ $("#adminLista").innerHTML = `<div class="card vazio">Nenhuma conta ${aFiltro === "pendente" ? "aguardando aprovação" : aFiltro === "ativo" ? "ativa" : aFiltro === "inativo" ? "desativada" : ""}.</div>`; return; }
+  $("#adminLista").innerHTML = l.map(c => {
+    const nome = (aEsts[c.uid] && aEsts[c.uid].nome) || c.nome, s = stats[c.uid] || {total:0, mes:0, ultimo:0};
+    const [cls, txt] = ROTULO[c.status] || ["pe", c.status];
+    const base = Math.max(s.ultimo || 0, c.aprovadoEm || c.criadoEm || 0);
+    const semUso = c.status === "ativo" && base < agora - 14*864e5;
+    const bts = c.status === "pendente"
+      ? `<button class="ok grow" data-st="ativo" data-u="${c.uid}">✓ Aprovar</button><button class="danger" data-st="inativo" data-u="${c.uid}">Recusar</button>`
+      : c.status === "ativo" ? `<button class="danger" data-st="inativo" data-u="${c.uid}">Desativar</button>`
+      : `<button class="ok" data-st="ativo" data-u="${c.uid}">Reativar</button>`;
+    return `<div class="card">
+      <div class="v-head" style="margin-bottom:4px"><div><h3 style="margin:0">${esc(nome)}</h3><p class="mute" style="margin:2px 0 0">${esc(c.email)}</p></div><span class="pill ${cls}">${txt}</span></div>
+      <div class="stats"><span>Cadastro: <b>${data(c.criadoEm)}</b></span><span>Veículos: <b>${s.total}</b></span><span>Últimos 30 dias: <b>${s.mes}</b></span><span>Último uso: <b>${s.ultimo ? data(s.ultimo) : "nunca"}</b></span></div>
+      ${semUso ? `<p class="mute" style="color:var(--warn);margin:6px 0 0">⚠️ Sem uso há mais de 14 dias</p>` : ""}
+      <div class="acts">${bts}</div></div>`;
+  }).join("");
+}
+$("#tabsA").onclick = e => {
+  const b = e.target.closest("button"); if (!b) return;
+  aFiltro = b.dataset.f; $("#tabsA").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); renderAdmin();
+};
+$("#adminLista").onclick = async e => {
+  const b = e.target.closest("[data-st]"); if (!b) return;
+  const c = aContas.find(x => x.uid === b.dataset.u); if (!c) return;
+  const acao = b.dataset.st === "ativo" ? (c.status === "pendente" ? "Aprovar" : "Reativar") : (c.status === "pendente" ? "Recusar" : "Desativar");
+  if (!confirm(`${acao} ${(aEsts[c.uid] && aEsts[c.uid].nome) || c.nome}?`)) return;
+  try { await store.setStatus(c.uid, b.dataset.st); } catch(err){ alert("Erro: " + err.message); }
 };
 
 /* ---------- Início ---------- */
 const codigo = new URLSearchParams(location.search).get("c");
 if (codigo) abrirCliente(codigo, false);
-else store.onAuth(u => {
-  usuarioAtual = u;
-  if (!u){ show("vLogin"); return; }
-  iniciarPainel(); mostrarNome();
-  if (!u.displayName) pedirNome(true);
-});
+else store.onAuth(iniciarSessao);
 </script>
 </body>
 </html>

@@ -1,35 +1,24 @@
-# Lavaflux — acompanhamento de lavagem
+# Lavaflux
 
-Um único `index.html` com duas telas:
+Plataforma para lava jatos: o cliente acompanha pelo link o andamento do próprio veículo.
 
-- **Painel da equipe** (abrir o site sem nada no link): login, registrar veículo, avançar etapas, gerar link/QR/WhatsApp.
-- **Tela do cliente** (`...index.html?c=CODIGO`): mostra só aquele veículo, atualizando sozinha em tempo real.
+**App:** https://lavaflux.web.app
 
-Etapas: cadastradas pelo próprio estabelecimento em **⚙️ Etapas** (padrão: Lavagem externa, Secagem, Limpeza interna, Finalização). Cada veículo tem suas etapas, marcadas como checklist em qualquer ordem. Ao **Concluir**, o cliente vê "Pronto para retirada" e a equipe pode avisá-lo no WhatsApp.
+## Como funciona
+- **Lava jato** cria a conta em "Criar conta do estabelecimento" (nome, e-mail, senha) e aguarda aprovação.
+- **Administrador** (conta registrada em `admins/` no Firestore) entra no mesmo link e vê o painel de contas: aguardando, ativas e desativadas, com uso de cada uma. Aprova, recusa, desativa ou reativa.
+- **Estabelecimento aprovado**: um login por lava jato; cada celular informa o nome do funcionário (fica salvo no aparelho) para o histórico.
+  - Registra veículos (carro/moto), marca etapas em qualquer ordem, conclui e avisa pelo WhatsApp.
+  - Em ⚙️ Ajustes: nome do estabelecimento, etapas e horário de funcionamento.
+- **Cliente** (`?c=código`): vê nome do estabelecimento, etapas concluídas, status e horário de funcionamento.
 
-Em **⚙️ Ajustes** o estabelecimento também configura o **horário de funcionamento** por dia: ele aparece na tela do cliente (com "Aberto agora"/"Fechado agora") e no aviso de pronto ("Lembrando que hoje funcionamos até às 18h").
+As mensagens do WhatsApp usam o nome do estabelecimento.
 
-No registro escolhe-se **Carro ou Moto**; as mensagens se ajustam ("sua moto está pronta").
+## Dados (Firestore)
+- `contas/{uid}` privado: e-mail, status (pendente | ativo | inativo)
+- `estabelecimentos/{uid}` público: nome, etapas, horário
+- `lavagens/{código}` veículo, com `est` = uid do estabelecimento
+- `admins/{uid}` administradores
 
-Cada cadastro pode ser alterado em **✏️ Editar** (placa, modelo, nome, WhatsApp e etapas).
-
-## Por que o cliente só vê o próprio veículo
-Cada atendimento recebe um código aleatório de 20 caracteres (impossível de adivinhar). As regras do Firestore permitem abrir um documento **pelo código**, mas bloqueiam listar a coleção. Telefone fica guardado, mas a tela do cliente não o exibe.
-
-## Configuração
-O `firebaseConfig` já está no `index.html` (projeto `lavaflux-1da77`). Falta, no console do Firebase:
-1. **Firestore Database** → Criar banco → local `southamerica-east1 (São Paulo)` → modo produção → aba *Regras* → colar `firestore.rules` com os e-mails da equipe → Publicar.
-2. **Authentication** → Vamos começar → *E-mail/senha* → Ativar → aba *Usuários* → Adicionar usuário para cada funcionário.
-3. Todo funcionário novo: criar o usuário (passo 2) **e** incluir o e-mail dele na lista de `firestore.rules` (passo 1).
-
-Site: https://santos1gav14.github.io/lavaflux/
-
-## Uso no dia a dia
-1. Cliente chega → equipe registra placa (modelo, nome e WhatsApp opcionais).
-2. Abre a janela de compartilhamento: copiar link, enviar no WhatsApp ou mostrar o QR no balcão.
-3. A cada etapa, toca em **Avançar**. "↶ Voltar" desfaz um toque errado.
-4. Ao concluir, o cliente vê "Pronto para retirada".
-
-## Observações
-- Os horários vêm do relógio do celular/computador da equipe.
-- "Remover" apaga o atendimento e invalida o link. Atendimentos antigos podem ser removidos periodicamente.
+## Publicação
+Cada push na `main` publica automaticamente (GitHub Actions → Firebase Hosting + regras do Firestore).
