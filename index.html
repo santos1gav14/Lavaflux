@@ -123,12 +123,13 @@ button:disabled{opacity:.45;cursor:default}
 
 <!-- ===== COMPARTILHAR ===== -->
 <div class="modal" id="mShare"><div class="sheet">
-  <div class="v-head"><div><h3>Link do cliente</h3><p class="mute" id="shInfo"></p></div><button class="ghost" data-close>✕</button></div>
-  <input id="shLink" readonly onclick="this.select()">
-  <div class="row"><button id="shCopiar">Copiar link</button><a id="shWpp" class="btn pri" target="_blank" rel="noopener">Enviar no WhatsApp</a></div>
-  <div id="qr"></div>
-  <p class="mute" style="text-align:center">O cliente também pode escanear o QR code no balcão.</p>
-  <button id="shVer" style="width:100%">Ver como o cliente vê</button>
+  <div class="v-head"><div><h3 id="shTit">Link do cliente</h3><p class="mute" id="shInfo"></p></div><button class="ghost" data-close>✕</button></div>
+  <div id="shLinkBox"><input id="shLink" readonly onclick="this.select()"></div>
+  <div class="row"><button id="shCopiar" class="shSo">Copiar link</button><a id="shWpp" class="btn pri" target="_blank" rel="noopener">Enviar no WhatsApp</a></div>
+  <div id="qr" class="shSo"></div>
+  <p class="mute shSo" style="text-align:center">O cliente também pode escanear o QR code no balcão.</p>
+  <button id="shVer" class="shSo" style="width:100%">Ver como o cliente vê</button>
+  <p class="mute" id="shSemTel" style="text-align:center;margin-top:10px"></p>
 </div></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -251,7 +252,7 @@ function renderLista(){
     const ult = v.etapa === ETAPAS.length - 1;
     const segs = ETAPAS.map((_,i) => `<i class="${(v.concluido || i <= v.etapa) ? "d" : ""}"></i>`).join("");
     const status = v.concluido ? `✅ Concluído às ${hora(v.tempos?.fim)}` : `${ETAPAS[v.etapa].ic} ${ETAPAS[v.etapa].nome} <span class="mute">· desde ${hora(v.tempos?.[v.etapa])}</span>`;
-    const principal = v.concluido ? "" :
+    const principal = v.concluido ? `<button class="ok grow" data-act="avisar" data-id="${v.id}">📲 Avisar que está pronto</button>` :
       `<button class="${ult ? "ok" : "pri"} grow" data-act="avancar" data-id="${v.id}">${ult ? "Concluir ✓" : "Avançar → " + ETAPAS[v.etapa+1].nome}</button>`;
     return `<div class="card">
       <div class="v-head"><div><span class="placa">${esc(v.placa)}</span><p class="mute" style="margin-top:6px">${esc(v.modelo)}${v.modelo && v.nome ? " · " : ""}${esc(v.nome)}</p></div>
@@ -272,13 +273,14 @@ $("#lista").onclick = async ev => {
   try {
     if (b.dataset.act === "avancar"){
       if (v.etapa < ETAPAS.length - 1){ const n = v.etapa + 1; t[n] = Date.now(); await store.atualizar(v.id,{etapa:n, tempos:t}); }
-      else { t.fim = Date.now(); await store.atualizar(v.id,{concluido:true, tempos:t}); }
+      else { t.fim = Date.now(); await store.atualizar(v.id,{concluido:true, tempos:t}); abrirShare({...v, tempos:t}, true); }
     } else if (b.dataset.act === "voltar"){
       if (v.concluido){ delete t.fim; await store.atualizar(v.id,{concluido:false, tempos:t}); }
       else if (v.etapa > 0){ delete t[v.etapa]; await store.atualizar(v.id,{etapa:v.etapa-1, tempos:t}); }
     } else if (b.dataset.act === "remover"){
       if (confirm(`Remover ${v.placa}? O link do cliente deixará de funcionar.`)) await store.remover(v.id);
     } else if (b.dataset.act === "share") abrirShare(v);
+    else if (b.dataset.act === "avisar") abrirShare(v, true);
   } catch(e){ alert("Não foi possível salvar: " + e.message); }
 };
 
@@ -305,16 +307,22 @@ $("#fNovo").onsubmit = async ev => {
 
 /* ---------- Compartilhar ---------- */
 let shareAtual = null;
-function abrirShare(v){
+function abrirShare(v, pronto){
   shareAtual = v;
   const link = linkCliente(v.id);
+  $("#shTit").textContent = pronto ? "✅ Avisar que está pronto" : "Link do cliente";
   $("#shInfo").textContent = `${v.placa}${v.nome ? " · " + v.nome : ""}`;
   $("#shLink").value = link;
-  const msg = `Olá${v.nome ? " " + v.nome : ""}! Acompanhe a lavagem do seu veículo (${v.placa}) no ${NOME_LAVAJATO}: ${link}`;
+  $("#shLinkBox").classList.toggle("hidden", !!pronto);
+  document.querySelectorAll("#mShare .shSo").forEach(e => e.classList.toggle("hidden", !!pronto));
+  $("#shSemTel").textContent = (pronto && !v.telefone) ? "Sem WhatsApp cadastrado: o WhatsApp vai abrir para você escolher o contato." : "";
+  const msg = pronto
+    ? `Olá${v.nome ? " " + v.nome : ""}! Seu veículo (${v.placa}) está pronto para retirada no ${NOME_LAVAJATO}. Obrigado pela preferência! 🚗✨`
+    : `Olá${v.nome ? " " + v.nome : ""}! Acompanhe a lavagem do seu veículo (${v.placa}) no ${NOME_LAVAJATO}: ${link}`;
   let tel = v.telefone || ""; if (tel && tel.length <= 11) tel = "55" + tel;
   $("#shWpp").href = `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`;
   $("#qr").innerHTML = "";
-  if (window.QRCode) new QRCode($("#qr"), {text: link, width: 200, height: 200});
+  if (!pronto && window.QRCode) new QRCode($("#qr"), {text: link, width: 200, height: 200});
   $("#mShare").classList.add("on");
 }
 $("#mShare").onclick = e => { if (e.target.id === "mShare" || e.target.closest("[data-close]")) $("#mShare").classList.remove("on"); };
