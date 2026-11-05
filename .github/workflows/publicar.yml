@@ -2,7 +2,7 @@ name: Publicar no Firebase Hosting
 on:
   push:
     branches: [main]
-    paths: [index.html, logo.svg, deploy_hosting.py, firestore.rules, deploy_firestore.py, .github/workflows/publicar.yml]
+    paths: [index.html, app.html, og.png, logo.svg, deploy_hosting.py, firestore.rules, deploy_firestore.py, .github/workflows/publicar.yml]
   workflow_dispatch:
 permissions:
   contents: read

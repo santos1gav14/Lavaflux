@@ -12,7 +12,7 @@ SITE = os.environ.get("SITE")
 QP = os.environ.get("QUOTA_PROJECT")
 DIR = os.environ.get("DIR", ".")
 API = "https://firebasehosting.googleapis.com/v1beta1"
-ARQUIVOS = ["index.html", "logo.svg"]
+ARQUIVOS = ["index.html", "app.html", "logo.svg", "og.png"]
 
 
 def call(method, url, body=None, raw=None):
@@ -46,7 +46,7 @@ for f in ARQUIVOS:
     h = hashlib.sha256(b).hexdigest()
     comprimidos[h], hashes["/" + f] = b, h
 
-config = {"headers": [{"glob": "**", "headers": {"Cache-Control": "no-cache"}}]}
+config = {"cleanUrls": True, "headers": [{"glob": "**", "headers": {"Cache-Control": "no-cache"}}]}
 versao = call("POST", f"{API}/sites/{SITE}/versions", {"config": config})["name"]
 pf = call("POST", f"{API}/{versao}:populateFiles", {"files": hashes})
 for h in pf.get("uploadRequiredHashes", []):

@@ -2,7 +2,9 @@
 
 Plataforma para lava jatos: o cliente acompanha pelo link o andamento do próprio veículo.
 
-**App:** https://lavaflux.web.app
+**Site:** https://lavaflux.web.app · **App:** https://lavaflux.web.app/app
+
+`index.html` é o site de divulgação; `app.html` é o app. Links de cliente (`/?c=código`) são redirecionados para o app.
 
 ## Como funciona
 - **Lava jato** cria a conta em "Criar conta do estabelecimento" (nome, e-mail, senha) e aguarda aprovação.

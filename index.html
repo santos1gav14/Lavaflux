@@ -2,146 +2,183 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<script>
+  // Link de acompanhamento do cliente (/?c=código) abre direto no app
+  if (/[?&]c=/.test(location.search)) location.replace("/app" + location.search);
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Lavaflux</title>
-<meta name="theme-color" content="#0a4fb5">
-<link rel="icon" href="logo.svg" type="image/svg+xml">
+<title>Lavaflux — seu cliente acompanha a lavagem pelo celular</title>
+<meta name="description" content="App para lava jato: o cliente recebe um link no WhatsApp e acompanha cada etapa da lavagem do carro ou da moto. 15 dias grátis, depois R$ 49,90/mês sem fidelidade.">
+<meta property="og:title" content="Lavaflux — seu cliente acompanha a lavagem pelo celular">
+<meta property="og:description" content="Menos ligação perguntando “já tá pronto?”. Teste grátis por 15 dias.">
+<meta property="og:image" content="https://lavaflux.web.app/og.png">
+<meta property="og:url" content="https://lavaflux.web.app/">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0b2b5c">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f2f6fc;--card:#fff;--ink:#0c1b33;--mute:#5a6b85;--line:#d9e3f2;--pri:#1668e3;--pri2:#0a4fb5;--soft:#e6efff;--ok:#12915a;--danger:#c63a2f;--warn:#b7791f}
-@media (prefers-color-scheme:dark){:root{--bg:#0a1220;--card:#111d31;--ink:#e6eefb;--mute:#93a5c2;--line:#22334f;--pri:#4b95ff;--pri2:#2f7cf0;--soft:#16294a;--ok:#35cf88;--danger:#ff6b5b;--warn:#f6c560}}
+:root{
+  --placa:#0b3d91;      /* azul da faixa da placa Mercosul */
+  --noite:#0b2b5c;      /* fundo escuro */
+  --agua:#1f74ff;       /* azul de ação */
+  --espuma:#e9f2ff;     /* fundo claro */
+  --branco:#ffffff;
+  --tinta:#13213a;      /* texto */
+  --cinza:#5b6a82;
+  --linha:#d3deef;
+  --zap:#25d366;        /* só para momentos de WhatsApp */
+  --zap-esc:#128c4a;
+  --cond:"Barlow Condensed","Arial Narrow",sans-serif;
+  --corpo:"Barlow",system-ui,sans-serif;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
-.wrap{max-width:640px;margin:0 auto;padding:16px 16px 48px}
-.wrap.wide{max-width:860px}
-header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 18px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:-.03em;min-width:0}
-.brand svg{width:38px;height:38px;flex:none;filter:drop-shadow(0 3px 6px rgba(10,79,181,.25))}
-.brand .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.brand .fx{color:var(--pri)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
-h2,h3{margin:0 0 6px;letter-spacing:-.01em}
-p{margin:0 0 8px}
-.mute{color:var(--mute);font-size:14px}
-input[type=text],input[type=email],input[type=password],input[type=tel],input:not([type]){width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit;margin-bottom:10px}
-input:focus{outline:2px solid var(--pri);border-color:transparent}
-label.f{font-size:13px;color:var(--mute);display:block;margin:0 0 4px 2px}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.row>*{flex:1 1 140px}
-button,.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;font-size:15px;padding:11px 14px;border-radius:12px;cursor:pointer;text-decoration:none;text-align:center;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-button.pri,.btn.pri{background:linear-gradient(135deg,var(--pri),var(--pri2));border-color:var(--pri2);color:#fff}
-button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
-button.ghost{background:transparent;border-color:transparent;color:var(--mute);padding:8px 10px}
-button.danger{color:var(--danger)}
-button:disabled{opacity:.45;cursor:default}
-.w100{width:100%}
-.linkbtn{background:none;border:0;color:var(--pri);font-weight:600;font-size:14px;padding:8px 0;cursor:pointer}
-.tabs{display:flex;background:var(--soft);border-radius:12px;padding:4px;margin:4px 0 12px}
-.tabs button{flex:1;border:0;background:transparent;padding:9px 6px;font-size:14px}
-.tabs button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12)}
-.placa{display:inline-block;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;letter-spacing:.08em;border:2px solid var(--ink);border-radius:6px;padding:2px 8px;font-size:15px;background:var(--card)}
-.v-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
-.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin:8px 0}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),#38b6ff);border-radius:4px;transition:width .3s}
-.bar.fim i{background:var(--ok)}
-.status{font-weight:700;margin-bottom:10px}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{border-radius:999px;padding:8px 14px;font-size:14px;border:1.5px solid var(--line);background:var(--bg)}
-.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
-.acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.acts .grow{flex:1 1 160px}
-.vazio{text-align:center;padding:32px 16px;color:var(--mute)}
-.erro{color:var(--danger);font-size:14px;min-height:20px}
-.okmsg{color:var(--ok);font-size:14px}
-.cks{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
-.cks label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px 6px 8px;font-size:14px;cursor:pointer;background:var(--bg)}
-.cks input{width:18px;height:18px;accent-color:var(--pri);margin:0}
-.seg{display:flex;background:var(--soft);border-radius:12px;padding:4px;margin:0 0 12px}
-.seg label{flex:1;text-align:center;padding:9px;border-radius:9px;cursor:pointer;font-weight:600;font-size:15px}
-.seg input{position:absolute;opacity:0;pointer-events:none}
-.seg label:has(input:checked){background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);color:var(--pri)}
-.hor{width:100%;border-collapse:collapse;font-size:15px}
-.hor td{padding:7px 0;border-bottom:1px solid var(--line)}
-.hor tr:last-child td{border-bottom:0}
-.hor td:last-child{text-align:right}
-.hor tr.hoje td{font-weight:700;color:var(--pri)}
-.pill{display:inline-block;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:700;white-space:nowrap}
-.pill.ab{background:#dff6ea;color:#0d7a4a}.pill.fe{background:#fde4e1;color:#a8322a}.pill.pe{background:#fff1d6;color:#8a5a00}
-@media (prefers-color-scheme:dark){.pill.ab{background:#0f3a28;color:#5fe0a2}.pill.fe{background:#3d1714;color:#ff8f84}.pill.pe{background:#3a2c0c;color:#f6c560}}
-.hr-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.hr-row .dia{width:72px;font-weight:600}
-.hr-row label{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mute)}
-.hr-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--pri)}
-.hr-row input[type=time]{padding:7px 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:15px}
-.hr-row .hs{display:flex;align-items:center;gap:6px;margin-left:auto}
-.hr-row.off .hs{opacity:.35;pointer-events:none}
-.sec{font-size:17px;margin:18px 0 4px}
-details.hist{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
-details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;font-weight:600;list-style:none}
-details.hist summary::-webkit-details-marker{display:none}
-details.hist ul{list-style:none;margin:8px 0 0;padding:0;font-size:14px}
-details.hist li{padding:5px 0;border-bottom:1px dashed var(--line)}
-details.hist li:last-child{border-bottom:0}
-/* cliente */
-.hero{text-align:center;padding:24px 16px}
-.hero .ic{font-size:52px;line-height:1;margin-bottom:8px}
-.hero .st{font-size:26px;font-weight:800;margin-bottom:4px}
-.hero .bar{max-width:320px;margin:12px auto 6px}
-.pronto{background:linear-gradient(135deg,#12915a,#0f7a4c);color:#fff;border-color:#12915a}
-.pronto .mute{color:#e3fff0}
-.cl{list-style:none;margin:0;padding:0}
-.cl li{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
-.cl li:last-child{border-bottom:0}
-.cl .dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px}
-.cl li.d .dot{background:var(--pri);border-color:var(--pri)}
-.cl .nm{flex:1;font-weight:600}
-.cl li:not(.d) .nm{color:var(--mute)}
-.cl .hr{font-size:13px;color:var(--mute)}
-.est-hero{text-align:center;margin:8px 0 16px}
-.est-hero .en{font-size:26px;font-weight:800;letter-spacing:-.02em}
-footer.rod{text-align:center;margin-top:20px;color:var(--mute);font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px}
-footer.rod svg{width:18px;height:18px}
-/* admin */
-.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
-.tile b{display:block;font-size:26px;letter-spacing:-.02em}
-.tile span{font-size:13px;color:var(--mute)}
-.stats{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--mute);margin:6px 0 2px}
-.stats b{color:var(--ink)}
-/* modal */
-.modal{position:fixed;inset:0;background:rgba(5,12,25,.55);display:none;align-items:flex-end;justify-content:center;z-index:10}
-.modal.on{display:flex}
-.sheet{background:var(--card);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
-@media(min-width:600px){.modal{align-items:center}.sheet{border-radius:20px}}
-#qr{display:flex;justify-content:center;margin:14px 0;padding:12px;background:#fff;border-radius:12px}
-.et-row{display:flex;gap:6px;align-items:center;margin-bottom:8px}
-.et-row input{margin:0;flex:1}
-.et-row button{padding:9px 11px}
-.banner{border-radius:14px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px}
-.banner .tx{flex:1 1 200px}
-.banner.info{background:var(--soft);color:var(--ink)}
-.banner.alerta{background:#fff1d6;color:#6b4500}
-@media (prefers-color-scheme:dark){.banner.alerta{background:#3a2c0c;color:#f6c560}}
-.banner button{padding:8px 14px}
-.paybox{border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0;text-align:left}
-.paybox h4{margin:0 0 6px;font-size:16px}
-.pixkey{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:10px;word-break:break-all;margin:6px 0}
-.preco{font-size:30px;font-weight:800;letter-spacing:-.02em}
-.preco small{font-size:15px;color:var(--mute);font-weight:600}
-.tiles.t4{grid-template-columns:repeat(4,1fr)}
-#tabsA{overflow-x:auto;scrollbar-width:none}
-#tabsA button{flex:1 0 auto;padding:9px 10px}
-@media(max-width:420px){.tiles.t4{grid-template-columns:repeat(2,1fr)}}
-.plano{font-size:14px;font-weight:600;margin-top:6px}
-.plano.ok{color:var(--ok)}.plano.av{color:var(--warn)}.plano.ve{color:var(--danger)}
-.hidden{display:none!important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--branco);color:var(--tinta);font:18px/1.6 var(--corpo);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img,svg{display:block}
+.box{max-width:1120px;margin:0 auto;padding:0 20px}
+:focus-visible{outline:3px solid var(--zap);outline-offset:3px;border-radius:6px}
+
+/* ---------- topo ---------- */
+.topo{position:sticky;top:0;z-index:20;background:rgba(11,43,92,.96);backdrop-filter:blur(8px);color:#fff}
+.topo .box{display:flex;align-items:center;gap:24px;height:64px}
+.marca{display:flex;align-items:center;gap:10px;text-decoration:none;font:800 26px/1 var(--cond);letter-spacing:.01em}
+.marca svg{width:34px;height:34px}
+.marca b{color:#7fb3ff;font-weight:800}
+.nav{display:flex;gap:22px;margin-left:auto;font-size:16px}
+.nav a{text-decoration:none;opacity:.85}
+.nav a:hover{opacity:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 18px/1 var(--corpo);text-decoration:none;border-radius:12px;padding:15px 22px;border:2px solid transparent;cursor:pointer;white-space:nowrap}
+.btn.pri{background:var(--agua);color:#fff}
+.btn.pri:hover{background:#0f5fe0}
+.btn.cla{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
+.btn.cla:hover{border-color:#fff}
+.btn.peq{padding:10px 16px;font-size:16px}
+@media(max-width:820px){.nav{display:none}.topo .entrar{margin-left:auto}}
+
+/* ---------- abertura ---------- */
+.abre{background:var(--noite);color:#fff;overflow:hidden;position:relative;padding:0}
+.abre .box{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding-top:56px;padding-bottom:72px}
+.abre h1{font:800 clamp(46px,7.2vw,86px)/.95 var(--cond);letter-spacing:-.01em;margin:0 0 22px;text-wrap:balance}
+.abre .lead{font-size:20px;line-height:1.55;color:#c9d9f5;max-width:34em;margin:0 0 30px}
+.abre .acoes{display:flex;gap:12px;flex-wrap:wrap}
+.abre .nota{margin-top:16px;font-size:15px;color:#9fb6dc}
+/* faixas da pista, discretas */
+.abre::before{content:"";position:absolute;inset:auto -10% -40px -10%;height:120px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.06) 0 70px,transparent 70px 120px);transform:skewX(-30deg);pointer-events:none}
+@media(max-width:900px){.abre .box{grid-template-columns:1fr;padding-top:36px}.palco{order:2}}
+
+/* ---------- celular demonstrativo ---------- */
+.palco{position:relative;display:flex;justify-content:center;min-height:560px}
+.cel{width:290px;height:560px;background:#0a1730;border-radius:44px;padding:12px;box-shadow:0 30px 80px rgba(0,0,0,.45),inset 0 0 0 2px #24406e;position:relative}
+.tela{background:#f2f6fc;border-radius:34px;height:100%;overflow:hidden;color:var(--tinta);padding:30px 16px 16px;font-size:13px;line-height:1.4}
+.tela .loja{text-align:center;font:800 21px/1.1 var(--cond);margin-bottom:2px}
+.tela .sub{text-align:center;color:var(--cinza);font-size:12px;margin-bottom:12px}
+.mini{background:#fff;border:1px solid var(--linha);border-radius:14px;padding:11px 12px;margin-bottom:9px}
+.mini.vei{display:flex;justify-content:space-between;align-items:center}
+.placa{display:inline-flex;flex-direction:column;border:2px solid #13213a;border-radius:5px;overflow:hidden;background:#fff;font:700 15px/1 var(--cond);letter-spacing:.12em;text-align:center}
+.placa i{display:block;background:var(--placa);color:#fff;font:600 7px/1 var(--corpo);letter-spacing:.2em;padding:2px 6px;font-style:normal}
+.placa span{padding:3px 7px 2px}
+.estado{text-align:center;padding:14px 10px}
+.estado .ic{font-size:30px;line-height:1}
+.estado .st{font:800 22px/1.1 var(--cond);margin:6px 0 4px}
+.estado .bar{height:6px;border-radius:3px;background:var(--linha);overflow:hidden;margin:8px auto 0;max-width:180px}
+.estado .bar i{display:block;height:100%;width:0;background:var(--agua);transition:width .5s ease}
+.estado.pronto{background:var(--zap-esc);color:#fff;border-color:var(--zap-esc)}
+.estado.pronto .bar{display:none}
+.lista{list-style:none;margin:0;padding:0}
+.lista li{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--linha);color:var(--cinza);font-weight:600}
+.lista li:last-child{border:0}
+.lista .d{width:20px;height:20px;border-radius:50%;border:2px solid var(--linha);flex:none;display:grid;place-items:center;color:#fff;font-size:11px;transition:background .3s,border-color .3s}
+.lista li.ok{color:var(--tinta)}
+.lista li.ok .d{background:var(--agua);border-color:var(--agua)}
+.lista .h{margin-left:auto;font-weight:500;font-size:11px}
+/* balão do WhatsApp */
+.zap{position:absolute;left:50%;bottom:26px;transform:translate(-50%,20px);width:300px;background:#fff;border-radius:16px;padding:12px 14px 12px 50px;box-shadow:0 18px 40px rgba(0,0,0,.35);font-size:14px;line-height:1.4;color:var(--tinta);opacity:0;transition:opacity .4s,transform .4s}
+.zap::before{content:"";position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:50%;background:var(--zap) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.2 13.8c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z'/%3E%3C/svg%3E") center/18px no-repeat}
+.zap b{display:block;font-size:13px;color:var(--zap-esc)}
+.zap.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:400px){.zap{width:270px}}
+
+/* ---------- seções ---------- */
+section{padding:88px 0}
+h2{font:800 clamp(36px,5vw,56px)/1 var(--cond);margin:0 0 18px;letter-spacing:-.005em;text-wrap:balance}
+.intro{font-size:20px;color:var(--cinza);max-width:36em;margin:0 0 44px}
+
+/* dor */
+.dor{background:var(--espuma)}
+.dor .box{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.falas{display:flex;flex-direction:column;gap:12px}
+.fala{align-self:flex-start;background:#fff;border-radius:4px 18px 18px 18px;padding:12px 18px;font-size:18px;box-shadow:0 1px 0 var(--linha)}
+.fala:nth-child(2){margin-left:36px}.fala:nth-child(3){margin-left:12px}
+.fala small{display:block;color:var(--cinza);font-size:13px}
+@media(max-width:820px){.dor .box{grid-template-columns:1fr;gap:28px}}
+
+/* passos (sequência real) */
+.passos{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:p;border-top:4px solid var(--noite)}
+.passos li{counter-increment:p;padding:26px 24px 8px 0;position:relative}
+.passos li::before{content:counter(p);display:block;font:800 64px/1 var(--cond);color:var(--agua);margin-bottom:10px}
+.passos h3{font:700 26px/1.1 var(--cond);margin:0 0 8px}
+.passos p{margin:0;color:var(--cinza);font-size:17px}
+@media(max-width:900px){.passos{grid-template-columns:1fr 1fr;row-gap:12px}}
+@media(max-width:520px){.passos{grid-template-columns:1fr}}
+
+/* recursos */
+.recursos{background:var(--noite);color:#fff}
+.recursos .intro{color:#b7c9ea}
+.rec{display:grid;grid-template-columns:repeat(2,1fr);gap:0 64px}
+.rec div{padding:22px 0;border-top:1px solid rgba(255,255,255,.14)}
+.rec h3{font:700 24px/1.15 var(--cond);margin:0 0 6px}
+.rec p{margin:0;color:#b7c9ea;font-size:17px}
+@media(max-width:760px){.rec{grid-template-columns:1fr}}
+
+/* preço */
+.preco .box{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.etiqueta{border:3px solid var(--tinta);border-radius:16px;overflow:hidden;max-width:440px}
+.etiqueta .faixa{background:var(--placa);color:#fff;font:600 14px/1 var(--corpo);letter-spacing:.18em;padding:9px 18px;display:flex;justify-content:space-between}
+.etiqueta .corpo{padding:26px 26px 28px}
+.valor{font:800 clamp(56px,8vw,92px)/.9 var(--cond);letter-spacing:-.02em;white-space:nowrap}
+.valor small{font:700 26px/1 var(--cond);color:var(--cinza);margin-left:4px}
+.etiqueta ul{list-style:none;padding:0;margin:22px 0 26px}
+.etiqueta li{padding:7px 0 7px 30px;position:relative}
+.etiqueta li::before{content:"";position:absolute;left:4px;top:15px;width:12px;height:7px;border-left:3px solid var(--agua);border-bottom:3px solid var(--agua);transform:rotate(-45deg)}
+.etiqueta .btn{width:100%}
+.preco .lado p{color:var(--cinza)}
+@media(max-width:820px){.preco .box{grid-template-columns:1fr;gap:32px}}
+
+/* dúvidas */
+.duvidas{background:var(--espuma)}
+.duvidas details{border-top:1px solid var(--linha);padding:18px 0}
+.duvidas details:last-of-type{border-bottom:1px solid var(--linha)}
+.duvidas summary{cursor:pointer;font:700 22px/1.25 var(--cond);list-style:none;display:flex;justify-content:space-between;gap:20px}
+.duvidas summary::after{content:"+";font-size:28px;line-height:.9;color:var(--agua)}
+.duvidas details[open] summary::after{content:"–"}
+.duvidas summary::-webkit-details-marker{display:none}
+.duvidas details p{margin:10px 0 0;color:var(--cinza);max-width:42em}
+.duvidas .box{max-width:860px}
+
+/* chamada final */
+.final{background:var(--agua);color:#fff;text-align:center}
+.final h2{margin-bottom:12px}
+.final p{font-size:20px;margin:0 0 30px;color:#e3eeff}
+.final .btn{background:#fff;color:var(--noite)}
+.final .btn:hover{background:var(--espuma)}
+
+footer{background:var(--noite);color:#9fb6dc;font-size:15px;padding:30px 0}
+footer .box{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer a{text-decoration:none}
+footer a:hover{color:#fff}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <linearGradient id="lgLogo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b9bff"/><stop offset="1" stop-color="#0a4fb5"/></linearGradient>
+    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b9bff"/><stop offset="1" stop-color="#0a4fb5"/></linearGradient>
     <symbol id="logo" viewBox="0 0 48 48">
-      <rect width="48" height="48" rx="13" fill="url(#lgLogo)"/>
+      <rect width="48" height="48" rx="13" fill="url(#lg)"/>
       <path d="M22.5 8.5C17 15.8 12 21.6 12 27.6a10.5 10.5 0 0 0 21 0c0-6-5-11.8-10.5-19.1z" fill="#fff"/>
       <path d="M14.6 29.2c2.6-1.6 5-1.6 7.9 0s5.3 1.6 7.9 0" stroke="#1668e3" stroke-width="2.6" fill="none" stroke-linecap="round"/>
       <path d="M16.3 33.6c2.1-1.2 4.1-1.2 6.2 0s4.1 1.2 6.2 0" stroke="#6cb8ff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
@@ -149,881 +186,174 @@ footer.rod svg{width:18px;height:18px}
     </symbol>
   </defs>
 </svg>
-<div class="wrap" id="wrap">
 
-  <!-- ===== CLIENTE ===== -->
-  <section id="vCliente" class="hidden">
-    <header class="top"><button id="btVoltarPainel" class="ghost hidden">← Painel</button></header>
-    <div id="cliente"><div class="card vazio">Carregando…</div></div>
-  </section>
+<header class="topo">
+  <div class="box">
+    <a class="marca" href="/" aria-label="Lavaflux, início"><svg><use href="#logo"/></svg><span>Lava<b>flux</b></span></a>
+    <nav class="nav" aria-label="Seções">
+      <a href="#como-funciona">Como funciona</a><a href="#recursos">Recursos</a><a href="#preco">Preço</a><a href="#duvidas">Dúvidas</a>
+    </nav>
+    <a class="btn cla peq entrar" href="/app">Entrar</a>
+  </div>
+</header>
 
-  <!-- ===== LOGIN ===== -->
-  <section id="vLogin" class="hidden">
-    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span></span></div></header>
-    <form id="fLogin" class="card">
-      <h2>Entrar</h2>
-      <p class="mute">Acesso do estabelecimento.</p>
-      <label class="f">E-mail</label><input id="lEmail" type="email" autocomplete="username" required>
-      <label class="f">Senha</label><input id="lSenha" type="password" autocomplete="current-password" required>
-      <div class="erro" id="lErro"></div>
-      <p class="okmsg" id="lMsg"></p>
-      <button class="pri w100">Entrar</button>
-      <div style="text-align:center"><button type="button" class="linkbtn" id="btEsqueci">Esqueci minha senha</button></div>
-    </form>
-    <div class="card" style="text-align:center">
-      <p style="margin-bottom:4px"><b>Tem um lava jato?</b></p>
-      <p class="mute">Cadastre seu estabelecimento e use <b>grátis por 15 dias</b> após a aprovação.</p>
-      <button class="w100" id="btIrCadastro">Criar conta do estabelecimento</button>
-    </div>
-  </section>
-
-  <!-- ===== CADASTRO ===== -->
-  <section id="vCadastro" class="hidden">
-    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span></span></div>
-      <button class="ghost" id="btVoltarLogin">← Entrar</button></header>
-    <form id="fCad" class="card">
-      <h2>Criar conta do estabelecimento</h2>
-      <p class="mute">O nome aparece para os seus clientes e nas mensagens do WhatsApp.</p>
-      <label class="f">Nome do estabelecimento *</label><input id="cNome" maxlength="40" required placeholder="Ex.: Lava Jato do Zé">
-      <label class="f">WhatsApp do responsável *</label><input id="cWhats" type="tel" inputmode="tel" required placeholder="(51) 99999-0000">
-      <label class="f">E-mail *</label><input id="cEmail" type="email" autocomplete="username" required>
-      <label class="f">Senha * (mínimo 6 caracteres)</label><input id="cSenha" type="password" autocomplete="new-password" required minlength="6">
-      <label class="f">Repita a senha *</label><input id="cSenha2" type="password" autocomplete="new-password" required minlength="6">
-      <div class="erro" id="cErro"></div>
-      <button class="pri w100">Criar conta</button>
-    </form>
-  </section>
-
-  <!-- ===== AGUARDANDO / DESATIVADA ===== -->
-  <section id="vEspera" class="hidden">
-    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span></span></div>
-      <button class="ghost" data-sair>Sair</button></header>
-    <div class="card" style="text-align:center;padding:32px 20px" id="esperaBox"></div>
-  </section>
-
-  <!-- ===== PAINEL DO ESTABELECIMENTO ===== -->
-  <section id="vPainel" class="hidden">
-    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm" id="painelNome"></span></div>
-      <div style="text-align:right;margin-left:auto"><button id="btNome" class="ghost">👤</button><button id="btAjustes" class="ghost">⚙️ Ajustes</button><button class="ghost" data-sair>Sair</button></div></header>
-
-    <div id="banner"></div>
-    <form id="fNovo" class="card">
-      <h3>Novo veículo</h3>
-      <div class="seg"><label><input type="radio" name="nTipo" value="carro" checked>🚗 Carro</label><label><input type="radio" name="nTipo" value="moto">🏍️ Moto</label></div>
-      <div class="row">
-        <div><label class="f">Placa *</label><input id="nPlaca" required maxlength="8" placeholder="ABC1D23" style="text-transform:uppercase"></div>
-        <div><label class="f">Modelo</label><input id="nModelo" placeholder="Onix prata"></div>
+<main>
+  <section class="abre" aria-labelledby="t-abre">
+    <div class="box">
+      <div>
+        <h1 id="t-abre">O cliente acompanha a lavagem pelo celular.</h1>
+        <p class="lead">Registre a placa, mande o link no WhatsApp e marque cada etapa. Seu cliente vê tudo em tempo real e recebe o aviso quando o carro ou a moto fica pronto.</p>
+        <div class="acoes">
+          <a class="btn pri" href="/app#cadastro">Testar grátis por 15 dias</a>
+          <a class="btn cla" href="#como-funciona">Ver como funciona</a>
+        </div>
+        <p class="nota">Sem instalar nada. Depois do teste, R$ 49,90 por mês, sem fidelidade.</p>
       </div>
-      <div class="row">
-        <div><label class="f">Nome do cliente</label><input id="nNome" placeholder="Ana"></div>
-        <div><label class="f">WhatsApp</label><input id="nTel" type="tel" inputmode="tel" placeholder="(51) 99999-0000"></div>
+
+      <div class="palco" aria-label="Demonstração: a tela que o cliente vê enquanto o carro é lavado">
+        <div class="cel" aria-hidden="true">
+          <div class="tela">
+            <div class="loja">Lava Jato do Bairro</div>
+            <div class="sub">Acompanhe seu carro em tempo real</div>
+            <div class="mini vei"><div><b>Olá, Ana!</b><br><span style="color:var(--cinza)">Onix prata</span></div>
+              <div class="placa"><i>BRASIL</i><span>RIO2A18</span></div></div>
+            <div class="mini estado" id="dEstado"><div class="ic" id="dIc">⏳</div><div class="st" id="dSt">Na fila</div><div id="dTx" style="color:var(--cinza)">Seu carro foi recebido.</div><div class="bar"><i id="dBar"></i></div></div>
+            <div class="mini"><ul class="lista" id="dLista">
+              <li><span class="d"></span>Lavagem externa<span class="h"></span></li>
+              <li><span class="d"></span>Aspiração<span class="h"></span></li>
+              <li><span class="d"></span>Secagem<span class="h"></span></li>
+              <li><span class="d"></span>Pretinho nos pneus<span class="h"></span></li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="zap" id="dZap" aria-hidden="true"><b>Lava Jato do Bairro</b>Olá Ana! Seu carro (RIO2A18) está pronto para retirada. Lembrando que hoje funcionamos até às 18h. 🚗✨</div>
       </div>
-      <label class="f">Etapas deste veículo</label>
-      <div class="cks" id="nEtapas"></div>
-      <div class="erro" id="nErro"></div>
-      <button class="pri w100">Registrar e gerar link</button>
-    </form>
-
-    <div class="tabs" id="tabsV"><button data-tab="ativos" class="on">Em andamento <span id="cA"></span></button><button data-tab="fim">Concluídos <span id="cF"></span></button></div>
-    <div id="lista"></div>
+    </div>
   </section>
 
-  <!-- ===== ADMINISTRADOR ===== -->
-  <section id="vAdmin" class="hidden">
-    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span> <span class="mute" style="font-weight:600;font-size:15px">· Admin</span></span></div>
-      <div style="margin-left:auto"><button class="ghost" id="btCobranca">💰 Cobrança</button><button class="ghost" data-sair>Sair</button></div></header>
-    <div class="tiles t4">
-      <div class="tile"><b id="tPend">0</b><span>Aguardando</span></div>
-      <div class="tile"><b id="tTeste">0</b><span>Em teste</span></div>
-      <div class="tile"><b id="tAss">0</b><span>Assinantes</span></div>
-      <div class="tile"><b id="tVenc">0</b><span>Vencendo / vencidas</span></div>
+  <section class="dor" aria-labelledby="t-dor">
+    <div class="box">
+      <div>
+        <h2 id="t-dor">Chega de parar a lavagem para atender o telefone.</h2>
+        <p class="intro" style="margin-bottom:0">Com o link, o cliente para de ligar e vê sozinho em que etapa o carro está. Sua equipe trabalha sem interrupção e o lava jato passa uma imagem mais organizada.</p>
+      </div>
+      <div class="falas" aria-label="Mensagens que o lava jato recebe todo dia">
+        <div class="fala">Já tá pronto? <small>10:42</small></div>
+        <div class="fala">Falta muito pro meu carro? <small>11:15</small></div>
+        <div class="fala">Posso ir buscar agora? <small>11:31</small></div>
+      </div>
     </div>
-    <div class="tabs" id="tabsA">
-      <button data-f="pendente" class="on">Aguardando</button><button data-f="vencendo">Vencendo</button><button data-f="ativo">Ativas</button><button data-f="inativo">Desativadas</button><button data-f="todas">Todas</button>
-    </div>
-    <div id="adminLista"></div>
   </section>
-</div>
 
-<!-- ===== COMPARTILHAR / AVISAR ===== -->
-<div class="modal" id="mShare"><div class="sheet">
-  <div class="v-head"><div><h3 id="shTit">Link do cliente</h3><p class="mute" id="shInfo"></p></div><button class="ghost" data-close>✕</button></div>
-  <div id="shLinkBox"><input id="shLink" readonly onclick="this.select()"></div>
-  <div class="row"><button id="shCopiar" class="shSo">Copiar link</button><a id="shWpp" class="btn pri" target="_blank" rel="noopener">Enviar no WhatsApp</a></div>
-  <div id="qr" class="shSo"></div>
-  <p class="mute shSo" style="text-align:center">O cliente também pode escanear o QR code no balcão.</p>
-  <button id="shVer" class="shSo w100">Ver como o cliente vê</button>
-  <p class="mute" id="shSemTel" style="text-align:center;margin-top:10px"></p>
-</div></div>
-
-<!-- ===== EDITAR VEÍCULO ===== -->
-<div class="modal" id="mEdit"><div class="sheet">
-  <form id="fEdit">
-    <div class="v-head"><h3>Editar veículo</h3><button type="button" class="ghost" data-close>✕</button></div>
-    <div class="seg"><label><input type="radio" name="eTipo" value="carro" checked>🚗 Carro</label><label><input type="radio" name="eTipo" value="moto">🏍️ Moto</label></div>
-    <div class="row">
-      <div><label class="f">Placa *</label><input id="ePlaca" required maxlength="8" style="text-transform:uppercase"></div>
-      <div><label class="f">Modelo</label><input id="eModelo" placeholder="Onix prata"></div>
+  <section id="como-funciona" aria-labelledby="t-como">
+    <div class="box">
+      <h2 id="t-como">Como funciona</h2>
+      <p class="intro">Quatro passos, direto no celular da equipe.</p>
+      <ol class="passos">
+        <li><h3>Registre o veículo</h3><p>Placa, carro ou moto, nome e WhatsApp do cliente. Escolha as etapas daquele serviço.</p></li>
+        <li><h3>Envie o link</h3><p>Um toque manda o link pelo WhatsApp. No balcão, o cliente também pode escanear o QR code.</p></li>
+        <li><h3>Marque as etapas</h3><p>Cada etapa concluída aparece na hora para o cliente, com o horário, em qualquer ordem.</p></li>
+        <li><h3>Avise que está pronto</h3><p>Ao concluir, o WhatsApp abre com a mensagem pronta e o horário de funcionamento do dia.</p></li>
+      </ol>
     </div>
-    <div class="row">
-      <div><label class="f">Nome do cliente</label><input id="eNome" placeholder="Ana"></div>
-      <div><label class="f">WhatsApp</label><input id="eTel" type="tel" inputmode="tel"></div>
+  </section>
+
+  <section class="recursos" id="recursos" aria-labelledby="t-rec">
+    <div class="box">
+      <h2 id="t-rec">Feito para a rotina do lava jato</h2>
+      <p class="intro">Tudo o que a equipe precisa no pátio, sem planilha e sem papel.</p>
+      <div class="rec">
+        <div><h3>Etapas do seu jeito</h3><p>Cadastre os serviços que você oferece, como aspiração, cera ou higienização, e escolha quais cada veículo vai fazer.</p></div>
+        <div><h3>Carro ou moto</h3><p>As mensagens se ajustam: “seu carro está pronto” ou “sua moto está pronta”.</p></div>
+        <div><h3>Seu nome em tudo</h3><p>O cliente vê o nome do seu lava jato na tela e em todas as mensagens do WhatsApp.</p></div>
+        <div><h3>Horário de funcionamento</h3><p>Aparece para o cliente, com aviso de aberto ou fechado e o horário de fechamento no aviso de pronto.</p></div>
+        <div><h3>Quem fez cada etapa</h3><p>O histórico de cada veículo mostra qual funcionário marcou cada etapa e a que horas.</p></div>
+        <div><h3>Sem instalar nada</h3><p>Funciona no navegador de qualquer celular. O cliente só abre o link, sem baixar aplicativo.</p></div>
+      </div>
     </div>
-    <label class="f">Etapas deste veículo</label>
-    <div class="cks" id="eEtapas"></div>
-    <div class="erro" id="eErro"></div>
-    <button class="pri w100">Salvar alterações</button>
-  </form>
-</div></div>
+  </section>
 
-<!-- ===== NOME DO FUNCIONÁRIO (por aparelho) ===== -->
-<div class="modal" id="mNome"><div class="sheet">
-  <form id="fNome">
-    <div class="v-head"><div><h3>Quem está usando este celular?</h3><p class="mute">Seu nome aparece no histórico de cada veículo (quem marcou cada etapa). Fica salvo neste aparelho.</p></div><button type="button" class="ghost" data-close id="nomeFechar">✕</button></div>
-    <input id="nomeInput" maxlength="30" placeholder="Ex.: Carlos" required>
-    <button class="pri w100">Salvar</button>
-  </form>
-</div></div>
+  <section class="preco" id="preco" aria-labelledby="t-preco">
+    <div class="box">
+      <div class="lado">
+        <h2 id="t-preco">Um plano, tudo incluído</h2>
+        <p class="intro">Comece com 15 dias grátis. Se gostar, assine por mês, sem fidelidade. Se não, é só não assinar.</p>
+        <p>O pagamento é por Pix ou cartão de crédito, direto no painel do seu lava jato. Antes do teste acabar, você recebe um aviso no WhatsApp.</p>
+      </div>
+      <div class="etiqueta">
+        <div class="faixa"><span>LAVAFLUX</span><span>MENSAL</span></div>
+        <div class="corpo">
+          <div class="valor">R$ 49,90<small>/mês</small></div>
+          <ul>
+            <li>Veículos ilimitados</li>
+            <li>Toda a equipe no mesmo login</li>
+            <li>Link e QR code para cada cliente</li>
+            <li>Aviso de pronto pelo WhatsApp</li>
+            <li>Cancele quando quiser</li>
+          </ul>
+          <a class="btn pri" href="/app#cadastro">Testar grátis por 15 dias</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<!-- ===== ASSINATURA (estabelecimento) ===== -->
-<div class="modal" id="mPagar"><div class="sheet">
-  <div class="v-head"><h3>Assinatura Lavaflux</h3><button class="ghost" data-close>✕</button></div>
-  <div id="pagarBox"></div>
-</div></div>
+  <section class="duvidas" id="duvidas" aria-labelledby="t-duv">
+    <div class="box">
+      <h2 id="t-duv">Dúvidas</h2>
+      <details><summary>O cliente precisa baixar algum aplicativo?</summary><p>Não. Ele recebe um link pelo WhatsApp, ou escaneia o QR code, e acompanha pelo navegador do celular.</p></details>
+      <details><summary>E a minha equipe, precisa instalar?</summary><p>Também não. Vocês entram em lavaflux.web.app/app pelo navegador. Se quiser, adicione o atalho à tela inicial do celular.</p></details>
+      <details><summary>Quantos funcionários podem usar?</summary><p>Quantos quiser. O lava jato tem um login, e cada celular informa o nome de quem está usando, para o histórico mostrar quem fez cada etapa.</p></details>
+      <details><summary>Como começo o teste grátis?</summary><p>Crie a conta com o nome do lava jato, seu WhatsApp e um e-mail. Depois que a conta é aprovada, os 15 dias começam a contar e você já pode registrar veículos.</p></details>
+      <details><summary>O que acontece quando o teste acaba?</summary><p>Se você não assinar, o painel é pausado. Nada é cobrado e os seus dados ficam guardados caso queira voltar.</p></details>
+      <details><summary>Tem fidelidade ou multa para cancelar?</summary><p>Não. A assinatura é mensal e você cancela quando quiser.</p></details>
+      <details><summary>Por quanto tempo o link do cliente funciona?</summary><p>Por 90 dias depois do serviço. Depois disso, os dados do atendimento são apagados automaticamente.</p></details>
+    </div>
+  </section>
 
-<!-- ===== COBRANÇA (admin) ===== -->
-<div class="modal" id="mCob"><div class="sheet">
-  <div class="v-head"><div><h3>Cobrança</h3><p class="mute">Aparece para os lava jatos na tela de assinatura.</p></div><button class="ghost" data-close>✕</button></div>
-  <label class="f">Valor mensal (R$)</label><input id="cobPreco" inputmode="decimal" placeholder="49,90">
-  <h3 class="sec">Pix</h3>
-  <label class="f">Chave Pix</label><input id="cobPix" placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória">
-  <label class="f">Nome do titular</label><input id="cobPixNome">
-  <h3 class="sec">Cartão (Mercado Pago)</h3>
-  <label class="f">Link da assinatura mensal</label><input id="cobMp" type="url" placeholder="https://www.mercadopago.com.br/subscriptions/checkout?...">
-  <h3 class="sec">Suporte</h3>
-  <label class="f">Seu WhatsApp (para receber comprovantes)</label><input id="cobWhats" type="tel" inputmode="tel" placeholder="(51) 99999-0000">
-  <div class="erro" id="cobErro"></div>
-  <button id="cobSalvar" class="pri w100">Salvar</button>
-</div></div>
+  <section class="final" aria-labelledby="t-final">
+    <div class="box">
+      <h2 id="t-final">Comece hoje no seu lava jato</h2>
+      <p>15 dias grátis. Sem cartão para começar.</p>
+      <a class="btn" href="/app#cadastro">Criar conta do lava jato</a>
+    </div>
+  </section>
+</main>
 
-<!-- ===== AJUSTES ===== -->
-<div class="modal" id="mCfg"><div class="sheet">
-  <div class="v-head"><h3>Ajustes do estabelecimento</h3><button class="ghost" data-close>✕</button></div>
-  <h3 class="sec" style="margin-top:0">Nome do estabelecimento</h3>
-  <p class="mute">Aparece na tela do cliente e nas mensagens do WhatsApp.</p>
-  <input id="cfgNome" maxlength="40">
-  <h3 class="sec">Etapas</h3>
-  <p class="mute">Serviços pelos quais os veículos passam. A equipe marca cada um quando é feito, em qualquer ordem.</p>
-  <div id="cfgLista"></div>
-  <button id="cfgAdd" class="w100" style="margin:4px 0 12px">+ Adicionar etapa</button>
-  <p class="mute">Vale para os próximos veículos registrados. Para mudar um veículo que já está no pátio, use ✏️ Editar nele.</p>
-  <h3 class="sec">Horário de funcionamento</h3>
-  <p class="mute">Aparece para o cliente e no aviso de veículo pronto.</p>
-  <div id="horLista" style="margin-bottom:12px"></div>
-  <div class="erro" id="cfgErro"></div>
-  <button id="cfgSalvar" class="pri w100">Salvar ajustes</button>
-</div></div>
+<footer>
+  <div class="box">
+    <a class="marca" href="/" style="font-size:22px;color:#fff"><svg style="width:28px;height:28px"><use href="#logo"/></svg><span>Lava<b>flux</b></span></a>
+    <span>© <span id="ano"></span> Lavaflux · <a href="/app">Entrar no painel</a></span>
+  </div>
+</footer>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-/* ================== CONFIGURAÇÃO ================== */
-const firebaseConfig = {
-  apiKey: "AIzaSyCxUaPVTFyp0zaxOmLJjlTB2QXrBllp0DM",
-  authDomain: "lavaflux-1da77.firebaseapp.com",
-  projectId: "lavaflux-1da77",
-  storageBucket: "lavaflux-1da77.firebasestorage.app",
-  messagingSenderId: "744979919279",
-  appId: "1:744979919279:web:d70c697928294589cd7f5a"
-};
-/* ================================================= */
+document.getElementById("ano").textContent = new Date().getFullYear();
 
-const ETAPAS_PADRAO = ["Lavagem externa","Secagem","Limpeza interna","Finalização"].map((nome,i) => ({id:"p"+i, nome}));
-const DIAS = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
-const HORARIO_PADRAO = {
-  0:{aberto:false, abre:"08:00", fecha:"12:00"},
-  1:{aberto:true, abre:"08:00", fecha:"18:00"}, 2:{aberto:true, abre:"08:00", fecha:"18:00"},
-  3:{aberto:true, abre:"08:00", fecha:"18:00"}, 4:{aberto:true, abre:"08:00", fecha:"18:00"},
-  5:{aberto:true, abre:"08:00", fecha:"18:00"}, 6:{aberto:true, abre:"08:00", fecha:"13:00"}
-};
-const DIAS_TESTE = 15, DIAS_MES = 30, DIA = 864e5, DIAS_GUARDA = 90;
-const mesChave = ms => { const d = new Date(ms); return "m" + d.getFullYear() + String(d.getMonth()+1).padStart(2,"0"); };
-const PRECO_PADRAO = "49,90";
-const DEMO = firebaseConfig.apiKey.startsWith("COLE");
-
-const $ = s => document.querySelector(s);
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const hora = ms => ms ? new Date(ms).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "";
-const data = ms => ms ? new Date(ms).toLocaleDateString("pt-BR") : "—";
-const VIEWS = ["vCliente","vLogin","vCadastro","vEspera","vPainel","vAdmin"];
-const show = id => { VIEWS.forEach(v => $("#"+v).classList.toggle("hidden", v !== id)); $("#wrap").classList.toggle("wide", id === "vAdmin"); };
-const fechar = id => $("#"+id).classList.remove("on");
-const abrir = id => $("#"+id).classList.add("on");
-
-function token(n = 20){
-  const a = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
-  return [...crypto.getRandomValues(new Uint8Array(n))].map(x => a[x % a.length]).join("");
-}
-const linkCliente = id => location.origin + location.pathname + "?c=" + id;
-const placaLimpa = s => s.toUpperCase().replace(/[^A-Z0-9]/g,"");
-const etapasDe = v => Array.isArray(v.etapas) && v.etapas.length ? v.etapas : ETAPAS_PADRAO;
-const checksDe = v => v.checks || {};
-const tsDe = x => (x && typeof x === "object") ? x.em : x;
-const moto = v => v.tipo === "moto";
-const seuVeic = v => moto(v) ? "sua moto" : "seu carro";
-const prontoV = v => moto(v) ? "pronta" : "pronto";
-const iconeV = v => moto(v) ? "🏍️" : "🚗";
-const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
-const diasAte = ms => Math.ceil((ms - Date.now()) / DIA);
-const vencida = c => !!(c && c.venceEm && Date.now() > c.venceEm);
-const emDias = n => n <= 0 ? "hoje" : n === 1 ? "amanhã" : `em ${n} dias`;
-const soDigitos = t => String(t || "").replace(/\D/g, "");
-const telBR = t => { const d = soDigitos(t); return d && d.length <= 11 ? "55" + d : d; };
-
-// Nome do funcionário: salvo no aparelho (o login é do estabelecimento)
-const LS_FUNC = "lavaflux_funcionario";
-const lerLS = k => { try { return localStorage.getItem(k) || ""; } catch { return ""; } };
-const gravarLS = (k,v) => { try { localStorage.setItem(k, v); } catch {} };
-let funcMem = "";
-const quem = () => funcMem || lerLS(LS_FUNC) || "Equipe";
-
-/* ---------- Horário ---------- */
-const minutos = t => { const [a,b] = String(t).split(":").map(Number); return a*60 + (b||0); };
-const fmtH = t => { const [a,b] = String(t).split(":"); return `${+a}h${b && b !== "00" ? b : ""}`; };
-function situacao(hor, agora = new Date()){
-  const d = agora.getDay(), h = hor[d], min = agora.getHours()*60 + agora.getMinutes();
-  if (h && h.aberto && min < minutos(h.fecha)) return {hoje: true, aberto: min >= minutos(h.abre), abre: h.abre, fecha: h.fecha};
-  for (let i = 1; i <= 7; i++){
-    const dd = (d + i) % 7, x = hor[dd];
-    if (x && x.aberto) return {hoje: false, dia: i === 1 ? "amanhã" : DIAS[dd].toLowerCase(), abre: x.abre};
+// Demonstração: as etapas vão sendo marcadas e chega o aviso de pronto
+(function(){
+  const itens = [...document.querySelectorAll("#dLista li")], est = document.getElementById("dEstado"),
+        ic = document.getElementById("dIc"), st = document.getElementById("dSt"), tx = document.getElementById("dTx"),
+        bar = document.getElementById("dBar"), zap = document.getElementById("dZap");
+  const horas = ["10:12","10:26","10:34","10:41"];
+  function estado(n){
+    itens.forEach((li,i) => { const ok = i < n; li.classList.toggle("ok", ok); li.querySelector(".d").textContent = ok ? "✓" : ""; li.querySelector(".h").textContent = ok ? horas[i] : ""; });
+    const pronto = n > itens.length;
+    est.classList.toggle("pronto", pronto);
+    if (pronto){ ic.textContent = "✅"; st.textContent = "Pronto para retirada!"; tx.textContent = "Concluído às 10:45."; tx.style.color = "#e3fff0"; }
+    else if (n === 0){ ic.textContent = "⏳"; st.textContent = "Na fila"; tx.textContent = "Seu carro foi recebido."; tx.style.color = ""; }
+    else { ic.textContent = "🧽"; st.textContent = "Em andamento"; tx.textContent = `${Math.min(n,itens.length)} de ${itens.length} etapas concluídas`; tx.style.color = ""; }
+    bar.style.width = (Math.min(n,itens.length) / itens.length * 100) + "%";
+    zap.classList.toggle("on", pronto);
   }
-  return null;
-}
-function lembrete(hor){
-  const s = situacao(hor); if (!s) return "";
-  if (s.hoje && s.aberto) return `Lembrando que hoje funcionamos até às ${fmtH(s.fecha)}.`;
-  if (s.hoje) return `Lembrando que hoje funcionamos das ${fmtH(s.abre)} às ${fmtH(s.fecha)}.`;
-  return `Já encerramos por hoje; abrimos novamente ${s.dia} às ${fmtH(s.abre)}.`;
-}
-function cardHorario(hor){
-  const s = situacao(hor), hoje = new Date().getDay();
-  const pill = s && s.hoje && s.aberto ? `<span class="pill ab">Aberto agora · até ${fmtH(s.fecha)}</span>` : `<span class="pill fe">Fechado agora</span>`;
-  const linhas = [1,2,3,4,5,6,0].map(d => { const h = hor[d] || {};
-    return `<tr class="${d === hoje ? "hoje" : ""}"><td>${DIAS[d]}${d === hoje ? " (hoje)" : ""}</td><td>${h.aberto ? `${fmtH(h.abre)} – ${fmtH(h.fecha)}` : "Fechado"}</td></tr>`; }).join("");
-  return `<div class="card"><div class="v-head" style="margin-bottom:6px"><h3 style="margin:0">Horário de funcionamento</h3>${pill}</div><table class="hor">${linhas}</table></div>`;
-}
-
-/* ---------- Armazenamento ----------
-   contas/{uid}           privado: e-mail e status (pendente | ativo | inativo)
-   estabelecimentos/{uid} público: nome, etapas, horário
-   lavagens/{código}      veículo, com "est" = uid do estabelecimento
-   admins/{uid}           administradores da plataforma                       */
-let store;
-if (DEMO) {
-  // Modo de teste local: ?papel=admin | pendente | inativo (padrão: estabelecimento ativo)
-  const papel = new URLSearchParams(location.search).get("papel") || "ativo";
-  const U = {uid: "est1", email: "demo@lavajato.com"}, N = Date.now();
-  const contas = new Map([["est1",{email:U.email, nome:"Lava Jato Demo", whatsapp:"51999990000", status: ["admin","vencido"].includes(papel) ? "ativo" : papel, plano:"teste", criadoEm: N-DIA*13, venceEm: papel === "vencido" ? N-DIA : N+DIA*2}],
-    ["est2",{email:"zé@exemplo.com", nome:"Lava Jato do Zé", whatsapp:"51988887777", status:"pendente", criadoEm: N-36e5}],
-    ["est3",{email:"brilho@exemplo.com", nome:"Brilho Car", whatsapp:"51977776666", status:"inativo", criadoEm: N-DIA*60}],
-    ["est4",{email:"top@exemplo.com", nome:"Top Wash", whatsapp:"51966665555", status:"ativo", plano:"assinante", criadoEm: N-DIA*50, venceEm: N+DIA*20}]]);
-  let cfgPlat = {preco:"49,90", pix:"12.345.678/0001-90", pixNome:"Santos Serviços", mpLink:"https://www.mercadopago.com.br/subscriptions/checkout?x=demo", suporteWhats:"51911112222"};
-  const ests = new Map([["est1",{nome:"Lava Jato Demo"}],["est2",{nome:"Lava Jato do Zé"}],["est3",{nome:"Brilho Car"}]]);
-  const lav = new Map(); const subs = new Set();
-  const emit = () => subs.forEach(f => f());
-  const sub = f => { subs.add(f); f(); return () => subs.delete(f); };
-  store = {
-    onAuth: cb => cb(U), entrar: async()=>{}, sair: async()=>{}, esqueci: async()=>{},
-    cadastrar: async()=>{}, souAdmin: async()=> papel === "admin",
-    conta: (uid, cb) => sub(() => cb(contas.get(uid) || null)),
-    criarConta: async()=>{},
-    est: (uid, cb) => sub(() => cb(ests.get(uid) || null)),
-    salvarEst: async (uid, o) => { ests.set(uid, {...ests.get(uid), ...o}); emit(); },
-    lista: (uid, cb) => sub(() => cb([...lav.values()].filter(v => v.est === uid && (!v.concluido || v.criadoEm >= Date.now() - 2*DIA)).sort((a,b) => b.criadoEm - a.criadoEm))),
-    anteriores: async (uid, antesDe, n) => [...lav.values()].filter(v => v.est === uid && v.criadoEm < antesDe).sort((a,b) => b.criadoEm - a.criadoEm).slice(0, n),
-    ts: ms => ms,
-    limparExpirados: async () => 0,
-    um: (id, cb) => sub(() => cb(lav.get(id) || null)),
-    async criar(d){ const id = token(); lav.set(id, {...d, id, expiraEm: d.criadoEm + DIAS_GUARDA*DIA});
-      const e = ests.get(d.est) || {}, u = e.uso || {}; ests.set(d.est, {...e, uso: {...u, total: (u.total||0)+1, ultimo: d.criadoEm, [mesChave(d.criadoEm)]: (u[mesChave(d.criadoEm)]||0)+1}});
-      emit(); return id; },
-    async atualizar(id,p,ev){ const a = lav.get(id); lav.set(id, {...a, ...p, ...(ev ? {historico:[...(a.historico||[]), {...ev, por:quem(), em:Date.now()}]} : {})}); emit(); },
-    async remover(id){ lav.delete(id); emit(); },
-    contas: cb => sub(() => cb([...contas].map(([uid,c]) => ({uid, ...c})))),
-    config: cb => sub(() => cb(cfgPlat)),
-    salvarConfig: async o => { cfgPlat = {...cfgPlat, ...o}; emit(); },
-    atualizarConta: async (uid, patch) => { contas.set(uid, {...contas.get(uid), ...patch}); emit(); },
-    ests: cb => sub(() => cb(Object.fromEntries(ests))),
-  };
-} else {
-  firebase.initializeApp(firebaseConfig);
-  const fs = firebase.firestore(), au = firebase.auth();
-  // Cache no aparelho: ao reabrir o app, só o que mudou é lido de novo
-  fs.enablePersistence({synchronizeTabs: true}).catch(() => {});
-  au.languageCode = "pt-BR";
-  const FV = firebase.firestore.FieldValue;
-  const col = n => fs.collection(n);
-  const snapDoc = (ref, cb, err) => ref.onSnapshot(d => cb(d.exists ? d.data() : null), err || (() => cb(null)));
-  store = {
-    onAuth: cb => au.onAuthStateChanged(cb),
-    entrar: (e,s) => au.signInWithEmailAndPassword(e,s),
-    sair: () => au.signOut(),
-    esqueci: e => au.sendPasswordResetEmail(e, {url: location.origin + location.pathname}),
-    cadastrar: (e,s) => au.createUserWithEmailAndPassword(e,s),
-    souAdmin: async uid => { try { return (await col("admins").doc(uid).get()).exists; } catch { return false; } },
-    conta: (uid, cb, err) => snapDoc(col("contas").doc(uid), cb, err),
-    async criarConta(uid, email, nome, whatsapp){
-      await col("contas").doc(uid).set({email, nome, whatsapp, status: "pendente", criadoEm: Date.now()});
-      await col("estabelecimentos").doc(uid).set({nome, etapas: ETAPAS_PADRAO, horario: HORARIO_PADRAO}, {merge: true});
-    },
-    est: (uid, cb) => snapDoc(col("estabelecimentos").doc(uid), cb),
-    salvarEst: (uid, o) => col("estabelecimentos").doc(uid).set(o, {merge: true}),
-    // Painel: só veículos em andamento + os registrados nas últimas 48 h
-    lista(uid, cb, err){
-      let ativos = new Map(), recentes = new Map();
-      const conv = s => new Map(s.docs.map(d => [d.id, {id: d.id, ...d.data()}]));
-      const out = () => cb([...new Map([...recentes, ...ativos]).values()].sort((a,b) => b.criadoEm - a.criadoEm));
-      const u1 = col("lavagens").where("est","==",uid).where("concluido","==",false).onSnapshot(s => { ativos = conv(s); out(); }, err);
-      const u2 = col("lavagens").where("est","==",uid).where("criadoEm",">=",Date.now() - 2*DIA).orderBy("criadoEm","desc").onSnapshot(s => { recentes = conv(s); out(); }, err);
-      return () => { u1(); u2(); };
-    },
-    anteriores: async (uid, antesDe, n) => (await col("lavagens").where("est","==",uid).where("criadoEm","<",antesDe).orderBy("criadoEm","desc").limit(n).get())
-      .docs.map(d => ({id: d.id, ...d.data()})),
-    ts: ms => firebase.firestore.Timestamp.fromMillis(ms),
-    // Limpeza sem plano pago: veículos criados há mais de 90 dias cujo "expiraEm" já passou
-    async limparExpirados(uid){
-      const s = await col("lavagens").where("est","==",uid).where("criadoEm","<",Date.now() - DIAS_GUARDA*DIA).orderBy("criadoEm","desc").limit(200).get();
-      const venc = s.docs.filter(d => { const x = d.data().expiraEm; const ms = x && x.toMillis ? x.toMillis() : x; return !ms || ms < Date.now(); });
-      for (let i = 0; i < venc.length; i += 400){ const b = fs.batch(); venc.slice(i, i+400).forEach(d => b.delete(d.ref)); await b.commit(); }
-      return venc.length;
-    },
-    um: (id, cb, err) => col("lavagens").doc(id).onSnapshot(d => cb(d.exists ? {id:d.id, ...d.data()} : null), err),
-    // Registra o veículo e atualiza os contadores de uso do estabelecimento (uma operação só)
-    async criar(d){
-      const id = token(), b = fs.batch(), inc = FV.increment(1);
-      b.set(col("lavagens").doc(id), {...d, expiraEm: firebase.firestore.Timestamp.fromMillis(d.criadoEm + DIAS_GUARDA*DIA)});
-      b.set(col("estabelecimentos").doc(d.est), {uso: {total: inc, ultimo: d.criadoEm, [mesChave(d.criadoEm)]: inc}}, {merge: true});
-      await b.commit(); return id;
-    },
-    atualizar: (id,p,ev) => col("lavagens").doc(id).update(ev ? {...p, historico: FV.arrayUnion({...ev, por: quem(), em: Date.now()})} : p),
-    remover: id => col("lavagens").doc(id).delete(),
-    contas: (cb, err) => col("contas").onSnapshot(s => cb(s.docs.map(d => ({uid: d.id, ...d.data()}))), err),
-    ests: cb => col("estabelecimentos").onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = d.data()); cb(o); }, () => cb({})),
-    config: cb => snapDoc(col("config").doc("plataforma"), cb),
-    salvarConfig: o => col("config").doc("plataforma").set(o, {merge: true}),
-    atualizarConta: (uid, patch, pagamento) => col("contas").doc(uid).update(pagamento ? {...patch, pagamentos: firebase.firestore.FieldValue.arrayUnion(pagamento)} : patch)
-  };
-}
-
-/* ---------- Cliente ---------- */
-let pararCli = [], cliV = null, cliEst = null, cliCarregado = false;
-const pararTudo = arr => { arr.forEach(f => f && f()); arr.length = 0; };
-function abrirCliente(id, doPainel){
-  show("vCliente");
-  $("#btVoltarPainel").classList.toggle("hidden", !doPainel);
-  pararTudo(pararCli); cliEst = null; cliCarregado = false; let estAtual = null;
-  pararCli.push(store.um(id, v => {
-    cliCarregado = true; cliV = v;
-    if (v && v.est && v.est !== estAtual){
-      estAtual = v.est;
-      pararCli.push(store.est(v.est, e => { cliEst = e; renderCliente(); }));
-    }
-    renderCliente();
-  }, () => { cliCarregado = true; cliV = null; renderCliente(); }));
-}
-function renderCliente(){
-  const v = cliV, el = $("#cliente");
-  if (!cliCarregado) return;
-  if (!v || !v.placa){ el.innerHTML = `<div class="card vazio"><h2>Link não encontrado</h2><p>Este link expirou ou não existe. Os acompanhamentos ficam disponíveis por ${DIAS_GUARDA} dias após o serviço.</p></div>`; return; }
-  const nomeEst = (cliEst && cliEst.nome) || "", hor = (cliEst && cliEst.horario) || HORARIO_PADRAO;
-  document.title = nomeEst || "Acompanhe seu veículo";
-  const et = etapasDe(v), ch = checksDe(v), feitas = et.filter(e => ch[e.id]).length, pct = Math.round(100 * feitas / et.length);
-  const dia0 = d => new Date(d).setHours(0,0,0,0), dif = Math.round((dia0(Date.now()) - dia0(v.criadoEm)) / DIA);
-  const quando = dif === 0 ? "hoje" : dif === 1 ? "ontem" : "de " + data(v.criadoEm);
-  const antigo = dif > 0 ? `<div class="banner alerta"><span class="tx">⚠️ Este acompanhamento é de um <b>atendimento anterior</b> (${data(v.criadoEm)}). Se ${seuVeic(v)} está no ${esc(nomeEst || "lava jato")} hoje, peça o link novo.</span></div>` : "";
-  let hero;
-  if (v.concluido) hero = `<div class="card hero pronto"><div class="ic">✅</div><div class="st">${dif > 0 ? "Serviço concluído" : "Pronto para retirada!"}</div><p class="mute">${dif > 0 ? `Concluído em ${data(v.fimEm)} às ${hora(v.fimEm)}.` : `Concluído às ${hora(v.fimEm)}. ${esc(lembrete(hor))}`}</p><p class="mute" style="margin:0">Obrigado pela preferência!</p></div>`;
-  else if (!feitas) hero = `<div class="card hero"><div class="ic">⏳</div><div class="st">Na fila</div><p class="mute">${cap(seuVeic(v))} foi recebid${moto(v) ? "a" : "o"} e logo será atendid${moto(v) ? "a" : "o"}.</p></div>`;
-  else hero = `<div class="card hero"><div class="ic">🧽</div><div class="st">Em andamento</div><p class="mute">${feitas} de ${et.length} etapas concluídas</p><div class="bar"><i style="width:${pct}%"></i></div></div>`;
-  const itens = et.map(e => `<li class="${ch[e.id] ? "d" : ""}"><div class="dot">${ch[e.id] ? "✓" : ""}</div><div class="nm">${esc(e.nome)}</div><div class="hr">${ch[e.id] ? hora(tsDe(ch[e.id])) : ""}</div></li>`).join("");
-  el.innerHTML = `
-    ${antigo}
-    ${nomeEst ? `<div class="est-hero"><div class="en">${esc(nomeEst)}</div><div class="mute">Acompanhe ${seuVeic(v)} em tempo real</div></div>` : ""}
-    <div class="card"><div class="v-head" style="margin:0"><div>${v.nome ? `<p>Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute" style="margin:0">${iconeV(v)} ${esc(v.modelo) || cap(seuVeic(v))}</p><p class="mute" style="margin:4px 0 0">📅 Atendimento ${quando === "hoje" || quando === "ontem" ? "de " + quando : quando}</p></div><span class="placa">${esc(v.placa)}</span></div></div>
-    ${hero}
-    <div class="card"><h3 style="margin-bottom:4px">Serviços</h3><ul class="cl">${itens}</ul></div>
-    ${cardHorario(hor)}
-    <footer class="rod"><svg><use href="#logo"/></svg>Atualiza sozinho · Lavaflux</footer>`;
-}
-$("#btVoltarPainel").onclick = () => { pararTudo(pararCli); history.replaceState(null,"",location.pathname); show("vPainel"); };
-
-/* ---------- Sessão ---------- */
-let usuario = null, pararSessao = [], cadastrando = null, contaAtual = null, cfgPlat = {};
-function iniciarSessao(u){
-  pararTudo(pararSessao); pararTudo(pararPainel); pararTudo(pararAdmin);
-  usuario = u;
-  if (!u){ show("vLogin"); return; }
-  store.souAdmin(u.uid).then(adm => {
-    if (usuario !== u) return;
-    if (adm) { iniciarAdmin(); return; }
-    pararSessao.push(store.config(c => { cfgPlat = c || {}; avaliarConta(); }));
-    pararSessao.push(store.conta(u.uid, c => {
-      if (!c){
-        if (cadastrando) return;   // cadastro sendo gravado
-        contaAtual = null; espera("semconta"); return;
-      }
-      contaAtual = c; avaliarConta();
-    }, () => espera("erro")));
-  });
-}
-function avaliarConta(){
-  const c = contaAtual; if (!c || !usuario) return;
-  if (c.status === "ativo" && !vencida(c)) { if (!painelAtivo) iniciarPainel(); else renderBanner(); }
-  else { pararTudo(pararPainel); painelAtivo = false; espera(c.status === "ativo" ? "vencido" : c.status, c); }
-}
-setInterval(avaliarConta, 60000);   // bloqueia no momento do vencimento
-
-function espera(tipo, c){
-  show("vEspera");
-  const box = $("#esperaBox");
-  if (tipo === "pendente") box.innerHTML = `<div style="font-size:48px">⏳</div><h2>Cadastro recebido!</h2><p><b>${esc(c.nome)}</b> está aguardando aprovação.</p><p class="mute">Esta tela abre o painel sozinha assim que a conta for aprovada.</p>`;
-  else if (tipo === "inativo") box.innerHTML = `<div style="font-size:48px">🔒</div><h2>Conta desativada</h2><p class="mute">O acesso de <b>${esc(c.nome)}</b> está desativado. Entre em contato com o suporte do Lavaflux.</p>`;
-  else if (tipo === "vencido") box.innerHTML = `<div style="font-size:48px">⛔</div><h2>${c.plano === "assinante" ? "Mensalidade vencida" : "Teste grátis encerrado"}</h2>
-      <p>${c.plano === "assinante" ? "A mensalidade" : "O período de teste"} de <b>${esc(c.nome)}</b> venceu em ${data(c.venceEm)} e o painel foi pausado.</p>
-      <p class="mute">Seus dados e os links dos clientes estão guardados. Assine para voltar a usar — o acesso volta assim que o pagamento for confirmado.</p>${pagamentoHtml()}`;
-  else if (tipo === "semconta") box.innerHTML = `<div style="font-size:48px">📝</div><h2>Conclua o cadastro</h2><p class="mute">Informe o nome do estabelecimento e o WhatsApp do responsável.</p>
-      <input id="fimNome" maxlength="40" placeholder="Nome do estabelecimento"><input id="fimWhats" type="tel" inputmode="tel" placeholder="WhatsApp do responsável"><div class="erro" id="fimErro"></div><button class="pri w100" id="fimBt">Enviar para aprovação</button>`;
-  else box.innerHTML = `<div style="font-size:48px">⚠️</div><h2>Não foi possível carregar</h2><p class="mute">Verifique a internet e tente de novo.</p>`;
-  const bt = $("#fimBt");
-  if (bt) bt.onclick = async () => {
-    const n = $("#fimNome").value.trim(), w = soDigitos($("#fimWhats").value);
-    if (!n || w.length < 10){ $("#fimErro").textContent = "Preencha o nome e um WhatsApp com DDD."; return; }
-    try { await store.criarConta(usuario.uid, usuario.email, n, w); } catch(e){ $("#fimErro").textContent = "Erro: " + e.message; }
-  };
-}
-document.querySelectorAll("[data-sair]").forEach(b => b.onclick = () => store.sair());
-
-/* ---------- Login / cadastro ---------- */
-$("#fLogin").onsubmit = async ev => {
-  ev.preventDefault(); $("#lErro").textContent = ""; $("#lMsg").textContent = "";
-  try { await store.entrar($("#lEmail").value.trim(), $("#lSenha").value); }
-  catch { $("#lErro").textContent = "E-mail ou senha incorretos."; }
-};
-$("#btEsqueci").onclick = async () => {
-  const em = $("#lEmail").value.trim(); $("#lMsg").textContent = "";
-  if (!em){ $("#lErro").textContent = "Digite seu e-mail no campo acima e toque de novo em \"Esqueci minha senha\"."; $("#lEmail").focus(); return; }
-  try {
-    await store.esqueci(em);
-    $("#lErro").textContent = "";
-    $("#lMsg").textContent = `Se ${em} estiver cadastrado, enviamos um e-mail com o link para criar uma nova senha. Confira também a caixa de spam.`;
-  } catch(e){ $("#lErro").textContent = e.code === "auth/invalid-email" ? "E-mail inválido." : "Não foi possível enviar agora. Tente novamente em instantes."; }
-};
-$("#btIrCadastro").onclick = () => { $("#cErro").textContent = ""; show("vCadastro"); };
-$("#btVoltarLogin").onclick = () => show("vLogin");
-$("#fCad").onsubmit = async ev => {
-  ev.preventDefault();
-  const nome = $("#cNome").value.trim(), email = $("#cEmail").value.trim(), s1 = $("#cSenha").value, s2 = $("#cSenha2").value;
-  const whats = soDigitos($("#cWhats").value);
-  if (whats.length < 10){ $("#cErro").textContent = "Informe o WhatsApp com DDD."; return; }
-  if (s1 !== s2){ $("#cErro").textContent = "As senhas não são iguais."; return; }
-  $("#cErro").textContent = ""; cadastrando = {nome};
-  try {
-    const r = await store.cadastrar(email, s1);
-    await store.criarConta(r.user.uid, email, nome, whats);
-  } catch(e){
-    $("#cErro").textContent = ({ "auth/email-already-in-use": "Este e-mail já tem conta. Volte e entre, ou use \"Esqueci minha senha\".",
-      "auth/weak-password": "Senha fraca: use pelo menos 6 caracteres.", "auth/invalid-email": "E-mail inválido." })[e.code] || "Erro ao criar conta: " + e.message;
-  } finally { cadastrando = null; }
-};
-
-/* ---------- Painel do estabelecimento ---------- */
-let painelAtivo = false, pararPainel = [], lista = [], listaVivo = [], antigos = [], semMaisAntigos = false, aba = "ativos";
-function juntarLista(){
-  const m = new Map(antigos.map(v => [v.id, v])); listaVivo.forEach(v => m.set(v.id, v));
-  lista = [...m.values()].sort((a,b) => b.criadoEm - a.criadoEm); renderLista();
-}
-async function carregarAnteriores(bt){
-  bt.disabled = true; bt.textContent = "Carregando…";
-  const antesDe = lista.length ? Math.min(...lista.map(v => v.criadoEm)) : Date.now();
-  try {
-    const l = await store.anteriores(usuario.uid, antesDe, 30);
-    if (l.length < 30) semMaisAntigos = true;
-    antigos = antigos.concat(l); juntarLista();
-  } catch(e){ bt.disabled = false; bt.textContent = "Erro ao carregar. Tentar de novo"; }
-}
-let estDados = {}, etapasCfg = ETAPAS_PADRAO, horarioCfg = HORARIO_PADRAO;
-const nomeEst = () => estDados.nome || "Lava jato";
-
-function iniciarPainel(){
-  painelAtivo = true; show("vPainel"); mostrarNome();
-  const uid = usuario.uid;
-  pararPainel.push(store.est(uid, d => {
-    estDados = d || {};
-    etapasCfg = (estDados.etapas && estDados.etapas.length) ? estDados.etapas : ETAPAS_PADRAO;
-    horarioCfg = estDados.horario || HORARIO_PADRAO;
-    $("#painelNome").textContent = nomeEst(); document.title = nomeEst();
-    renderNovoChecks();
-  }));
-  antigos = []; semMaisAntigos = false;
-  pararPainel.push(store.lista(uid, l => { listaVivo = l; juntarLista(); },
-    e => { $("#lista").innerHTML = `<div class="card vazio">Não foi possível carregar os veículos. Se acabou de ser aprovado, aguarde alguns minutos e recarregue.</div>`; console.error(e); }));
-  renderBanner();
-  if (!lerLS(LS_FUNC) && !funcMem) pedirNome(true);
-  // uma vez por dia por aparelho
-  const hoje = new Date().toDateString(), chave = "lavaflux_limpeza_" + uid;
-  if (lerLS(chave) !== hoje) store.limparExpirados(uid).then(() => gravarLS(chave, hoje)).catch(e => console.warn("limpeza", e));
-}
-function renderBanner(){
-  const c = contaAtual, el = $("#banner");
-  if (!c || !c.venceEm){ el.innerHTML = ""; return; }
-  const n = diasAte(c.venceEm), teste = c.plano !== "assinante";
-  if (!teste && n > 5){ el.innerHTML = ""; return; }
-  const txt = teste ? `🎁 <b>Teste grátis</b>: termina ${emDias(n)} (${data(c.venceEm)}).` : `💳 Sua mensalidade vence ${emDias(n)} (${data(c.venceEm)}).`;
-  el.innerHTML = `<div class="banner ${n <= 3 ? "alerta" : "info"}"><span class="tx">${txt}</span><button class="pri" data-pagar>${teste ? "Assinar" : "Pagar"}</button></div>`;
-}
-function pagamentoHtml(){
-  const c = cfgPlat || {}, preco = c.preco || PRECO_PADRAO;
-  const comprov = c.suporteWhats ? `https://wa.me/${telBR(c.suporteWhats)}?text=${encodeURIComponent(`Olá! Segue o comprovante da assinatura do Lavaflux — ${(contaAtual && contaAtual.nome) || ""} (${(usuario && usuario.email) || ""}).`)}` : "";
-  return `<div style="text-align:center;margin:12px 0 4px"><div class="preco">R$ ${esc(preco)} <small>/ mês</small></div><p class="mute">Sem fidelidade: cancele quando quiser.</p></div>
-    ${c.pix ? `<div class="paybox"><h4>💠 Pagar com Pix</h4><div class="pixkey" id="pixKey">${esc(c.pix)}</div>${c.pixNome ? `<p class="mute">Titular: ${esc(c.pixNome)}</p>` : ""}
-      <button class="w100" data-copiar-pix>Copiar chave Pix</button>
-      ${comprov ? `<a class="btn w100" style="margin-top:8px" target="_blank" rel="noopener" href="${comprov}">📲 Enviar comprovante no WhatsApp</a>` : ""}</div>` : ""}
-    ${c.mpLink ? `<div class="paybox"><h4>💳 Pagar com cartão</h4><p class="mute">Assinatura mensal pelo Mercado Pago — cobra todo mês automaticamente.</p>
-      <a class="btn pri w100" target="_blank" rel="noopener" href="${esc(c.mpLink)}">Assinar com cartão</a></div>` : ""}
-    ${!c.pix && !c.mpLink ? `<p class="mute">Formas de pagamento em configuração. Fale com o suporte do Lavaflux.</p>` : ""}
-    <p class="mute" style="text-align:center">A liberação é feita assim que o pagamento é confirmado.</p>`;
-}
-document.addEventListener("click", async e => {
-  if (e.target.closest("[data-pagar]")){ $("#pagarBox").innerHTML = pagamentoHtml(); abrir("mPagar"); }
-  const cp = e.target.closest("[data-copiar-pix]");
-  if (cp){ try { await navigator.clipboard.writeText((cfgPlat && cfgPlat.pix) || ""); cp.textContent = "Chave copiada ✓"; } catch { cp.textContent = "Copie a chave acima"; } }
-});
-
-function renderChecks(box, l, marcados){
-  box.innerHTML = l.map(e => `<label><input type="checkbox" value="${esc(e.id)}" ${marcados.has(e.id) ? "checked" : ""}>${esc(e.nome)}</label>`).join("")
-    || `<span class="mute">Nenhuma etapa cadastrada. Use ⚙️ Ajustes.</span>`;
-}
-const lerChecks = (box, l) => { const ids = new Set([...box.querySelectorAll("input:checked")].map(i => i.value)); return l.filter(e => ids.has(e.id)); };
-const renderNovoChecks = () => renderChecks($("#nEtapas"), etapasCfg, new Set(etapasCfg.map(e => e.id)));
-
-const histAbertos = new Set();
-const ACOES = {registrou:"registrou o veículo", concluiu:"concluiu o serviço", reabriu:"reabriu o serviço", editou:"editou o cadastro"};
-function histHtml(v){
-  const h = (v.historico || []).slice().sort((a,b) => b.em - a.em);
-  if (!h.length) return "";
-  const itens = h.map(x => `<li><span class="mute">${hora(x.em)}</span> · <b>${esc(x.por || "?")}</b> ${x.acao === "marcou" ? "marcou ✓ " + esc(x.etapa) : x.acao === "desmarcou" ? "desmarcou " + esc(x.etapa) : esc(ACOES[x.acao] || x.acao)}</li>`).join("");
-  return `<details class="hist" data-hid="${v.id}" ${histAbertos.has(v.id) ? "open" : ""}><summary>📋 Histórico (${h.length})</summary><ul>${itens}</ul></details>`;
-}
-$("#lista").addEventListener("toggle", e => { const d = e.target; if (d.dataset && d.dataset.hid) d.open ? histAbertos.add(d.dataset.hid) : histAbertos.delete(d.dataset.hid); }, true);
-
-function renderLista(){
-  const ativos = lista.filter(v => !v.concluido), fim = lista.filter(v => v.concluido);
-  $("#cA").textContent = ativos.length ? `(${ativos.length})` : "";
-  $("#cF").textContent = fim.length ? `(${fim.length})` : "";
-  const itens = aba === "ativos" ? ativos : fim;
-  const rodape = aba === "fim" ? `<div style="text-align:center;margin:8px 0 4px">${semMaisAntigos ? `<p class="mute">Não há mais veículos anteriores.</p>` : `<button id="btAnteriores">Carregar dias anteriores</button>`}
-      <p class="mute" style="margin-top:8px">Os veículos são apagados automaticamente ${DIAS_GUARDA} dias após a conclusão.</p></div>` : "";
-  if (!itens.length){ $("#lista").innerHTML = `<div class="card vazio">${aba === "ativos" ? "Nenhum veículo em andamento." : "Nenhum veículo concluído recentemente."}</div>${rodape}`; return; }
-  $("#lista").innerHTML = itens.map(v => {
-    const et = etapasDe(v), ch = checksDe(v), feitas = et.filter(e => ch[e.id]).length, tudo = feitas === et.length;
-    const status = v.concluido ? `✅ Concluído às ${hora(v.fimEm)}`
-      : !feitas ? `⏳ Na fila <span class="mute">· chegou às ${hora(v.criadoEm)}</span>`
-      : `🧽 Em andamento <span class="mute">· ${feitas} de ${et.length}</span>`;
-    const chips = et.map(e => `<button class="chip ${ch[e.id] ? "on" : ""}" title="${ch[e.id] && ch[e.id].por ? "Marcado por " + esc(ch[e.id].por) + " às " + hora(tsDe(ch[e.id])) : ""}" data-act="check" data-id="${v.id}" data-e="${esc(e.id)}" ${v.concluido ? "disabled" : ""}>${ch[e.id] ? "✓ " : ""}${esc(e.nome)}</button>`).join("");
-    const acoes = v.concluido
-      ? `<button class="ok grow" data-act="avisar" data-id="${v.id}">📲 Avisar que está ${prontoV(v)}</button>
-         <button data-act="reabrir" data-id="${v.id}">↶ Reabrir</button>`
-      : `<button class="${tudo ? "ok" : ""} grow" data-act="concluir" data-id="${v.id}">Concluir ✓</button>
-         <button data-act="editar" data-id="${v.id}">✏️ Editar</button>`;
-    return `<div class="card">
-      <div class="v-head"><div><span style="font-size:20px;vertical-align:middle;margin-right:6px">${iconeV(v)}</span><span class="placa">${esc(v.placa)}</span><p class="mute" style="margin:6px 0 0">${esc(v.modelo)}${v.modelo && v.nome ? " · " : ""}${esc(v.nome)}</p></div>
-        <button class="ghost" data-act="share" data-id="${v.id}">🔗 Link</button></div>
-      <div class="bar ${v.concluido ? "fim" : ""}"><i style="width:${v.concluido ? 100 : Math.round(100*feitas/et.length)}%"></i></div>
-      <div class="status">${status}</div>
-      <div class="chips">${chips}</div>
-      <div class="acts">${acoes}<button class="ghost danger" data-act="remover" data-id="${v.id}">Remover</button></div>
-      ${histHtml(v)}
-    </div>`;
-  }).join("") + rodape;
-}
-
-$("#lista").onclick = async ev => {
-  if (ev.target.closest("#btAnteriores")){ carregarAnteriores(ev.target.closest("#btAnteriores")); return; }
-  const b = ev.target.closest("[data-act]"); if (!b) return;
-  const v = lista.find(x => x.id === b.dataset.id); if (!v) return;
-  const act = b.dataset.act;
-  try {
-    if (act === "check"){
-      const ch = {...checksDe(v)}, e = b.dataset.e, etapa = (etapasDe(v).find(x => x.id === e) || {}).nome || "";
-      let evt;
-      if (ch[e]){ delete ch[e]; evt = {acao: "desmarcou", etapa}; }
-      else { ch[e] = {em: Date.now(), por: quem()}; evt = {acao: "marcou", etapa}; }
-      await store.atualizar(v.id, {checks: ch}, evt);
-    } else if (act === "concluir"){
-      const faltam = etapasDe(v).filter(e => !checksDe(v)[e.id]).map(e => e.nome);
-      if (faltam.length && !confirm(`Ainda não marcadas: ${faltam.join(", ")}.\nConcluir mesmo assim?`)) return;
-      const fimEm = Date.now();
-      await store.atualizar(v.id, {concluido: true, fimEm, expiraEm: store.ts(fimEm + DIAS_GUARDA*DIA)}, {acao: "concluiu"});
-      abrirShare({...v, fimEm}, true);
-    } else if (act === "reabrir") await store.atualizar(v.id, {concluido: false, fimEm: null}, {acao: "reabriu"});
-    else if (act === "editar") abrirEdit(v);
-    else if (act === "remover"){ if (confirm(`Remover ${v.placa}? O link do cliente deixará de funcionar.`)) await store.remover(v.id); }
-    else if (act === "share") abrirShare(v);
-    else if (act === "avisar") abrirShare(v, true);
-  } catch(e){ alert("Não foi possível salvar: " + e.message); }
-};
-
-$("#tabsV").onclick = e => {
-  const b = e.target.closest("button"); if (!b) return;
-  aba = b.dataset.tab;
-  $("#tabsV").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
-  renderLista();
-};
-
-$("#fNovo").onsubmit = async ev => {
-  ev.preventDefault();
-  const placa = placaLimpa($("#nPlaca").value), etapas = lerChecks($("#nEtapas"), etapasCfg);
-  if (placa.length < 7){ $("#nErro").textContent = "Placa inválida."; return; }
-  if (!etapas.length){ $("#nErro").textContent = "Selecione pelo menos uma etapa."; return; }
-  $("#nErro").textContent = "";
-  const d = { est: usuario.uid, tipo: document.querySelector("input[name=nTipo]:checked").value, placa,
-              modelo: $("#nModelo").value.trim(), nome: $("#nNome").value.trim(),
-              telefone: $("#nTel").value.replace(/\D/g,""), etapas, checks: {},
-              concluido: false, criadoEm: Date.now(), historico: [{acao: "registrou", por: quem(), em: Date.now()}] };
-  try {
-    const id = await store.criar(d);
-    ev.target.reset(); renderNovoChecks();
-    abrirShare({...d, id});
-  } catch(e){ $("#nErro").textContent = "Erro ao registrar: " + e.message; }
-};
-
-/* ---------- Exemplo de modelo conforme carro/moto ---------- */
-const EXEMPLO_MODELO = {carro: "Onix prata", moto: "CG 150 vermelha"}, EXEMPLO_NOME = {carro: "Ana", moto: "João"};
-function ajustarExemplo(radioName, inputSel){
-  const r = document.querySelector(`input[name=${radioName}]:checked`);
-  const t = r ? r.value : "carro";
-  $(inputSel).placeholder = EXEMPLO_MODELO[t];
-  const nome = $(inputSel === "#nModelo" ? "#nNome" : "#eNome"); if (nome) nome.placeholder = EXEMPLO_NOME[t];
-}
-document.querySelectorAll("input[name=nTipo]").forEach(r => r.addEventListener("change", () => ajustarExemplo("nTipo", "#nModelo")));
-document.querySelectorAll("input[name=eTipo]").forEach(r => r.addEventListener("change", () => ajustarExemplo("eTipo", "#eModelo")));
-$("#fNovo").addEventListener("reset", () => setTimeout(() => ajustarExemplo("nTipo", "#nModelo"), 0));
-
-/* ---------- Editar veículo ---------- */
-let editAtual = null, editLista = [];
-function abrirEdit(v){
-  editAtual = v;
-  document.querySelector(`input[name=eTipo][value=${moto(v) ? "moto" : "carro"}]`).checked = true;
-  $("#ePlaca").value = v.placa; $("#eModelo").value = v.modelo || ""; ajustarExemplo("eTipo", "#eModelo"); $("#eNome").value = v.nome || ""; $("#eTel").value = v.telefone || "";
-  const atuais = etapasDe(v), ids = new Set(atuais.map(e => e.id));
-  editLista = [...atuais, ...etapasCfg.filter(e => !ids.has(e.id))];
-  renderChecks($("#eEtapas"), editLista, ids);
-  $("#eErro").textContent = "";
-  abrir("mEdit");
-}
-$("#fEdit").onsubmit = async ev => {
-  ev.preventDefault();
-  const placa = placaLimpa($("#ePlaca").value), etapas = lerChecks($("#eEtapas"), editLista);
-  if (placa.length < 7){ $("#eErro").textContent = "Placa inválida."; return; }
-  if (!etapas.length){ $("#eErro").textContent = "Selecione pelo menos uma etapa."; return; }
-  const ch = {}, velho = checksDe(editAtual);
-  etapas.forEach(e => { if (velho[e.id]) ch[e.id] = velho[e.id]; });
-  try {
-    await store.atualizar(editAtual.id, { tipo: document.querySelector("input[name=eTipo]:checked").value, placa,
-      modelo: $("#eModelo").value.trim(), nome: $("#eNome").value.trim(),
-      telefone: $("#eTel").value.replace(/\D/g,""), etapas, checks: ch }, {acao: "editou"});
-    fechar("mEdit");
-  } catch(e){ $("#eErro").textContent = "Erro ao salvar: " + e.message; }
-};
-
-/* ---------- Funcionário ---------- */
-const mostrarNome = () => $("#btNome").textContent = "👤 " + quem();
-function pedirNome(obrigatorio){
-  $("#nomeInput").value = lerLS(LS_FUNC) || funcMem;
-  $("#nomeFechar").classList.toggle("hidden", obrigatorio);
-  $("#mNome").dataset.obrig = obrigatorio ? "1" : "";
-  abrir("mNome"); setTimeout(() => $("#nomeInput").focus(), 50);
-}
-$("#btNome").onclick = () => pedirNome(false);
-$("#fNome").onsubmit = ev => {
-  ev.preventDefault();
-  const n = $("#nomeInput").value.trim(); if (!n) return;
-  funcMem = n; gravarLS(LS_FUNC, n); mostrarNome();
-  $("#mNome").dataset.obrig = ""; fechar("mNome");
-};
-
-/* ---------- Ajustes ---------- */
-let cfgEdit = [], horEdit = {};
-function renderCfg(){
-  $("#cfgLista").innerHTML = cfgEdit.map((e,i) => `<div class="et-row">
-      <input value="${esc(e.nome)}" data-i="${i}" placeholder="Nome da etapa" maxlength="40">
-      <button type="button" data-mv="-1" data-i="${i}" ${i===0?"disabled":""} aria-label="Subir">↑</button>
-      <button type="button" data-mv="1" data-i="${i}" ${i===cfgEdit.length-1?"disabled":""} aria-label="Descer">↓</button>
-      <button type="button" class="danger" data-rm="${i}" aria-label="Remover">✕</button></div>`).join("");
-}
-function renderHor(){
-  $("#horLista").innerHTML = [1,2,3,4,5,6,0].map(d => { const h = horEdit[d];
-    return `<div class="hr-row ${h.aberto ? "" : "off"}" data-d="${d}"><span class="dia">${DIAS[d]}</span>
-      <label><input type="checkbox" data-k="aberto" ${h.aberto ? "checked" : ""}>Aberto</label>
-      <span class="hs"><input type="time" data-k="abre" value="${h.abre}"> às <input type="time" data-k="fecha" value="${h.fecha}"></span></div>`; }).join("");
-}
-$("#btAjustes").onclick = () => {
-  $("#cfgNome").value = estDados.nome || "";
-  cfgEdit = etapasCfg.map(e => ({...e}));
-  horEdit = JSON.parse(JSON.stringify(horarioCfg));
-  $("#cfgErro").textContent = ""; renderCfg(); renderHor(); abrir("mCfg");
-};
-$("#cfgLista").oninput = e => { if (e.target.dataset.i != null) cfgEdit[+e.target.dataset.i].nome = e.target.value; };
-$("#cfgLista").onclick = e => {
-  const b = e.target.closest("button"); if (!b) return;
-  if (b.dataset.rm != null) cfgEdit.splice(+b.dataset.rm, 1);
-  else { const i = +b.dataset.i, j = i + +b.dataset.mv; [cfgEdit[i], cfgEdit[j]] = [cfgEdit[j], cfgEdit[i]]; }
-  renderCfg();
-};
-$("#cfgAdd").onclick = () => { cfgEdit.push({id: "e" + token(6), nome: ""}); renderCfg(); const ins = $("#cfgLista").querySelectorAll("input"); ins[ins.length-1].focus(); };
-$("#horLista").onchange = e => {
-  const r = e.target.closest(".hr-row"), k = e.target.dataset.k; if (!r || !k) return;
-  const h = horEdit[r.dataset.d];
-  if (k === "aberto"){ h.aberto = e.target.checked; r.classList.toggle("off", !h.aberto); } else h[k] = e.target.value;
-};
-$("#cfgSalvar").onclick = async () => {
-  const nome = $("#cfgNome").value.trim();
-  if (!nome){ $("#cfgErro").textContent = "Informe o nome do estabelecimento."; return; }
-  const l = cfgEdit.map(e => ({id: e.id, nome: e.nome.trim()})).filter(e => e.nome);
-  if (!l.length){ $("#cfgErro").textContent = "Cadastre pelo menos uma etapa."; return; }
-  for (const d of [1,2,3,4,5,6,0]){ const h = horEdit[d];
-    if (h.aberto && (!h.abre || !h.fecha || minutos(h.abre) >= minutos(h.fecha))){ $("#cfgErro").textContent = `Confira o horário de ${DIAS[d]}: o fechamento deve ser depois da abertura.`; return; } }
-  try { await store.salvarEst(usuario.uid, {nome, etapas: l, horario: horEdit}); fechar("mCfg"); }
-  catch(e){ $("#cfgErro").textContent = "Erro ao salvar: " + e.message; }
-};
-
-/* ---------- Compartilhar / avisar ---------- */
-let shareAtual = null;
-function abrirShare(v, pronto){
-  shareAtual = v;
-  const link = linkCliente(v.id), loja = nomeEst();
-  $("#shTit").textContent = pronto ? "✅ Avisar que está " + prontoV(v) : "Link do cliente";
-  $("#shInfo").textContent = `${v.placa}${v.nome ? " · " + v.nome : ""}`;
-  $("#shLink").value = link;
-  $("#shLinkBox").classList.toggle("hidden", !!pronto);
-  document.querySelectorAll("#mShare .shSo").forEach(e => e.classList.toggle("hidden", !!pronto));
-  $("#shSemTel").textContent = (pronto && !v.telefone) ? "Sem WhatsApp cadastrado: o WhatsApp vai abrir para você escolher o contato." : "";
-  const msg = pronto
-    ? `Olá${v.nome ? " " + v.nome : ""}! ${cap(seuVeic(v))} (${v.placa}) está ${prontoV(v)} para retirada no ${loja}. ${lembrete(horarioCfg)} Obrigado pela preferência! ${iconeV(v)}✨`.replace(/  +/g," ")
-    : `Olá${v.nome ? " " + v.nome : ""}! Acompanhe a lavagem d${moto(v) ? "a sua moto" : "o seu carro"} (${v.placa}) no ${loja}: ${link}`;
-  let tel = v.telefone || ""; if (tel && tel.length <= 11) tel = "55" + tel;
-  $("#shWpp").href = `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`;
-  $("#qr").innerHTML = "";
-  if (!pronto && window.QRCode) new QRCode($("#qr"), {text: link, width: 200, height: 200});
-  abrir("mShare");
-}
-document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e => {
-  if (m.dataset.obrig) return;
-  if (e.target === m || e.target.closest("[data-close]")) m.classList.remove("on");
-}));
-$("#shCopiar").onclick = async () => {
-  try { await navigator.clipboard.writeText($("#shLink").value); } catch { $("#shLink").select(); document.execCommand("copy"); }
-  $("#shCopiar").textContent = "Copiado ✓"; setTimeout(() => $("#shCopiar").textContent = "Copiar link", 1500);
-};
-$("#shVer").onclick = () => { fechar("mShare"); abrirCliente(shareAtual.id, true); };
-
-/* ---------- Administrador ---------- */
-let pararAdmin = [], aContas = [], aEsts = {}, aFiltro = "pendente";
-function iniciarAdmin(){
-  show("vAdmin"); document.title = "Lavaflux · Admin";
-  pararAdmin.push(store.config(c => { cfgPlat = c || {}; }));
-  pararAdmin.push(store.contas(l => { aContas = l; renderAdmin(); }, e => { $("#adminLista").innerHTML = `<div class="card vazio">Erro ao carregar contas: ${esc(e.message)}</div>`; }));
-  pararAdmin.push(store.ests(o => { aEsts = o; renderAdmin(); }));
-}
-const ROTULO = {pendente: ["pe","Aguardando aprovação"], ativo: ["ab","Ativa"], inativo: ["fe","Desativada"]};
-const vencendo = c => c.status === "ativo" && c.venceEm && diasAte(c.venceEm) <= 3;
-function planoHtml(c){
-  if (c.status !== "ativo" || !c.venceEm) return "";
-  const n = diasAte(c.venceEm), ass = c.plano === "assinante";
-  if (vencida(c)) return `<p class="plano ve">⛔ ${ass ? "Mensalidade vencida" : "Teste encerrado"} em ${data(c.venceEm)} — painel bloqueado</p>`;
-  return `<p class="plano ${n <= 3 ? "av" : "ok"}">${ass ? "💳 Assinante" : "🎁 Teste grátis"} até ${data(c.venceEm)} (${n <= 0 ? "vence hoje" : n === 1 ? "falta 1 dia" : `faltam ${n} dias`})</p>`;
-}
-function msgAviso(c){
-  const nome = (aEsts[c.uid] && aEsts[c.uid].nome) || c.nome, preco = cfgPlat.preco || PRECO_PADRAO, ass = c.plano === "assinante";
-  const pag = `Você pode pagar por Pix ou cartão direto no app, no botão "${ass ? "Pagar" : "Assinar"}".`;
-  if (vencida(c)) return `Olá, ${nome}! Aqui é do Lavaflux. ${ass ? "Sua mensalidade" : "Seu período de teste gratuito"} terminou em ${data(c.venceEm)} e o acesso ao painel foi pausado. Seus dados e os links dos clientes estão guardados. Para voltar a usar, é só ${ass ? "renovar" : "assinar"} o plano mensal de R$ ${preco}, sem fidelidade — cancele quando quiser. ${pag} Qualquer dúvida, estou à disposição!`;
-  const n = diasAte(c.venceEm);
-  return `Olá, ${nome}! Aqui é do Lavaflux. ${ass ? "Sua mensalidade vence" : "Seu período de teste gratuito termina"} ${emDias(n)} (${data(c.venceEm)}). Para continuar usando sem interrupção, ${ass ? "renove" : "assine"} o plano mensal de R$ ${preco}, sem fidelidade — cancele quando quiser. ${pag} Qualquer dúvida, estou à disposição!`;
-}
-function renderAdmin(){
-  const ativas = aContas.filter(c => c.status === "ativo");
-  $("#tPend").textContent = aContas.filter(c => c.status === "pendente").length;
-  $("#tTeste").textContent = ativas.filter(c => c.plano !== "assinante" && !vencida(c)).length;
-  $("#tAss").textContent = ativas.filter(c => c.plano === "assinante" && !vencida(c)).length;
-  $("#tVenc").textContent = aContas.filter(vencendo).length;
-  const agora = Date.now(), mk = mesChave(agora);
-  const l = aContas.filter(c => aFiltro === "todas" || (aFiltro === "vencendo" ? vencendo(c) : c.status === aFiltro))
-    .sort((a,b) => aFiltro === "vencendo" ? a.venceEm - b.venceEm : (b.criadoEm||0) - (a.criadoEm||0));
-  if (!l.length){ $("#adminLista").innerHTML = `<div class="card vazio">Nenhuma conta ${({pendente:"aguardando aprovação", vencendo:"vencendo nos próximos 3 dias", ativo:"ativa", inativo:"desativada"})[aFiltro] || ""}.</div>`; return; }
-  $("#adminLista").innerHTML = l.map(c => {
-    const u = (aEsts[c.uid] && aEsts[c.uid].uso) || {}, s = {total: u.total || 0, mes: u[mk] || 0, ultimo: u.ultimo || 0};
-    const nome = (aEsts[c.uid] && aEsts[c.uid].nome) || c.nome;
-    const [cls, txt] = ROTULO[c.status] || ["pe", c.status];
-    const base = Math.max(s.ultimo || 0, c.aprovadoEm || c.criadoEm || 0);
-    const semUso = c.status === "ativo" && base < agora - 14*864e5;
-    const zap = c.whatsapp ? `<a class="btn ${vencendo(c) ? "pri" : ""}" target="_blank" rel="noopener" href="https://wa.me/${telBR(c.whatsapp)}?text=${encodeURIComponent(c.status === "ativo" && c.venceEm ? msgAviso(c) : `Olá, ${(aEsts[c.uid] && aEsts[c.uid].nome) || c.nome}! Aqui é do Lavaflux.`)}">📲 ${vencendo(c) ? "Avisar no WhatsApp" : "WhatsApp"}</a>` : "";
-    const bts = c.status === "pendente"
-      ? `<button class="ok grow" data-st="ativo" data-u="${c.uid}">✓ Aprovar (${DIAS_TESTE} dias grátis)</button><button class="danger" data-st="inativo" data-u="${c.uid}">Recusar</button>${zap}`
-      : c.status === "ativo" ? `<button class="ok grow" data-pago="${c.uid}">💰 Pagamento recebido (+${DIAS_MES} dias)</button>${zap}<button class="ghost danger" data-st="inativo" data-u="${c.uid}">Desativar</button>`
-      : `<button class="ok" data-st="ativo" data-u="${c.uid}">Reativar</button>${zap}`;
-    return `<div class="card">
-      <div class="v-head" style="margin-bottom:4px"><div><h3 style="margin:0">${esc(nome)}</h3><p class="mute" style="margin:2px 0 0">${esc(c.email)}</p></div><span class="pill ${cls}">${txt}</span></div>
-      ${planoHtml(c)}
-      <div class="stats"><span>WhatsApp: <b>${esc(c.whatsapp || "—")}</b></span><span>Cadastro: <b>${data(c.criadoEm)}</b></span><span>Veículos: <b>${s.total}</b></span><span>Este mês: <b>${s.mes}</b></span><span>Último uso: <b>${s.ultimo ? data(s.ultimo) : "nunca"}</b></span></div>
-      ${semUso ? `<p class="mute" style="color:var(--warn);margin:6px 0 0">⚠️ Sem uso há mais de 14 dias</p>` : ""}
-      <div class="acts">${bts}</div></div>`;
-  }).join("");
-}
-$("#tabsA").onclick = e => {
-  const b = e.target.closest("button"); if (!b) return;
-  aFiltro = b.dataset.f; $("#tabsA").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); renderAdmin();
-};
-$("#adminLista").onclick = async e => {
-  const pg = e.target.closest("[data-pago]");
-  if (pg){
-    const c = aContas.find(x => x.uid === pg.dataset.pago); if (!c) return;
-    const base = Math.max(c.venceEm || 0, Date.now()), ate = base + DIAS_MES * DIA;
-    if (!confirm(`Confirmar pagamento de ${(aEsts[c.uid] && aEsts[c.uid].nome) || c.nome}?\nO acesso fica liberado até ${data(ate)}.`)) return;
-    try { await store.atualizarConta(c.uid, {plano: "assinante", venceEm: ate, ultimoPagamento: Date.now()}, {em: Date.now(), ate, valor: cfgPlat.preco || PRECO_PADRAO}); }
-    catch(err){ alert("Erro: " + err.message); }
-    return;
-  }
-  const b = e.target.closest("[data-st]"); if (!b) return;
-  const c = aContas.find(x => x.uid === b.dataset.u); if (!c) return;
-  const acao = b.dataset.st === "ativo" ? (c.status === "pendente" ? "Aprovar" : "Reativar") : (c.status === "pendente" ? "Recusar" : "Desativar");
-  const extra = acao === "Aprovar" ? `\nO teste grátis vai até ${data(Date.now() + DIAS_TESTE * DIA)}.` : "";
-  if (!confirm(`${acao} ${(aEsts[c.uid] && aEsts[c.uid].nome) || c.nome}?${extra}`)) return;
-  const patch = {status: b.dataset.st, alteradoEm: Date.now()};
-  if (acao === "Aprovar" && !c.venceEm) Object.assign(patch, {aprovadoEm: Date.now(), plano: "teste", venceEm: Date.now() + DIAS_TESTE * DIA});
-  try { await store.atualizarConta(c.uid, patch); } catch(err){ alert("Erro: " + err.message); }
-};
-$("#btCobranca").onclick = () => {
-  const c = cfgPlat || {};
-  $("#cobPreco").value = c.preco || PRECO_PADRAO; $("#cobPix").value = c.pix || ""; $("#cobPixNome").value = c.pixNome || "";
-  $("#cobMp").value = c.mpLink || ""; $("#cobWhats").value = c.suporteWhats || ""; $("#cobErro").textContent = "";
-  abrir("mCob");
-};
-$("#cobSalvar").onclick = async () => {
-  const mp = $("#cobMp").value.trim();
-  if (mp && !/^https:\/\//.test(mp)){ $("#cobErro").textContent = "O link do Mercado Pago deve começar com https://"; return; }
-  try {
-    await store.salvarConfig({ preco: $("#cobPreco").value.trim() || PRECO_PADRAO, pix: $("#cobPix").value.trim(), pixNome: $("#cobPixNome").value.trim(),
-      mpLink: mp, suporteWhats: soDigitos($("#cobWhats").value) });
-    fechar("mCob");
-  } catch(e){ $("#cobErro").textContent = "Erro ao salvar: " + e.message; }
-};
-
-/* ---------- Início ---------- */
-const codigo = new URLSearchParams(location.search).get("c");
-if (codigo) abrirCliente(codigo, false);
-else store.onAuth(iniciarSessao);
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches){ estado(itens.length + 1); return; }
+  let n = 0;
+  (function passo(){
+    estado(n);
+    const espera = n > itens.length ? 5000 : n === 0 ? 1800 : 1300;   // segura o "pronto" para dar tempo de ler
+    n = n > itens.length ? 0 : n + 1;
+    setTimeout(passo, espera);
+  })();
+})();
 </script>
 </body>
 </html>
