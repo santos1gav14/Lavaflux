@@ -540,14 +540,18 @@ function renderCliente(){
   const nomeEst = (cliEst && cliEst.nome) || "", hor = (cliEst && cliEst.horario) || HORARIO_PADRAO;
   document.title = nomeEst || "Acompanhe seu veículo";
   const et = etapasDe(v), ch = checksDe(v), feitas = et.filter(e => ch[e.id]).length, pct = Math.round(100 * feitas / et.length);
+  const dia0 = d => new Date(d).setHours(0,0,0,0), dif = Math.round((dia0(Date.now()) - dia0(v.criadoEm)) / DIA);
+  const quando = dif === 0 ? "hoje" : dif === 1 ? "ontem" : "de " + data(v.criadoEm);
+  const antigo = dif > 0 ? `<div class="banner alerta"><span class="tx">⚠️ Este acompanhamento é de um <b>atendimento anterior</b> (${data(v.criadoEm)}). Se ${seuVeic(v)} está no ${esc(nomeEst || "lava jato")} hoje, peça o link novo.</span></div>` : "";
   let hero;
-  if (v.concluido) hero = `<div class="card hero pronto"><div class="ic">✅</div><div class="st">Pronto para retirada!</div><p class="mute">Concluído às ${hora(v.fimEm)}. ${esc(lembrete(hor))}</p><p class="mute" style="margin:0">Obrigado pela preferência!</p></div>`;
+  if (v.concluido) hero = `<div class="card hero pronto"><div class="ic">✅</div><div class="st">${dif > 0 ? "Serviço concluído" : "Pronto para retirada!"}</div><p class="mute">${dif > 0 ? `Concluído em ${data(v.fimEm)} às ${hora(v.fimEm)}.` : `Concluído às ${hora(v.fimEm)}. ${esc(lembrete(hor))}`}</p><p class="mute" style="margin:0">Obrigado pela preferência!</p></div>`;
   else if (!feitas) hero = `<div class="card hero"><div class="ic">⏳</div><div class="st">Na fila</div><p class="mute">${cap(seuVeic(v))} foi recebid${moto(v) ? "a" : "o"} e logo será atendid${moto(v) ? "a" : "o"}.</p></div>`;
   else hero = `<div class="card hero"><div class="ic">🧽</div><div class="st">Em andamento</div><p class="mute">${feitas} de ${et.length} etapas concluídas</p><div class="bar"><i style="width:${pct}%"></i></div></div>`;
   const itens = et.map(e => `<li class="${ch[e.id] ? "d" : ""}"><div class="dot">${ch[e.id] ? "✓" : ""}</div><div class="nm">${esc(e.nome)}</div><div class="hr">${ch[e.id] ? hora(tsDe(ch[e.id])) : ""}</div></li>`).join("");
   el.innerHTML = `
+    ${antigo}
     ${nomeEst ? `<div class="est-hero"><div class="en">${esc(nomeEst)}</div><div class="mute">Acompanhe ${seuVeic(v)} em tempo real</div></div>` : ""}
-    <div class="card"><div class="v-head" style="margin:0"><div>${v.nome ? `<p>Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute" style="margin:0">${iconeV(v)} ${esc(v.modelo) || cap(seuVeic(v))}</p></div><span class="placa">${esc(v.placa)}</span></div></div>
+    <div class="card"><div class="v-head" style="margin:0"><div>${v.nome ? `<p>Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute" style="margin:0">${iconeV(v)} ${esc(v.modelo) || cap(seuVeic(v))}</p><p class="mute" style="margin:4px 0 0">📅 Atendimento ${quando === "hoje" || quando === "ontem" ? "de " + quando : quando}</p></div><span class="placa">${esc(v.placa)}</span></div></div>
     ${hero}
     <div class="card"><h3 style="margin-bottom:4px">Serviços</h3><ul class="cl">${itens}</ul></div>
     ${cardHorario(hor)}
