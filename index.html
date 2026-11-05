@@ -98,6 +98,14 @@ footer.rod svg{width:18px;height:18px}
 .hr-row .hs{display:flex;align-items:center;gap:6px;margin-left:auto}
 .hr-row.off .hs{opacity:.35;pointer-events:none}
 .sec{font-size:17px;margin:18px 0 4px}
+details.hist{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;font-weight:600;list-style:none}
+details.hist summary::-webkit-details-marker{display:none}
+details.hist ul{list-style:none;margin:8px 0 0;padding:0;font-size:14px}
+details.hist li{padding:5px 0;border-bottom:1px dashed var(--line)}
+details.hist li:last-child{border-bottom:0}
+.linkbtn{background:none;border:0;color:var(--pri);font-weight:600;font-size:14px;padding:8px 0;cursor:pointer}
+.okmsg{color:var(--ok);font-size:14px}
 .hidden{display:none!important}
 </style>
 </head>
@@ -132,14 +140,16 @@ footer.rod svg{width:18px;height:18px}
       <label class="f">E-mail</label><input id="lEmail" type="email" autocomplete="username" required>
       <label class="f">Senha</label><input id="lSenha" type="password" autocomplete="current-password" required>
       <div class="erro" id="lErro"></div>
+      <p class="okmsg" id="lMsg"></p>
       <button class="pri w100">Entrar</button>
+      <div style="text-align:center"><button type="button" class="linkbtn" id="btEsqueci">Esqueci minha senha</button></div>
     </form>
   </section>
 
   <!-- ===== PAINEL DA EQUIPE ===== -->
   <section id="vPainel" class="hidden">
     <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nomeLJ"></span></div>
-      <div><button id="btEtapas" class="ghost">⚙️ Ajustes</button><button id="btSair" class="ghost">Sair</button></div></header>
+      <div style="text-align:right"><button id="btNome" class="ghost">👤</button><button id="btEtapas" class="ghost">⚙️ Ajustes</button><button id="btSair" class="ghost">Sair</button></div></header>
 
     <form id="fNovo" class="card">
       <h3>Novo veículo</h3>
@@ -191,6 +201,16 @@ footer.rod svg{width:18px;height:18px}
     <div class="cks" id="eEtapas"></div>
     <div class="erro" id="eErro"></div>
     <button class="pri w100">Salvar alterações</button>
+  </form>
+</div></div>
+
+<!-- ===== NOME DO FUNCIONÁRIO ===== -->
+<div class="modal" id="mNome"><div class="sheet">
+  <form id="fNome">
+    <div class="v-head"><div><h3>Seu nome</h3><p class="mute">É assim que você aparece no histórico de cada veículo (quem marcou cada etapa).</p></div><button type="button" class="ghost" data-close id="nomeFechar">✕</button></div>
+    <input id="nomeInput" maxlength="30" placeholder="Ex.: Carlos" required>
+    <div class="erro" id="nomeErro"></div>
+    <button class="pri w100">Salvar</button>
   </form>
 </div></div>
 
@@ -258,6 +278,9 @@ const linkCliente = id => location.origin + location.pathname + "?c=" + id;
 const placaLimpa = s => s.toUpperCase().replace(/[^A-Z0-9]/g,"");
 const etapasDe = v => Array.isArray(v.etapas) && v.etapas.length ? v.etapas : ETAPAS_PADRAO;
 const checksDe = v => v.checks || {};
+const tsDe = x => (x && typeof x === "object") ? x.em : x;
+let usuarioAtual = null;
+const quem = () => (usuarioAtual && (usuarioAtual.displayName || (usuarioAtual.email || "").split("@")[0])) || "?";
 const moto = v => v.tipo === "moto";
 const seuVeic = v => moto(v) ? "sua moto" : "seu carro";
 const prontoV = v => moto(v) ? "pronta" : "pronto";
@@ -298,11 +321,11 @@ if (DEMO) {
   const todos = () => [...db.values()].sort((a,b) => b.criadoEm - a.criadoEm);
   const emit = () => { subs.forEach(f => f(todos())); docSubs.forEach((fs,id) => fs.forEach(f => f(db.get(id) || null))); };
   store = {
-    onAuth: cb => cb({email:"demo"}), entrar: async()=>{}, sair: async()=>{},
+    onAuth: cb => cb({email:"demo@demo", displayName:"Demo"}), entrar: async()=>{}, sair: async()=>{}, esqueci: async()=>{}, definirNome: async n => { usuarioAtual.displayName = n; },
     lista(cb){ subs.add(cb); cb(todos()); return () => subs.delete(cb); },
     um(id, cb){ if(!docSubs.has(id)) docSubs.set(id,new Set()); docSubs.get(id).add(cb); cb(db.get(id)||null); return () => docSubs.get(id).delete(cb); },
     async criar(d){ const id = token(); db.set(id,{...d,id}); emit(); return id; },
-    async atualizar(id,p){ db.set(id,{...db.get(id),...p}); emit(); },
+    async atualizar(id,p,ev){ const a = db.get(id); db.set(id,{...a,...p, ...(ev ? {historico:[...(a.historico||[]), {...ev, por:quem(), em:Date.now()}]} : {})}); emit(); },
     async remover(id){ db.delete(id); emit(); },
     config(cb){ cfgSubs.add(cb); cb(cfg); return () => cfgSubs.delete(cb); },
     async salvarConfig(o){ cfg = {...(cfg||{}), ...o}; cfgSubs.forEach(f => f(cfg)); }
@@ -310,14 +333,17 @@ if (DEMO) {
 } else {
   firebase.initializeApp(firebaseConfig);
   const fs = firebase.firestore(), au = firebase.auth(), col = fs.collection("lavagens");
+  au.languageCode = "pt-BR";
   store = {
     onAuth: cb => au.onAuthStateChanged(cb),
     entrar: (e,s) => au.signInWithEmailAndPassword(e,s),
     sair: () => au.signOut(),
+    esqueci: e => au.sendPasswordResetEmail(e, {url: location.origin + location.pathname}),
+    definirNome: n => au.currentUser.updateProfile({displayName: n}),
     lista: (cb,err) => col.orderBy("criadoEm","desc").limit(300).onSnapshot(s => cb(s.docs.map(d => ({id:d.id,...d.data()})).filter(v => v.placa)), err),
     um: (id,cb,err) => col.doc(id).onSnapshot(d => cb(d.exists ? {id:d.id,...d.data()} : null), err),
     async criar(d){ const id = token(); await col.doc(id).set(d); return id; },
-    atualizar: (id,p) => col.doc(id).update(p),
+    atualizar: (id,p,ev) => col.doc(id).update(ev ? {...p, historico: firebase.firestore.FieldValue.arrayUnion({...ev, por: quem(), em: Date.now()})} : p),
     remover: id => col.doc(id).delete(),
     config: cb => col.doc("_config").onSnapshot(d => cb(d.exists ? d.data() : null), () => cb(null)),
     salvarConfig: o => col.doc("_config").set(o, {merge: true})
@@ -344,7 +370,7 @@ function renderCliente(v){
   if (v.concluido) hero = `<div class="card hero pronto"><div class="ic">✅</div><div class="st">Pronto para retirada!</div><p class="mute">Concluído às ${hora(v.fimEm)}. ${esc(lembrete(cliHor))}</p><p class="mute" style="margin:0">Obrigado pela preferência!</p></div>`;
   else if (!feitas) hero = `<div class="card hero"><div class="ic">⏳</div><div class="st">Na fila</div><p class="mute">${cap(seuVeic(v))} foi recebid${moto(v) ? "a" : "o"} e logo será atendid${moto(v) ? "a" : "o"}.</p></div>`;
   else hero = `<div class="card hero"><div class="ic">🧽</div><div class="st">Em andamento</div><p class="mute">${feitas} de ${et.length} etapas concluídas</p><div class="bar"><i style="width:${pct}%"></i></div></div>`;
-  const itens = et.map(e => `<li class="${ch[e.id] ? "d" : ""}"><div class="dot">${ch[e.id] ? "✓" : ""}</div><div class="nm">${esc(e.nome)}</div><div class="hr">${ch[e.id] ? hora(ch[e.id]) : ""}</div></li>`).join("");
+  const itens = et.map(e => `<li class="${ch[e.id] ? "d" : ""}"><div class="dot">${ch[e.id] ? "✓" : ""}</div><div class="nm">${esc(e.nome)}</div><div class="hr">${ch[e.id] ? hora(tsDe(ch[e.id])) : ""}</div></li>`).join("");
   el.innerHTML = `
     <div class="card"><div class="v-head" style="margin:0"><div>${v.nome ? `<p>Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute" style="margin:0">${iconeV(v)} ${esc(v.modelo) || cap(seuVeic(v))}</p></div><span class="placa">${esc(v.placa)}</span></div></div>
     ${hero}
@@ -423,7 +449,7 @@ function renderLista(){
     const status = v.concluido ? `✅ Concluído às ${hora(v.fimEm)}`
       : !feitas ? `⏳ Na fila <span class="mute">· chegou às ${hora(v.criadoEm)}</span>`
       : `🧽 Em andamento <span class="mute">· ${feitas} de ${et.length}</span>`;
-    const chips = et.map(e => `<button class="chip ${ch[e.id] ? "on" : ""}" data-act="check" data-id="${v.id}" data-e="${esc(e.id)}" ${v.concluido ? "disabled" : ""}>${ch[e.id] ? "✓ " : ""}${esc(e.nome)}</button>`).join("");
+    const chips = et.map(e => `<button class="chip ${ch[e.id] ? "on" : ""}" title="${ch[e.id] && ch[e.id].por ? "Marcado por " + esc(ch[e.id].por) + " às " + hora(tsDe(ch[e.id])) : ""}" data-act="check" data-id="${v.id}" data-e="${esc(e.id)}" ${v.concluido ? "disabled" : ""}>${ch[e.id] ? "✓ " : ""}${esc(e.nome)}</button>`).join("");
     const acoes = v.concluido
       ? `<button class="ok grow" data-act="avisar" data-id="${v.id}">📲 Avisar que está pronto</button>
          <button data-act="reabrir" data-id="${v.id}">↶ Reabrir</button>`
@@ -436,9 +462,20 @@ function renderLista(){
       <div class="status">${status}</div>
       <div class="chips">${chips}</div>
       <div class="acts">${acoes}<button class="ghost danger" data-act="remover" data-id="${v.id}">Remover</button></div>
+      ${histHtml(v)}
     </div>`;
   }).join("");
 }
+
+const histAbertos = new Set();
+const ACOES = {registrou:"registrou o veículo", concluiu:"concluiu o serviço", reabriu:"reabriu o serviço", editou:"editou o cadastro"};
+function histHtml(v){
+  const h = (v.historico || []).slice().sort((a,b) => b.em - a.em);
+  if (!h.length) return "";
+  const itens = h.map(x => `<li><span class="mute">${hora(x.em)}</span> · <b>${esc(x.por || "?")}</b> ${x.acao === "marcou" ? "marcou ✓ " + esc(x.etapa) : x.acao === "desmarcou" ? "desmarcou " + esc(x.etapa) : esc(ACOES[x.acao] || x.acao)}</li>`).join("");
+  return `<details class="hist" data-hid="${v.id}" ${histAbertos.has(v.id) ? "open" : ""}><summary>📋 Histórico (${h.length})</summary><ul>${itens}</ul></details>`;
+}
+$("#lista").addEventListener("toggle", e => { const d = e.target; if (d.dataset && d.dataset.hid) d.open ? histAbertos.add(d.dataset.hid) : histAbertos.delete(d.dataset.hid); }, true);
 
 $("#lista").onclick = async ev => {
   const b = ev.target.closest("[data-act]"); if (!b) return;
@@ -446,16 +483,18 @@ $("#lista").onclick = async ev => {
   const act = b.dataset.act;
   try {
     if (act === "check"){
-      const ch = {...checksDe(v)}, e = b.dataset.e;
-      if (ch[e]) delete ch[e]; else ch[e] = Date.now();
-      await store.atualizar(v.id, {checks: ch});
+      const ch = {...checksDe(v)}, e = b.dataset.e, etapa = (etapasDe(v).find(x => x.id === e) || {}).nome || "";
+      let evt;
+      if (ch[e]){ delete ch[e]; evt = {acao: "desmarcou", etapa}; }
+      else { ch[e] = {em: Date.now(), por: quem()}; evt = {acao: "marcou", etapa}; }
+      await store.atualizar(v.id, {checks: ch}, evt);
     } else if (act === "concluir"){
       const et = etapasDe(v), ch = checksDe(v), faltam = et.filter(e => !ch[e.id]).map(e => e.nome);
       if (faltam.length && !confirm(`Ainda não marcadas: ${faltam.join(", ")}.\nConcluir mesmo assim?`)) return;
       const fimEm = Date.now();
-      await store.atualizar(v.id, {concluido: true, fimEm});
+      await store.atualizar(v.id, {concluido: true, fimEm}, {acao: "concluiu"});
       abrirShare({...v, fimEm}, true);
-    } else if (act === "reabrir") await store.atualizar(v.id, {concluido: false, fimEm: null});
+    } else if (act === "reabrir") await store.atualizar(v.id, {concluido: false, fimEm: null}, {acao: "reabriu"});
     else if (act === "editar") abrirEdit(v);
     else if (act === "remover"){ if (confirm(`Remover ${v.placa}? O link do cliente deixará de funcionar.`)) await store.remover(v.id); }
     else if (act === "share") abrirShare(v);
@@ -478,7 +517,7 @@ $("#fNovo").onsubmit = async ev => {
   $("#nErro").textContent = "";
   const d = { tipo: document.querySelector("input[name=nTipo]:checked").value, placa, modelo: $("#nModelo").value.trim(), nome: $("#nNome").value.trim(),
               telefone: $("#nTel").value.replace(/\D/g,""), etapas, checks: {},
-              concluido: false, criadoEm: Date.now() };
+              concluido: false, criadoEm: Date.now(), historico: [{acao: "registrou", por: quem(), em: Date.now()}] };
   try {
     const id = await store.criar(d);
     ev.target.reset(); renderNovoChecks();
@@ -507,7 +546,7 @@ $("#fEdit").onsubmit = async ev => {
   etapas.forEach(e => { if (velho[e.id]) ch[e.id] = velho[e.id]; });
   try {
     await store.atualizar(editAtual.id, { tipo: document.querySelector("input[name=eTipo]:checked").value, placa, modelo: $("#eModelo").value.trim(), nome: $("#eNome").value.trim(),
-      telefone: $("#eTel").value.replace(/\D/g,""), etapas, checks: ch });
+      telefone: $("#eTel").value.replace(/\D/g,""), etapas, checks: ch }, {acao: "editou"});
     fechar("mEdit");
   } catch(e){ $("#eErro").textContent = "Erro ao salvar: " + e.message; }
 };
@@ -533,6 +572,7 @@ function abrirShare(v, pronto){
   abrir("mShare");
 }
 document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e => {
+  if (m.dataset.obrig) return;
   if (e.target === m || e.target.closest("[data-close]")) m.classList.remove("on");
 }));
 $("#shCopiar").onclick = async () => {
@@ -548,11 +588,39 @@ $("#fLogin").onsubmit = async ev => {
   catch { $("#lErro").textContent = "E-mail ou senha incorretos."; }
 };
 $("#btSair").onclick = () => store.sair();
+$("#btEsqueci").onclick = async () => {
+  const em = $("#lEmail").value.trim(); $("#lMsg").textContent = "";
+  if (!em){ $("#lErro").textContent = "Digite seu e-mail no campo acima e toque de novo em \"Esqueci minha senha\"."; $("#lEmail").focus(); return; }
+  try {
+    await store.esqueci(em);
+    $("#lErro").textContent = "";
+    $("#lMsg").textContent = `Se ${em} estiver cadastrado, enviamos um e-mail com o link para criar uma nova senha. Confira também a caixa de spam.`;
+  } catch(e){ $("#lErro").textContent = e.code === "auth/invalid-email" ? "E-mail inválido." : "Não foi possível enviar agora. Tente novamente em instantes."; }
+};
+const mostrarNome = () => $("#btNome").textContent = "👤 " + quem();
+function pedirNome(obrigatorio){
+  $("#nomeInput").value = (usuarioAtual && usuarioAtual.displayName) || ""; $("#nomeErro").textContent = "";
+  $("#nomeFechar").classList.toggle("hidden", obrigatorio);
+  $("#mNome").dataset.obrig = obrigatorio ? "1" : "";
+  abrir("mNome"); setTimeout(() => $("#nomeInput").focus(), 50);
+}
+$("#btNome").onclick = () => pedirNome(false);
+$("#fNome").onsubmit = async ev => {
+  ev.preventDefault();
+  const n = $("#nomeInput").value.trim(); if (!n) return;
+  try { await store.definirNome(n); mostrarNome(); $("#mNome").dataset.obrig = ""; fechar("mNome"); }
+  catch(e){ $("#nomeErro").textContent = "Erro ao salvar: " + e.message; }
+};
 
 /* ---------- Início ---------- */
 const codigo = new URLSearchParams(location.search).get("c");
 if (codigo) abrirCliente(codigo, false);
-else store.onAuth(u => u ? iniciarPainel() : show("vLogin"));
+else store.onAuth(u => {
+  usuarioAtual = u;
+  if (!u){ show("vLogin"); return; }
+  iniciarPainel(); mostrarNome();
+  if (!u.displayName) pedirNome(true);
+});
 </script>
 </body>
 </html>
