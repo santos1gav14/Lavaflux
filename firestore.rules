@@ -2,21 +2,45 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Membro da equipe = usuário logado cujo e-mail está nesta lista.
-    // Para adicionar um funcionário: crie o usuário em Authentication
-    // e inclua o e-mail dele aqui (entre aspas, separado por vírgula).
-    function ehEquipe() {
-      return request.auth != null &&
-             request.auth.token.email in [
-               "EMAIL_DO_FUNCIONARIO@exemplo.com"
-             ];
+    function logado() { return request.auth != null; }
+    // Administrador da plataforma: tem documento em /admins/{uid}
+    function admin() { return logado() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+    // Estabelecimento aprovado
+    function ativo() {
+      return logado() && get(/databases/$(database)/documents/contas/$(request.auth.uid)).data.status == "ativo";
     }
 
-    match /lavagens/{id} {
-      // Cliente: abre SOMENTE o documento cujo código está no link.
-      // "get" lê um documento pelo ID; "list" (listar todos) fica bloqueado.
+    match /admins/{uid} {
+      allow get: if logado() && request.auth.uid == uid;
+      allow list, write: if false;
+    }
+
+    // Dados privados da conta (e-mail e status) — só o dono e o admin
+    match /contas/{uid} {
+      allow get: if logado() && (request.auth.uid == uid || admin());
+      allow list: if admin();
+      allow create: if logado() && request.auth.uid == uid
+        && request.resource.data.status == "pendente"
+        && request.resource.data.keys().hasOnly(["email", "nome", "status", "criadoEm"]);
+      allow update, delete: if admin();
+    }
+
+    // Dados públicos do estabelecimento (nome, etapas, horário) — o cliente lê
+    match /estabelecimentos/{uid} {
       allow get: if true;
-      allow list, create, update, delete: if ehEquipe();
+      allow list: if admin();
+      allow create, update: if admin() || (logado() && request.auth.uid == uid);
+      allow delete: if admin();
+    }
+
+    // Veículos: o cliente abre só o documento cujo código está no link
+    match /lavagens/{id} {
+      allow get: if true;
+      allow list: if admin() || (ativo() && resource.data.est == request.auth.uid);
+      allow create: if ativo() && request.resource.data.est == request.auth.uid;
+      allow update: if ativo() && resource.data.est == request.auth.uid
+                    && request.resource.data.est == request.auth.uid;
+      allow delete: if admin() || (ativo() && resource.data.est == request.auth.uid);
     }
   }
 }
