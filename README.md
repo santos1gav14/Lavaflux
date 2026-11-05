@@ -7,6 +7,10 @@ Um único `index.html` com duas telas:
 
 Etapas: cadastradas pelo próprio estabelecimento em **⚙️ Etapas** (padrão: Lavagem externa, Secagem, Limpeza interna, Finalização). Cada veículo tem suas etapas, marcadas como checklist em qualquer ordem. Ao **Concluir**, o cliente vê "Pronto para retirada" e a equipe pode avisá-lo no WhatsApp.
 
+Em **⚙️ Ajustes** o estabelecimento também configura o **horário de funcionamento** por dia: ele aparece na tela do cliente (com "Aberto agora"/"Fechado agora") e no aviso de pronto ("Lembrando que hoje funcionamos até às 18h").
+
+No registro escolhe-se **Carro ou Moto**; as mensagens se ajustam ("sua moto está pronta").
+
 Cada cadastro pode ser alterado em **✏️ Editar** (placa, modelo, nome, WhatsApp e etapas).
 
 ## Por que o cliente só vê o próprio veículo

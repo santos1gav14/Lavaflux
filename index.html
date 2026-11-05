@@ -78,6 +78,26 @@ footer.rod svg{width:18px;height:18px}
 .et-row{display:flex;gap:6px;align-items:center;margin-bottom:8px}
 .et-row input{margin:0;flex:1}
 .et-row button{padding:9px 11px}
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:4px;margin:0 0 12px}
+.seg label{flex:1;text-align:center;padding:9px;border-radius:9px;cursor:pointer;font-weight:600;font-size:15px}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);color:var(--pri)}
+.hor{width:100%;border-collapse:collapse;font-size:15px}
+.hor td{padding:7px 0;border-bottom:1px solid var(--line)}
+.hor tr:last-child td{border-bottom:0}
+.hor td:last-child{text-align:right}
+.hor tr.hoje td{font-weight:700;color:var(--pri)}
+.pill{display:inline-block;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:700}
+.pill.ab{background:#dff6ea;color:#0d7a4a}.pill.fe{background:#fde4e1;color:#a8322a}
+@media (prefers-color-scheme:dark){.pill.ab{background:#0f3a28;color:#5fe0a2}.pill.fe{background:#3d1714;color:#ff8f84}}
+.hr-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.hr-row .dia{width:72px;font-weight:600}
+.hr-row label{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mute)}
+.hr-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--pri)}
+.hr-row input[type=time]{padding:7px 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:15px}
+.hr-row .hs{display:flex;align-items:center;gap:6px;margin-left:auto}
+.hr-row.off .hs{opacity:.35;pointer-events:none}
+.sec{font-size:17px;margin:18px 0 4px}
 .hidden{display:none!important}
 </style>
 </head>
@@ -119,10 +139,11 @@ footer.rod svg{width:18px;height:18px}
   <!-- ===== PAINEL DA EQUIPE ===== -->
   <section id="vPainel" class="hidden">
     <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nomeLJ"></span></div>
-      <div><button id="btEtapas" class="ghost">⚙️ Etapas</button><button id="btSair" class="ghost">Sair</button></div></header>
+      <div><button id="btEtapas" class="ghost">⚙️ Ajustes</button><button id="btSair" class="ghost">Sair</button></div></header>
 
     <form id="fNovo" class="card">
       <h3>Novo veículo</h3>
+      <div class="seg"><label><input type="radio" name="nTipo" value="carro" checked>🚗 Carro</label><label><input type="radio" name="nTipo" value="moto">🏍️ Moto</label></div>
       <div class="row">
         <div><label class="f">Placa *</label><input id="nPlaca" required maxlength="8" placeholder="ABC1D23" style="text-transform:uppercase"></div>
         <div><label class="f">Modelo</label><input id="nModelo" placeholder="Onix prata"></div>
@@ -157,6 +178,7 @@ footer.rod svg{width:18px;height:18px}
 <div class="modal" id="mEdit"><div class="sheet">
   <form id="fEdit">
     <div class="v-head"><h3>Editar veículo</h3><button type="button" class="ghost" data-close>✕</button></div>
+    <div class="seg"><label><input type="radio" name="eTipo" value="carro" checked>🚗 Carro</label><label><input type="radio" name="eTipo" value="moto">🏍️ Moto</label></div>
     <div class="row">
       <div><label class="f">Placa *</label><input id="ePlaca" required maxlength="8" style="text-transform:uppercase"></div>
       <div><label class="f">Modelo</label><input id="eModelo"></div>
@@ -174,12 +196,17 @@ footer.rod svg{width:18px;height:18px}
 
 <!-- ===== CONFIGURAR ETAPAS ===== -->
 <div class="modal" id="mCfg"><div class="sheet">
-  <div class="v-head"><div><h3>Etapas do estabelecimento</h3><p class="mute">Cadastre os serviços pelos quais os veículos passam. A equipe marca cada um quando é feito, em qualquer ordem.</p></div><button class="ghost" data-close>✕</button></div>
+  <div class="v-head"><h3>Ajustes do estabelecimento</h3><button class="ghost" data-close>✕</button></div>
+  <h3 class="sec" style="margin-top:0">Etapas</h3>
+  <p class="mute">Serviços pelos quais os veículos passam. A equipe marca cada um quando é feito, em qualquer ordem.</p>
   <div id="cfgLista"></div>
   <button id="cfgAdd" class="w100" style="margin:4px 0 12px">+ Adicionar etapa</button>
   <p class="mute">Vale para os próximos veículos registrados. Para mudar um veículo que já está no pátio, use ✏️ Editar nele.</p>
+  <h3 class="sec">Horário de funcionamento</h3>
+  <p class="mute">Aparece para o cliente e no aviso de veículo pronto.</p>
+  <div id="horLista" style="margin-bottom:12px"></div>
   <div class="erro" id="cfgErro"></div>
-  <button id="cfgSalvar" class="pri w100">Salvar etapas</button>
+  <button id="cfgSalvar" class="pri w100">Salvar ajustes</button>
 </div></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -201,6 +228,13 @@ const firebaseConfig = {
 
 // Etapas usadas até o estabelecimento cadastrar as suas
 const ETAPAS_PADRAO = ["Lavagem externa","Secagem","Limpeza interna","Finalização"].map((nome,i) => ({id:"p"+i, nome}));
+const DIAS = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+const HORARIO_PADRAO = {
+  0:{aberto:false, abre:"08:00", fecha:"12:00"},
+  1:{aberto:true, abre:"08:00", fecha:"18:00"}, 2:{aberto:true, abre:"08:00", fecha:"18:00"},
+  3:{aberto:true, abre:"08:00", fecha:"18:00"}, 4:{aberto:true, abre:"08:00", fecha:"18:00"},
+  5:{aberto:true, abre:"08:00", fecha:"18:00"}, 6:{aberto:true, abre:"08:00", fecha:"13:00"}
+};
 const DEMO = firebaseConfig.apiKey.startsWith("COLE");
 
 const $ = s => document.querySelector(s);
@@ -224,9 +258,40 @@ const linkCliente = id => location.origin + location.pathname + "?c=" + id;
 const placaLimpa = s => s.toUpperCase().replace(/[^A-Z0-9]/g,"");
 const etapasDe = v => Array.isArray(v.etapas) && v.etapas.length ? v.etapas : ETAPAS_PADRAO;
 const checksDe = v => v.checks || {};
+const moto = v => v.tipo === "moto";
+const seuVeic = v => moto(v) ? "sua moto" : "seu carro";
+const prontoV = v => moto(v) ? "pronta" : "pronto";
+const iconeV = v => moto(v) ? "🏍️" : "🚗";
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+/* ---------- Horário de funcionamento ---------- */
+const minutos = t => { const [a,b] = String(t).split(":").map(Number); return a*60 + (b||0); };
+const fmtH = t => { const [a,b] = String(t).split(":"); return `${+a}h${b && b !== "00" ? b : ""}`; };
+function situacao(hor, agora = new Date()){
+  const d = agora.getDay(), h = hor[d], min = agora.getHours()*60 + agora.getMinutes();
+  if (h && h.aberto && min < minutos(h.fecha)) return {hoje: true, aberto: min >= minutos(h.abre), abre: h.abre, fecha: h.fecha};
+  for (let i = 1; i <= 7; i++){
+    const dd = (d + i) % 7, x = hor[dd];
+    if (x && x.aberto) return {hoje: false, dia: i === 1 ? "amanhã" : DIAS[dd].toLowerCase(), abre: x.abre};
+  }
+  return null;
+}
+function lembrete(hor){
+  const s = situacao(hor); if (!s) return "";
+  if (s.hoje && s.aberto) return `Lembrando que hoje funcionamos até às ${fmtH(s.fecha)}.`;
+  if (s.hoje) return `Lembrando que hoje funcionamos das ${fmtH(s.abre)} às ${fmtH(s.fecha)}.`;
+  return `Já encerramos por hoje; abrimos novamente ${s.dia} às ${fmtH(s.abre)}.`;
+}
+function cardHorario(hor){
+  const s = situacao(hor), hoje = new Date().getDay();
+  const pill = s && s.hoje && s.aberto ? `<span class="pill ab">Aberto agora · até ${fmtH(s.fecha)}</span>` : `<span class="pill fe">Fechado agora</span>`;
+  const linhas = [1,2,3,4,5,6,0].map(d => { const h = hor[d] || {};
+    return `<tr class="${d === hoje ? "hoje" : ""}"><td>${DIAS[d]}${d === hoje ? " (hoje)" : ""}</td><td>${h.aberto ? `${fmtH(h.abre)} – ${fmtH(h.fecha)}` : "Fechado"}</td></tr>`; }).join("");
+  return `<div class="card"><div class="v-head" style="margin-bottom:6px"><h3 style="margin:0">Horário de funcionamento</h3>${pill}</div><table class="hor">${linhas}</table></div>`;
+}
 
 /* ---------- Armazenamento (Firebase ou demonstração) ---------- */
-// As etapas do estabelecimento ficam no documento "lavagens/_config".
+// Etapas e horário do estabelecimento ficam no documento "lavagens/_config".
 let store;
 if (DEMO) {
   const db = new Map(), subs = new Set(), docSubs = new Map(), cfgSubs = new Set(); let cfg = null;
@@ -240,7 +305,7 @@ if (DEMO) {
     async atualizar(id,p){ db.set(id,{...db.get(id),...p}); emit(); },
     async remover(id){ db.delete(id); emit(); },
     config(cb){ cfgSubs.add(cb); cb(cfg); return () => cfgSubs.delete(cb); },
-    async salvarConfig(l){ cfg = l; cfgSubs.forEach(f => f(cfg)); }
+    async salvarConfig(o){ cfg = {...(cfg||{}), ...o}; cfgSubs.forEach(f => f(cfg)); }
   };
 } else {
   firebase.initializeApp(firebaseConfig);
@@ -254,32 +319,37 @@ if (DEMO) {
     async criar(d){ const id = token(); await col.doc(id).set(d); return id; },
     atualizar: (id,p) => col.doc(id).update(p),
     remover: id => col.doc(id).delete(),
-    config: cb => col.doc("_config").onSnapshot(d => cb(d.exists ? d.data().etapas : null), () => cb(null)),
-    salvarConfig: l => col.doc("_config").set({etapas: l})
+    config: cb => col.doc("_config").onSnapshot(d => cb(d.exists ? d.data() : null), () => cb(null)),
+    salvarConfig: o => col.doc("_config").set(o, {merge: true})
   };
 }
 
 /* ---------- Visão do cliente ---------- */
-let pararCliente = null;
+let pararCliente = null, pararCfgCli = null, cliV, cliHor = HORARIO_PADRAO, cliCarregado = false;
 function abrirCliente(id, doPainel){
   show("vCliente");
   $("#btVoltarPainel").classList.toggle("hidden", !doPainel);
   if (pararCliente) pararCliente();
-  pararCliente = store.um(id, renderCliente, () => renderCliente(null));
+  if (pararCfgCli) pararCfgCli();
+  cliCarregado = false;
+  pararCfgCli = store.config(d => { cliHor = (d && d.horario) || HORARIO_PADRAO; if (cliCarregado) renderCliente(cliV); });
+  pararCliente = store.um(id, v => { cliCarregado = true; renderCliente(v); }, () => { cliCarregado = true; renderCliente(null); });
 }
 function renderCliente(v){
+  cliV = v;
   const el = $("#cliente");
   if (!v || !v.placa){ el.innerHTML = `<div class="card vazio"><h2>Link não encontrado</h2><p>Confira o link com a equipe do ${esc(NOME_LAVAJATO)}.</p></div>`; return; }
   const et = etapasDe(v), ch = checksDe(v), feitas = et.filter(e => ch[e.id]).length, pct = Math.round(100 * feitas / et.length);
   let hero;
-  if (v.concluido) hero = `<div class="card hero pronto"><div class="ic">✅</div><div class="st">Pronto para retirada!</div><p class="mute">Concluído às ${hora(v.fimEm)}. Obrigado pela preferência.</p></div>`;
-  else if (!feitas) hero = `<div class="card hero"><div class="ic">⏳</div><div class="st">Na fila</div><p class="mute">Seu veículo foi recebido e logo será atendido.</p></div>`;
+  if (v.concluido) hero = `<div class="card hero pronto"><div class="ic">✅</div><div class="st">Pronto para retirada!</div><p class="mute">Concluído às ${hora(v.fimEm)}. ${esc(lembrete(cliHor))}</p><p class="mute" style="margin:0">Obrigado pela preferência!</p></div>`;
+  else if (!feitas) hero = `<div class="card hero"><div class="ic">⏳</div><div class="st">Na fila</div><p class="mute">${cap(seuVeic(v))} foi recebid${moto(v) ? "a" : "o"} e logo será atendid${moto(v) ? "a" : "o"}.</p></div>`;
   else hero = `<div class="card hero"><div class="ic">🧽</div><div class="st">Em andamento</div><p class="mute">${feitas} de ${et.length} etapas concluídas</p><div class="bar"><i style="width:${pct}%"></i></div></div>`;
   const itens = et.map(e => `<li class="${ch[e.id] ? "d" : ""}"><div class="dot">${ch[e.id] ? "✓" : ""}</div><div class="nm">${esc(e.nome)}</div><div class="hr">${ch[e.id] ? hora(ch[e.id]) : ""}</div></li>`).join("");
   el.innerHTML = `
-    <div class="card"><div class="v-head" style="margin:0"><div>${v.nome ? `<p>Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute" style="margin:0">${esc(v.modelo) || "Seu veículo"}</p></div><span class="placa">${esc(v.placa)}</span></div></div>
+    <div class="card"><div class="v-head" style="margin:0"><div>${v.nome ? `<p>Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute" style="margin:0">${iconeV(v)} ${esc(v.modelo) || cap(seuVeic(v))}</p></div><span class="placa">${esc(v.placa)}</span></div></div>
     ${hero}
     <div class="card"><h3 style="margin-bottom:4px">Serviços</h3><ul class="cl">${itens}</ul></div>
+    ${cardHorario(cliHor)}
     <footer class="rod"><svg><use href="#logo"/></svg>Esta página se atualiza sozinha.</footer>`;
 }
 $("#btVoltarPainel").onclick = () => { if (pararCliente) pararCliente(); history.replaceState(null,"",location.pathname); show("vPainel"); };
@@ -293,7 +363,18 @@ function renderChecks(box, lista, marcados){
 const lerChecks = (box, lista) => { const ids = new Set([...box.querySelectorAll("input:checked")].map(i => i.value)); return lista.filter(e => ids.has(e.id)); };
 const renderNovoChecks = () => renderChecks($("#nEtapas"), etapasCfg, new Set(etapasCfg.map(e => e.id)));
 
-let cfgEdit = [];
+let cfgEdit = [], horEdit = {}, horarioCfg = HORARIO_PADRAO;
+function renderHor(){
+  $("#horLista").innerHTML = [1,2,3,4,5,6,0].map(d => { const h = horEdit[d];
+    return `<div class="hr-row ${h.aberto ? "" : "off"}" data-d="${d}"><span class="dia">${DIAS[d]}</span>
+      <label><input type="checkbox" data-k="aberto" ${h.aberto ? "checked" : ""}>Aberto</label>
+      <span class="hs"><input type="time" data-k="abre" value="${h.abre}"> às <input type="time" data-k="fecha" value="${h.fecha}"></span></div>`; }).join("");
+}
+$("#horLista").onchange = e => {
+  const r = e.target.closest(".hr-row"), k = e.target.dataset.k; if (!r || !k) return;
+  const h = horEdit[r.dataset.d];
+  if (k === "aberto"){ h.aberto = e.target.checked; r.classList.toggle("off", !h.aberto); } else h[k] = e.target.value;
+};
 function renderCfg(){
   $("#cfgLista").innerHTML = cfgEdit.map((e,i) => `<div class="et-row">
       <input value="${esc(e.nome)}" data-i="${i}" placeholder="Nome da etapa" maxlength="40">
@@ -301,7 +382,7 @@ function renderCfg(){
       <button type="button" data-mv="1" data-i="${i}" ${i===cfgEdit.length-1?"disabled":""} aria-label="Descer">↓</button>
       <button type="button" class="danger" data-rm="${i}" aria-label="Remover">✕</button></div>`).join("");
 }
-$("#btEtapas").onclick = () => { cfgEdit = etapasCfg.map(e => ({...e})); $("#cfgErro").textContent = ""; renderCfg(); abrir("mCfg"); };
+$("#btEtapas").onclick = () => { cfgEdit = etapasCfg.map(e => ({...e})); horEdit = JSON.parse(JSON.stringify(horarioCfg)); $("#cfgErro").textContent = ""; renderCfg(); renderHor(); abrir("mCfg"); };
 $("#cfgLista").oninput = e => { if (e.target.dataset.i != null) cfgEdit[+e.target.dataset.i].nome = e.target.value; };
 $("#cfgLista").onclick = e => {
   const b = e.target.closest("button"); if (!b) return;
@@ -313,7 +394,9 @@ $("#cfgAdd").onclick = () => { cfgEdit.push({id: "e" + token(6), nome: ""}); ren
 $("#cfgSalvar").onclick = async () => {
   const l = cfgEdit.map(e => ({id: e.id, nome: e.nome.trim()})).filter(e => e.nome);
   if (!l.length){ $("#cfgErro").textContent = "Cadastre pelo menos uma etapa."; return; }
-  try { await store.salvarConfig(l); fechar("mCfg"); } catch(e){ $("#cfgErro").textContent = "Erro ao salvar: " + e.message; }
+  for (const d of [1,2,3,4,5,6,0]){ const h = horEdit[d];
+    if (h.aberto && (!h.abre || !h.fecha || minutos(h.abre) >= minutos(h.fecha))){ $("#cfgErro").textContent = `Confira o horário de ${DIAS[d]}: o fechamento deve ser depois da abertura.`; return; } }
+  try { await store.salvarConfig({etapas: l, horario: horEdit}); fechar("mCfg"); } catch(e){ $("#cfgErro").textContent = "Erro ao salvar: " + e.message; }
 };
 
 /* ---------- Painel da equipe ---------- */
@@ -324,7 +407,7 @@ function iniciarPainel(){
   $("#btSair").classList.toggle("hidden", DEMO);
   if (pararLista) pararLista();
   if (pararCfg) pararCfg();
-  pararCfg = store.config(l => { etapasCfg = (l && l.length) ? l : ETAPAS_PADRAO; renderNovoChecks(); });
+  pararCfg = store.config(d => { etapasCfg = (d && d.etapas && d.etapas.length) ? d.etapas : ETAPAS_PADRAO; horarioCfg = (d && d.horario) || HORARIO_PADRAO; renderNovoChecks(); });
   pararLista = store.lista(l => { lista = l; renderLista(); },
     e => { $("#lista").innerHTML = `<div class="card vazio">Sem permissão para ver os veículos. Confira se o seu e-mail está na lista da equipe nas regras do Firestore.</div>`; console.error(e); });
 }
@@ -347,7 +430,7 @@ function renderLista(){
       : `<button class="${tudo ? "ok" : ""} grow" data-act="concluir" data-id="${v.id}">Concluir ✓</button>
          <button data-act="editar" data-id="${v.id}">✏️ Editar</button>`;
     return `<div class="card">
-      <div class="v-head"><div><span class="placa">${esc(v.placa)}</span><p class="mute" style="margin:6px 0 0">${esc(v.modelo)}${v.modelo && v.nome ? " · " : ""}${esc(v.nome)}</p></div>
+      <div class="v-head"><div><span style="font-size:20px;vertical-align:middle;margin-right:6px">${iconeV(v)}</span><span class="placa">${esc(v.placa)}</span><p class="mute" style="margin:6px 0 0">${esc(v.modelo)}${v.modelo && v.nome ? " · " : ""}${esc(v.nome)}</p></div>
         <button class="ghost" data-act="share" data-id="${v.id}">🔗 Link</button></div>
       <div class="bar ${v.concluido ? "fim" : ""}"><i style="width:${v.concluido ? 100 : Math.round(100*feitas/et.length)}%"></i></div>
       <div class="status">${status}</div>
@@ -393,7 +476,7 @@ $("#fNovo").onsubmit = async ev => {
   if (placa.length < 7){ $("#nErro").textContent = "Placa inválida."; return; }
   if (!etapas.length){ $("#nErro").textContent = "Selecione pelo menos uma etapa."; return; }
   $("#nErro").textContent = "";
-  const d = { placa, modelo: $("#nModelo").value.trim(), nome: $("#nNome").value.trim(),
+  const d = { tipo: document.querySelector("input[name=nTipo]:checked").value, placa, modelo: $("#nModelo").value.trim(), nome: $("#nNome").value.trim(),
               telefone: $("#nTel").value.replace(/\D/g,""), etapas, checks: {},
               concluido: false, criadoEm: Date.now() };
   try {
@@ -407,6 +490,7 @@ $("#fNovo").onsubmit = async ev => {
 let editAtual = null, editLista = [];
 function abrirEdit(v){
   editAtual = v;
+  document.querySelector(`input[name=eTipo][value=${moto(v) ? "moto" : "carro"}]`).checked = true;
   $("#ePlaca").value = v.placa; $("#eModelo").value = v.modelo || ""; $("#eNome").value = v.nome || ""; $("#eTel").value = v.telefone || "";
   const atuais = etapasDe(v), ids = new Set(atuais.map(e => e.id));
   editLista = [...atuais, ...etapasCfg.filter(e => !ids.has(e.id))];
@@ -422,7 +506,7 @@ $("#fEdit").onsubmit = async ev => {
   const ch = {}, velho = checksDe(editAtual);
   etapas.forEach(e => { if (velho[e.id]) ch[e.id] = velho[e.id]; });
   try {
-    await store.atualizar(editAtual.id, { placa, modelo: $("#eModelo").value.trim(), nome: $("#eNome").value.trim(),
+    await store.atualizar(editAtual.id, { tipo: document.querySelector("input[name=eTipo]:checked").value, placa, modelo: $("#eModelo").value.trim(), nome: $("#eNome").value.trim(),
       telefone: $("#eTel").value.replace(/\D/g,""), etapas, checks: ch });
     fechar("mEdit");
   } catch(e){ $("#eErro").textContent = "Erro ao salvar: " + e.message; }
@@ -440,8 +524,8 @@ function abrirShare(v, pronto){
   document.querySelectorAll("#mShare .shSo").forEach(e => e.classList.toggle("hidden", !!pronto));
   $("#shSemTel").textContent = (pronto && !v.telefone) ? "Sem WhatsApp cadastrado: o WhatsApp vai abrir para você escolher o contato." : "";
   const msg = pronto
-    ? `Olá${v.nome ? " " + v.nome : ""}! Seu veículo (${v.placa}) está pronto para retirada no ${NOME_LAVAJATO}. Obrigado pela preferência! 🚗✨`
-    : `Olá${v.nome ? " " + v.nome : ""}! Acompanhe a lavagem do seu veículo (${v.placa}) no ${NOME_LAVAJATO}: ${link}`;
+    ? `Olá${v.nome ? " " + v.nome : ""}! ${cap(seuVeic(v))} (${v.placa}) está ${prontoV(v)} para retirada no ${NOME_LAVAJATO}. ${lembrete(horarioCfg)} Obrigado pela preferência! ${iconeV(v)}✨`.replace(/  +/g," ")
+    : `Olá${v.nome ? " " + v.nome : ""}! Acompanhe a lavagem d${moto(v) ? "a sua moto" : "o seu carro"} (${v.placa}) no ${NOME_LAVAJATO}: ${link}`;
   let tel = v.telefone || ""; if (tel && tel.length <= 11) tel = "55" + tel;
   $("#shWpp").href = `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`;
   $("#qr").innerHTML = "";
