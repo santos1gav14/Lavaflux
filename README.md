@@ -5,7 +5,9 @@ Um único `index.html` com duas telas:
 - **Painel da equipe** (abrir o site sem nada no link): login, registrar veículo, avançar etapas, gerar link/QR/WhatsApp.
 - **Tela do cliente** (`...index.html?c=CODIGO`): mostra só aquele veículo, atualizando sozinha em tempo real.
 
-Etapas: Em espera → Lavagem → Secagem → Limpeza interna → Finalização → **Pronto para retirada**.
+Etapas: cadastradas pelo próprio estabelecimento em **⚙️ Etapas** (padrão: Lavagem externa, Secagem, Limpeza interna, Finalização). Cada veículo tem suas etapas, marcadas como checklist em qualquer ordem. Ao **Concluir**, o cliente vê "Pronto para retirada" e a equipe pode avisá-lo no WhatsApp.
+
+Cada cadastro pode ser alterado em **✏️ Editar** (placa, modelo, nome, WhatsApp e etapas).
 
 ## Por que o cliente só vê o próprio veículo
 Cada atendimento recebe um código aleatório de 20 caracteres (impossível de adivinhar). As regras do Firestore permitem abrir um documento **pelo código**, mas bloqueiam listar a coleção. Telefone fica guardado, mas a tela do cliente não o exibe.

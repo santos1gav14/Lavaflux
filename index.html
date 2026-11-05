@@ -4,116 +4,137 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Lavaflux</title>
-<meta name="theme-color" content="#0b5cab">
+<meta name="theme-color" content="#0a4fb5">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
 <style>
-:root{--bg:#f3f7fb;--card:#fff;--ink:#0f1e2e;--mute:#5d6f82;--line:#dbe4ee;--pri:#0b5cab;--pri-ink:#fff;--ok:#178a4c;--danger:#c0392b;--soft:#e7f0fa}
-@media (prefers-color-scheme:dark){:root{--bg:#0c141d;--card:#142130;--ink:#e6eef6;--mute:#93a6b9;--line:#24364a;--pri:#4ea1ff;--pri-ink:#04192e;--ok:#3fcf86;--danger:#ff6b5b;--soft:#17304a}}
+:root{--bg:#f2f6fc;--card:#fff;--ink:#0c1b33;--mute:#5a6b85;--line:#d9e3f2;--pri:#1668e3;--pri2:#0a4fb5;--pri-ink:#fff;--soft:#e6efff;--ok:#12915a;--danger:#c63a2f}
+@media (prefers-color-scheme:dark){:root{--bg:#0a1220;--card:#111d31;--ink:#e6eefb;--mute:#93a5c2;--line:#22334f;--pri:#4b95ff;--pri2:#2f7cf0;--pri-ink:#03142e;--soft:#16294a;--ok:#35cf88;--danger:#ff6b5b}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 .wrap{max-width:640px;margin:0 auto;padding:16px 16px 48px}
 header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 18px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.02em}
-.logo{width:34px;height:34px;border-radius:10px;background:var(--pri);display:grid;place-items:center;color:var(--pri-ink);font-size:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:-.03em}
+.brand svg{width:38px;height:38px;flex:none;filter:drop-shadow(0 3px 6px rgba(10,79,181,.25))}
+.brand .fx{color:var(--pri)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
-h1,h2,h3{margin:0 0 6px;letter-spacing:-.01em}
+h2,h3{margin:0 0 6px;letter-spacing:-.01em}
 p{margin:0 0 8px}
 .mute{color:var(--mute);font-size:14px}
-input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit;margin-bottom:10px}
+input[type=text],input[type=email],input[type=password],input[type=tel],input:not([type]){width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit;margin-bottom:10px}
 input:focus{outline:2px solid var(--pri);border-color:transparent}
-label{font-size:13px;color:var(--mute);display:block;margin:0 0 4px 2px}
+label.f{font-size:13px;color:var(--mute);display:block;margin:0 0 4px 2px}
 .row{display:flex;gap:8px;flex-wrap:wrap}
-.row>*{flex:1 1 0}
+.row>*{flex:1 1 140px}
 button,.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;font-size:15px;padding:11px 14px;border-radius:12px;cursor:pointer;text-decoration:none;text-align:center;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-button.pri,.btn.pri{background:var(--pri);border-color:var(--pri);color:var(--pri-ink)}
+button.pri,.btn.pri{background:linear-gradient(135deg,var(--pri),var(--pri2));border-color:var(--pri2);color:#fff}
 button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
 button.ghost{background:transparent;border-color:transparent;color:var(--mute);padding:8px 10px}
 button.danger{color:var(--danger)}
 button:disabled{opacity:.45;cursor:default}
+.w100{width:100%}
 .tabs{display:flex;background:var(--soft);border-radius:12px;padding:4px;margin:4px 0 12px}
 .tabs button{flex:1;border:0;background:transparent;padding:9px;font-size:14px}
 .tabs button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .placa{display:inline-block;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;letter-spacing:.08em;border:2px solid var(--ink);border-radius:6px;padding:2px 8px;font-size:15px;background:var(--card)}
 .v-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
-.segs{display:flex;gap:4px;margin:10px 0 6px}
-.segs i{flex:1;height:6px;border-radius:3px;background:var(--line)}
-.segs i.d{background:var(--pri)}
-.segs.fim i{background:var(--ok)}
-.status{font-weight:700}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),#38b6ff);border-radius:4px;transition:width .3s}
+.bar.fim i{background:var(--ok)}
+.status{font-weight:700;margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border-radius:999px;padding:8px 14px;font-size:14px;border:1.5px solid var(--line);background:var(--bg)}
+.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
 .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.acts .grow{flex:1 1 180px}
+.acts .grow{flex:1 1 160px}
 .vazio{text-align:center;padding:32px 16px;color:var(--mute)}
-.banner{background:#fff4d6;color:#6b4a00;border-radius:12px;padding:10px 14px;font-size:14px;margin-bottom:12px}
-@media (prefers-color-scheme:dark){.banner{background:#3a2e10;color:#ffd98a}}
 .erro{color:var(--danger);font-size:14px;min-height:20px}
+.cks{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
+.cks label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px 6px 8px;font-size:14px;cursor:pointer;background:var(--bg)}
+.cks input{width:18px;height:18px;accent-color:var(--pri);margin:0}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 0 8px}
 /* cliente */
 .hero{text-align:center;padding:24px 16px}
 .hero .ic{font-size:52px;line-height:1;margin-bottom:8px}
 .hero .st{font-size:26px;font-weight:800;margin-bottom:4px}
-.tl{list-style:none;margin:0;padding:0}
-.tl li{display:flex;gap:12px;position:relative;padding:0 0 18px}
-.tl li:last-child{padding-bottom:0}
-.tl li:not(:last-child)::before{content:"";position:absolute;left:13px;top:28px;bottom:2px;width:2px;background:var(--line)}
-.tl li.d:not(:last-child)::before{background:var(--pri)}
-.dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:var(--card);flex:none;display:grid;place-items:center;font-size:13px;color:var(--pri-ink);font-weight:800}
-.tl li.d .dot{background:var(--pri);border-color:var(--pri)}
-.tl li.c .dot{border-color:var(--pri);box-shadow:0 0 0 0 var(--pri);animation:pulse 1.8s infinite}
-.tl li.c .dot::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--pri)}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(78,161,255,.55)}70%{box-shadow:0 0 0 12px rgba(78,161,255,0)}100%{box-shadow:0 0 0 0 rgba(78,161,255,0)}}
-.tl .nm{font-weight:600;padding-top:3px}
-.tl li:not(.d):not(.c) .nm{color:var(--mute)}
-.tl .hr{font-size:13px;color:var(--mute)}
-.pronto{background:var(--ok);color:#fff;border-color:var(--ok)}
-.pronto .mute{color:#e8fff1}
+.hero .bar{max-width:320px;margin:12px auto 6px}
+.pronto{background:linear-gradient(135deg,#12915a,#0f7a4c);color:#fff;border-color:#12915a}
+.pronto .mute{color:#e3fff0}
+.cl{list-style:none;margin:0;padding:0}
+.cl li{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.cl li:last-child{border-bottom:0}
+.cl .dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px}
+.cl li.d .dot{background:var(--pri);border-color:var(--pri)}
+.cl .nm{flex:1;font-weight:600}
+.cl li:not(.d) .nm{color:var(--mute)}
+.cl .hr{font-size:13px;color:var(--mute)}
+footer.rod{text-align:center;margin-top:20px;color:var(--mute);font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px}
+footer.rod svg{width:18px;height:18px}
 /* modal */
-.modal{position:fixed;inset:0;background:rgba(5,12,20,.55);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.modal{position:fixed;inset:0;background:rgba(5,12,25,.55);display:none;align-items:flex-end;justify-content:center;z-index:10}
 .modal.on{display:flex}
 .sheet{background:var(--card);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
 @media(min-width:600px){.modal{align-items:center}.sheet{border-radius:20px}}
 #qr{display:flex;justify-content:center;margin:14px 0;padding:12px;background:#fff;border-radius:12px}
+.et-row{display:flex;gap:6px;align-items:center;margin-bottom:8px}
+.et-row input{margin:0;flex:1}
+.et-row button{padding:9px 11px}
 .hidden{display:none!important}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="lgLogo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b9bff"/><stop offset="1" stop-color="#0a4fb5"/></linearGradient>
+    <symbol id="logo" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="13" fill="url(#lgLogo)"/>
+      <path d="M22.5 8.5C17 15.8 12 21.6 12 27.6a10.5 10.5 0 0 0 21 0c0-6-5-11.8-10.5-19.1z" fill="#fff"/>
+      <path d="M14.6 29.2c2.6-1.6 5-1.6 7.9 0s5.3 1.6 7.9 0" stroke="#1668e3" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M16.3 33.6c2.1-1.2 4.1-1.2 6.2 0s4.1 1.2 6.2 0" stroke="#6cb8ff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M35.5 10.5l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8-2.8-1.2 2.8-1.2z" fill="#cfe8ff"/>
+    </symbol>
+  </defs>
+</svg>
 <div class="wrap">
 
   <!-- ===== VISÃO DO CLIENTE ===== -->
   <section id="vCliente" class="hidden">
-    <header class="top"><div class="brand"><div class="logo">💧</div><span class="nomeLJ"></span></div>
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nomeLJ"></span></div>
       <button id="btVoltarPainel" class="ghost hidden">← Painel</button></header>
     <div id="cliente"><div class="card vazio">Carregando…</div></div>
   </section>
 
   <!-- ===== LOGIN DA EQUIPE ===== -->
   <section id="vLogin" class="hidden">
-    <header class="top"><div class="brand"><div class="logo">💧</div><span class="nomeLJ"></span></div></header>
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nomeLJ"></span></div></header>
     <form id="fLogin" class="card">
       <h2>Acesso da equipe</h2>
       <p class="mute">Entre para atualizar o andamento dos veículos.</p>
-      <label>E-mail</label><input id="lEmail" type="email" autocomplete="username" required>
-      <label>Senha</label><input id="lSenha" type="password" autocomplete="current-password" required>
+      <label class="f">E-mail</label><input id="lEmail" type="email" autocomplete="username" required>
+      <label class="f">Senha</label><input id="lSenha" type="password" autocomplete="current-password" required>
       <div class="erro" id="lErro"></div>
-      <button class="pri" style="width:100%">Entrar</button>
+      <button class="pri w100">Entrar</button>
     </form>
   </section>
 
   <!-- ===== PAINEL DA EQUIPE ===== -->
   <section id="vPainel" class="hidden">
-    <header class="top"><div class="brand"><div class="logo">💧</div><span class="nomeLJ"></span></div>
-      <button id="btSair" class="ghost">Sair</button></header>
-    <div id="demoAviso" class="banner hidden">Modo demonstração — os dados ficam só nesta tela. Configure o Firebase (veja o LEIA-ME) para usar de verdade.</div>
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nomeLJ"></span></div>
+      <div><button id="btEtapas" class="ghost">⚙️ Etapas</button><button id="btSair" class="ghost">Sair</button></div></header>
 
     <form id="fNovo" class="card">
       <h3>Novo veículo</h3>
       <div class="row">
-        <div><label>Placa *</label><input id="nPlaca" required maxlength="8" placeholder="ABC1D23" style="text-transform:uppercase"></div>
-        <div><label>Modelo</label><input id="nModelo" placeholder="Onix prata"></div>
+        <div><label class="f">Placa *</label><input id="nPlaca" required maxlength="8" placeholder="ABC1D23" style="text-transform:uppercase"></div>
+        <div><label class="f">Modelo</label><input id="nModelo" placeholder="Onix prata"></div>
       </div>
       <div class="row">
-        <div><label>Nome do cliente</label><input id="nNome" placeholder="Ana"></div>
-        <div><label>WhatsApp</label><input id="nTel" inputmode="tel" placeholder="(51) 99999-0000"></div>
+        <div><label class="f">Nome do cliente</label><input id="nNome" placeholder="Ana"></div>
+        <div><label class="f">WhatsApp</label><input id="nTel" type="tel" inputmode="tel" placeholder="(51) 99999-0000"></div>
       </div>
+      <label class="f">Etapas deste veículo</label>
+      <div class="cks" id="nEtapas"></div>
       <div class="erro" id="nErro"></div>
-      <button class="pri" style="width:100%">Registrar e gerar link</button>
+      <button class="pri w100">Registrar e gerar link</button>
     </form>
 
     <div class="tabs"><button data-tab="ativos" class="on">Em andamento <span id="cA"></span></button><button data-tab="fim">Concluídos <span id="cF"></span></button></div>
@@ -121,15 +142,44 @@ button:disabled{opacity:.45;cursor:default}
   </section>
 </div>
 
-<!-- ===== COMPARTILHAR ===== -->
+<!-- ===== COMPARTILHAR / AVISAR ===== -->
 <div class="modal" id="mShare"><div class="sheet">
   <div class="v-head"><div><h3 id="shTit">Link do cliente</h3><p class="mute" id="shInfo"></p></div><button class="ghost" data-close>✕</button></div>
   <div id="shLinkBox"><input id="shLink" readonly onclick="this.select()"></div>
   <div class="row"><button id="shCopiar" class="shSo">Copiar link</button><a id="shWpp" class="btn pri" target="_blank" rel="noopener">Enviar no WhatsApp</a></div>
   <div id="qr" class="shSo"></div>
   <p class="mute shSo" style="text-align:center">O cliente também pode escanear o QR code no balcão.</p>
-  <button id="shVer" class="shSo" style="width:100%">Ver como o cliente vê</button>
+  <button id="shVer" class="shSo w100">Ver como o cliente vê</button>
   <p class="mute" id="shSemTel" style="text-align:center;margin-top:10px"></p>
+</div></div>
+
+<!-- ===== EDITAR VEÍCULO ===== -->
+<div class="modal" id="mEdit"><div class="sheet">
+  <form id="fEdit">
+    <div class="v-head"><h3>Editar veículo</h3><button type="button" class="ghost" data-close>✕</button></div>
+    <div class="row">
+      <div><label class="f">Placa *</label><input id="ePlaca" required maxlength="8" style="text-transform:uppercase"></div>
+      <div><label class="f">Modelo</label><input id="eModelo"></div>
+    </div>
+    <div class="row">
+      <div><label class="f">Nome do cliente</label><input id="eNome"></div>
+      <div><label class="f">WhatsApp</label><input id="eTel" type="tel" inputmode="tel"></div>
+    </div>
+    <label class="f">Etapas deste veículo</label>
+    <div class="cks" id="eEtapas"></div>
+    <div class="erro" id="eErro"></div>
+    <button class="pri w100">Salvar alterações</button>
+  </form>
+</div></div>
+
+<!-- ===== CONFIGURAR ETAPAS ===== -->
+<div class="modal" id="mCfg"><div class="sheet">
+  <div class="v-head"><div><h3>Etapas do estabelecimento</h3><p class="mute">Cadastre os serviços pelos quais os veículos passam. A equipe marca cada um quando é feito, em qualquer ordem.</p></div><button class="ghost" data-close>✕</button></div>
+  <div id="cfgLista"></div>
+  <button id="cfgAdd" class="w100" style="margin:4px 0 12px">+ Adicionar etapa</button>
+  <p class="mute">Vale para os próximos veículos registrados. Para mudar um veículo que já está no pátio, use ✏️ Editar nele.</p>
+  <div class="erro" id="cfgErro"></div>
+  <button id="cfgSalvar" class="pri w100">Salvar etapas</button>
 </div></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -149,34 +199,37 @@ const firebaseConfig = {
 };
 /* ================================================= */
 
-const ETAPAS = [
-  {nome:"Em espera",       ic:"⏳", txt:"Seu veículo está na fila e logo será atendido."},
-  {nome:"Lavagem",         ic:"🧽", txt:"Seu veículo está sendo lavado."},
-  {nome:"Secagem",         ic:"💨", txt:"Estamos secando seu veículo."},
-  {nome:"Limpeza interna", ic:"🧹", txt:"Cuidando do interior do seu veículo."},
-  {nome:"Finalização",     ic:"✨", txt:"Últimos detalhes e acabamento."}
-];
+// Etapas usadas até o estabelecimento cadastrar as suas
+const ETAPAS_PADRAO = ["Lavagem externa","Secagem","Limpeza interna","Finalização"].map((nome,i) => ({id:"p"+i, nome}));
 const DEMO = firebaseConfig.apiKey.startsWith("COLE");
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const hora = ms => ms ? new Date(ms).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "";
 const show = id => ["vCliente","vLogin","vPainel"].forEach(v => $("#"+v).classList.toggle("hidden", v !== id));
-document.querySelectorAll(".nomeLJ").forEach(e => e.textContent = NOME_LAVAJATO);
+const fechar = id => $("#"+id).classList.remove("on");
+const abrir = id => $("#"+id).classList.add("on");
+document.querySelectorAll(".nomeLJ").forEach(e => {
+  const m = NOME_LAVAJATO.match(/^(.*?)(flux)$/i);
+  e.innerHTML = m ? `${esc(m[1])}<span class="fx">${esc(m[2])}</span>` : esc(NOME_LAVAJATO);
+});
 document.title = NOME_LAVAJATO;
 
-// Código do link: 20 caracteres aleatórios — impossível de adivinhar,
-// então cada cliente só consegue abrir o próprio veículo.
-function token(){
+// Código aleatório e impossível de adivinhar: cada cliente só abre o próprio veículo.
+function token(n = 20){
   const a = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
-  return [...crypto.getRandomValues(new Uint8Array(20))].map(x => a[x % a.length]).join("");
+  return [...crypto.getRandomValues(new Uint8Array(n))].map(x => a[x % a.length]).join("");
 }
 const linkCliente = id => location.origin + location.pathname + "?c=" + id;
+const placaLimpa = s => s.toUpperCase().replace(/[^A-Z0-9]/g,"");
+const etapasDe = v => Array.isArray(v.etapas) && v.etapas.length ? v.etapas : ETAPAS_PADRAO;
+const checksDe = v => v.checks || {};
 
 /* ---------- Armazenamento (Firebase ou demonstração) ---------- */
+// As etapas do estabelecimento ficam no documento "lavagens/_config".
 let store;
 if (DEMO) {
-  const db = new Map(), subs = new Set(), docSubs = new Map();
+  const db = new Map(), subs = new Set(), docSubs = new Map(), cfgSubs = new Set(); let cfg = null;
   const todos = () => [...db.values()].sort((a,b) => b.criadoEm - a.criadoEm);
   const emit = () => { subs.forEach(f => f(todos())); docSubs.forEach((fs,id) => fs.forEach(f => f(db.get(id) || null))); };
   store = {
@@ -185,7 +238,9 @@ if (DEMO) {
     um(id, cb){ if(!docSubs.has(id)) docSubs.set(id,new Set()); docSubs.get(id).add(cb); cb(db.get(id)||null); return () => docSubs.get(id).delete(cb); },
     async criar(d){ const id = token(); db.set(id,{...d,id}); emit(); return id; },
     async atualizar(id,p){ db.set(id,{...db.get(id),...p}); emit(); },
-    async remover(id){ db.delete(id); emit(); }
+    async remover(id){ db.delete(id); emit(); },
+    config(cb){ cfgSubs.add(cb); cb(cfg); return () => cfgSubs.delete(cb); },
+    async salvarConfig(l){ cfg = l; cfgSubs.forEach(f => f(cfg)); }
   };
 } else {
   firebase.initializeApp(firebaseConfig);
@@ -194,11 +249,13 @@ if (DEMO) {
     onAuth: cb => au.onAuthStateChanged(cb),
     entrar: (e,s) => au.signInWithEmailAndPassword(e,s),
     sair: () => au.signOut(),
-    lista: (cb,err) => col.orderBy("criadoEm","desc").limit(200).onSnapshot(s => cb(s.docs.map(d => ({id:d.id,...d.data()}))), err),
+    lista: (cb,err) => col.orderBy("criadoEm","desc").limit(300).onSnapshot(s => cb(s.docs.map(d => ({id:d.id,...d.data()})).filter(v => v.placa)), err),
     um: (id,cb,err) => col.doc(id).onSnapshot(d => cb(d.exists ? {id:d.id,...d.data()} : null), err),
     async criar(d){ const id = token(); await col.doc(id).set(d); return id; },
     atualizar: (id,p) => col.doc(id).update(p),
-    remover: id => col.doc(id).delete()
+    remover: id => col.doc(id).delete(),
+    config: cb => col.doc("_config").onSnapshot(d => cb(d.exists ? d.data().etapas : null), () => cb(null)),
+    salvarConfig: l => col.doc("_config").set({etapas: l})
   };
 }
 
@@ -212,32 +269,62 @@ function abrirCliente(id, doPainel){
 }
 function renderCliente(v){
   const el = $("#cliente");
-  if (!v){ el.innerHTML = `<div class="card vazio"><h2>Link não encontrado</h2><p>Confira o link com a equipe do ${esc(NOME_LAVAJATO)}.</p></div>`; return; }
-  const atual = v.concluido ? ETAPAS.length : v.etapa, t = v.tempos || {};
-  const e = ETAPAS[Math.min(atual, ETAPAS.length-1)];
-  const hero = v.concluido
-    ? `<div class="card hero pronto"><div class="ic">✅</div><div class="st">Pronto para retirada!</div><p class="mute">Concluído às ${hora(t.fim)}. Obrigado pela preferência.</p></div>`
-    : `<div class="card hero"><div class="ic">${e.ic}</div><div class="st">${e.nome}</div><p class="mute">${e.txt}</p><p class="mute">Etapa ${atual+1} de ${ETAPAS.length}</p></div>`;
-  const passos = ETAPAS.map((s,i) => {
-    const cls = i < atual ? "d" : (i === atual ? "c" : "");
-    return `<li class="${cls}"><div class="dot">${i < atual ? "✓" : ""}</div><div><div class="nm">${s.nome}</div><div class="hr">${t[i] != null && i <= atual ? "Iniciada às " + hora(t[i]) : ""}</div></div></li>`;
-  }).join("");
+  if (!v || !v.placa){ el.innerHTML = `<div class="card vazio"><h2>Link não encontrado</h2><p>Confira o link com a equipe do ${esc(NOME_LAVAJATO)}.</p></div>`; return; }
+  const et = etapasDe(v), ch = checksDe(v), feitas = et.filter(e => ch[e.id]).length, pct = Math.round(100 * feitas / et.length);
+  let hero;
+  if (v.concluido) hero = `<div class="card hero pronto"><div class="ic">✅</div><div class="st">Pronto para retirada!</div><p class="mute">Concluído às ${hora(v.fimEm)}. Obrigado pela preferência.</p></div>`;
+  else if (!feitas) hero = `<div class="card hero"><div class="ic">⏳</div><div class="st">Na fila</div><p class="mute">Seu veículo foi recebido e logo será atendido.</p></div>`;
+  else hero = `<div class="card hero"><div class="ic">🧽</div><div class="st">Em andamento</div><p class="mute">${feitas} de ${et.length} etapas concluídas</p><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+  const itens = et.map(e => `<li class="${ch[e.id] ? "d" : ""}"><div class="dot">${ch[e.id] ? "✓" : ""}</div><div class="nm">${esc(e.nome)}</div><div class="hr">${ch[e.id] ? hora(ch[e.id]) : ""}</div></li>`).join("");
   el.innerHTML = `
-    <div class="card"><div class="v-head"><div>${v.nome ? `<p>Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute">${esc(v.modelo) || "Seu veículo"}</p></div><span class="placa">${esc(v.placa)}</span></div></div>
+    <div class="card"><div class="v-head" style="margin:0"><div>${v.nome ? `<p>Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute" style="margin:0">${esc(v.modelo) || "Seu veículo"}</p></div><span class="placa">${esc(v.placa)}</span></div></div>
     ${hero}
-    <div class="card"><ul class="tl">${passos}</ul></div>
-    <p class="mute" style="text-align:center">Esta página se atualiza sozinha.</p>`;
+    <div class="card"><h3 style="margin-bottom:4px">Serviços</h3><ul class="cl">${itens}</ul></div>
+    <footer class="rod"><svg><use href="#logo"/></svg>Esta página se atualiza sozinha.</footer>`;
 }
 $("#btVoltarPainel").onclick = () => { if (pararCliente) pararCliente(); history.replaceState(null,"",location.pathname); show("vPainel"); };
 
+/* ---------- Etapas do estabelecimento ---------- */
+let etapasCfg = ETAPAS_PADRAO;
+function renderChecks(box, lista, marcados){
+  box.innerHTML = lista.map(e => `<label><input type="checkbox" value="${esc(e.id)}" ${marcados.has(e.id) ? "checked" : ""}>${esc(e.nome)}</label>`).join("")
+    || `<span class="mute">Nenhuma etapa cadastrada. Use ⚙️ Etapas.</span>`;
+}
+const lerChecks = (box, lista) => { const ids = new Set([...box.querySelectorAll("input:checked")].map(i => i.value)); return lista.filter(e => ids.has(e.id)); };
+const renderNovoChecks = () => renderChecks($("#nEtapas"), etapasCfg, new Set(etapasCfg.map(e => e.id)));
+
+let cfgEdit = [];
+function renderCfg(){
+  $("#cfgLista").innerHTML = cfgEdit.map((e,i) => `<div class="et-row">
+      <input value="${esc(e.nome)}" data-i="${i}" placeholder="Nome da etapa" maxlength="40">
+      <button type="button" data-mv="-1" data-i="${i}" ${i===0?"disabled":""} aria-label="Subir">↑</button>
+      <button type="button" data-mv="1" data-i="${i}" ${i===cfgEdit.length-1?"disabled":""} aria-label="Descer">↓</button>
+      <button type="button" class="danger" data-rm="${i}" aria-label="Remover">✕</button></div>`).join("");
+}
+$("#btEtapas").onclick = () => { cfgEdit = etapasCfg.map(e => ({...e})); $("#cfgErro").textContent = ""; renderCfg(); abrir("mCfg"); };
+$("#cfgLista").oninput = e => { if (e.target.dataset.i != null) cfgEdit[+e.target.dataset.i].nome = e.target.value; };
+$("#cfgLista").onclick = e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.rm != null) cfgEdit.splice(+b.dataset.rm, 1);
+  else { const i = +b.dataset.i, j = i + +b.dataset.mv; [cfgEdit[i], cfgEdit[j]] = [cfgEdit[j], cfgEdit[i]]; }
+  renderCfg();
+};
+$("#cfgAdd").onclick = () => { cfgEdit.push({id: "e" + token(6), nome: ""}); renderCfg(); const ins = $("#cfgLista").querySelectorAll("input"); ins[ins.length-1].focus(); };
+$("#cfgSalvar").onclick = async () => {
+  const l = cfgEdit.map(e => ({id: e.id, nome: e.nome.trim()})).filter(e => e.nome);
+  if (!l.length){ $("#cfgErro").textContent = "Cadastre pelo menos uma etapa."; return; }
+  try { await store.salvarConfig(l); fechar("mCfg"); } catch(e){ $("#cfgErro").textContent = "Erro ao salvar: " + e.message; }
+};
+
 /* ---------- Painel da equipe ---------- */
-let lista = [], aba = "ativos", pararLista = null;
+let lista = [], aba = "ativos", pararLista = null, pararCfg = null;
 
 function iniciarPainel(){
   show("vPainel");
-  $("#demoAviso").classList.toggle("hidden", !DEMO);
   $("#btSair").classList.toggle("hidden", DEMO);
   if (pararLista) pararLista();
+  if (pararCfg) pararCfg();
+  pararCfg = store.config(l => { etapasCfg = (l && l.length) ? l : ETAPAS_PADRAO; renderNovoChecks(); });
   pararLista = store.lista(l => { lista = l; renderLista(); },
     e => { $("#lista").innerHTML = `<div class="card vazio">Sem permissão para ver os veículos. Confira se o seu e-mail está na lista da equipe nas regras do Firestore.</div>`; console.error(e); });
 }
@@ -249,19 +336,23 @@ function renderLista(){
   const itens = aba === "ativos" ? ativos : fim;
   if (!itens.length){ $("#lista").innerHTML = `<div class="card vazio">${aba === "ativos" ? "Nenhum veículo em andamento." : "Nenhum veículo concluído."}</div>`; return; }
   $("#lista").innerHTML = itens.map(v => {
-    const ult = v.etapa === ETAPAS.length - 1;
-    const segs = ETAPAS.map((_,i) => `<i class="${(v.concluido || i <= v.etapa) ? "d" : ""}"></i>`).join("");
-    const status = v.concluido ? `✅ Concluído às ${hora(v.tempos?.fim)}` : `${ETAPAS[v.etapa].ic} ${ETAPAS[v.etapa].nome} <span class="mute">· desde ${hora(v.tempos?.[v.etapa])}</span>`;
-    const principal = v.concluido ? `<button class="ok grow" data-act="avisar" data-id="${v.id}">📲 Avisar que está pronto</button>` :
-      `<button class="${ult ? "ok" : "pri"} grow" data-act="avancar" data-id="${v.id}">${ult ? "Concluir ✓" : "Avançar → " + ETAPAS[v.etapa+1].nome}</button>`;
+    const et = etapasDe(v), ch = checksDe(v), feitas = et.filter(e => ch[e.id]).length, tudo = feitas === et.length;
+    const status = v.concluido ? `✅ Concluído às ${hora(v.fimEm)}`
+      : !feitas ? `⏳ Na fila <span class="mute">· chegou às ${hora(v.criadoEm)}</span>`
+      : `🧽 Em andamento <span class="mute">· ${feitas} de ${et.length}</span>`;
+    const chips = et.map(e => `<button class="chip ${ch[e.id] ? "on" : ""}" data-act="check" data-id="${v.id}" data-e="${esc(e.id)}" ${v.concluido ? "disabled" : ""}>${ch[e.id] ? "✓ " : ""}${esc(e.nome)}</button>`).join("");
+    const acoes = v.concluido
+      ? `<button class="ok grow" data-act="avisar" data-id="${v.id}">📲 Avisar que está pronto</button>
+         <button data-act="reabrir" data-id="${v.id}">↶ Reabrir</button>`
+      : `<button class="${tudo ? "ok" : ""} grow" data-act="concluir" data-id="${v.id}">Concluir ✓</button>
+         <button data-act="editar" data-id="${v.id}">✏️ Editar</button>`;
     return `<div class="card">
-      <div class="v-head"><div><span class="placa">${esc(v.placa)}</span><p class="mute" style="margin-top:6px">${esc(v.modelo)}${v.modelo && v.nome ? " · " : ""}${esc(v.nome)}</p></div>
+      <div class="v-head"><div><span class="placa">${esc(v.placa)}</span><p class="mute" style="margin:6px 0 0">${esc(v.modelo)}${v.modelo && v.nome ? " · " : ""}${esc(v.nome)}</p></div>
         <button class="ghost" data-act="share" data-id="${v.id}">🔗 Link</button></div>
-      <div class="segs ${v.concluido ? "fim" : ""}">${segs}</div>
+      <div class="bar ${v.concluido ? "fim" : ""}"><i style="width:${v.concluido ? 100 : Math.round(100*feitas/et.length)}%"></i></div>
       <div class="status">${status}</div>
-      <div class="acts">${principal}
-        <button data-act="voltar" data-id="${v.id}" ${(!v.concluido && v.etapa === 0) ? "disabled" : ""}>↶ Voltar</button>
-        <button class="ghost danger" data-act="remover" data-id="${v.id}">Remover</button></div>
+      <div class="chips">${chips}</div>
+      <div class="acts">${acoes}<button class="ghost danger" data-act="remover" data-id="${v.id}">Remover</button></div>
     </div>`;
   }).join("");
 }
@@ -269,18 +360,23 @@ function renderLista(){
 $("#lista").onclick = async ev => {
   const b = ev.target.closest("[data-act]"); if (!b) return;
   const v = lista.find(x => x.id === b.dataset.id); if (!v) return;
-  const t = {...(v.tempos || {})};
+  const act = b.dataset.act;
   try {
-    if (b.dataset.act === "avancar"){
-      if (v.etapa < ETAPAS.length - 1){ const n = v.etapa + 1; t[n] = Date.now(); await store.atualizar(v.id,{etapa:n, tempos:t}); }
-      else { t.fim = Date.now(); await store.atualizar(v.id,{concluido:true, tempos:t}); abrirShare({...v, tempos:t}, true); }
-    } else if (b.dataset.act === "voltar"){
-      if (v.concluido){ delete t.fim; await store.atualizar(v.id,{concluido:false, tempos:t}); }
-      else if (v.etapa > 0){ delete t[v.etapa]; await store.atualizar(v.id,{etapa:v.etapa-1, tempos:t}); }
-    } else if (b.dataset.act === "remover"){
-      if (confirm(`Remover ${v.placa}? O link do cliente deixará de funcionar.`)) await store.remover(v.id);
-    } else if (b.dataset.act === "share") abrirShare(v);
-    else if (b.dataset.act === "avisar") abrirShare(v, true);
+    if (act === "check"){
+      const ch = {...checksDe(v)}, e = b.dataset.e;
+      if (ch[e]) delete ch[e]; else ch[e] = Date.now();
+      await store.atualizar(v.id, {checks: ch});
+    } else if (act === "concluir"){
+      const et = etapasDe(v), ch = checksDe(v), faltam = et.filter(e => !ch[e.id]).map(e => e.nome);
+      if (faltam.length && !confirm(`Ainda não marcadas: ${faltam.join(", ")}.\nConcluir mesmo assim?`)) return;
+      const fimEm = Date.now();
+      await store.atualizar(v.id, {concluido: true, fimEm});
+      abrirShare({...v, fimEm}, true);
+    } else if (act === "reabrir") await store.atualizar(v.id, {concluido: false, fimEm: null});
+    else if (act === "editar") abrirEdit(v);
+    else if (act === "remover"){ if (confirm(`Remover ${v.placa}? O link do cliente deixará de funcionar.`)) await store.remover(v.id); }
+    else if (act === "share") abrirShare(v);
+    else if (act === "avisar") abrirShare(v, true);
   } catch(e){ alert("Não foi possível salvar: " + e.message); }
 };
 
@@ -292,20 +388,47 @@ document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
 
 $("#fNovo").onsubmit = async ev => {
   ev.preventDefault();
-  const placa = $("#nPlaca").value.toUpperCase().replace(/[^A-Z0-9]/g,"");
+  const placa = placaLimpa($("#nPlaca").value);
+  const etapas = lerChecks($("#nEtapas"), etapasCfg);
   if (placa.length < 7){ $("#nErro").textContent = "Placa inválida."; return; }
+  if (!etapas.length){ $("#nErro").textContent = "Selecione pelo menos uma etapa."; return; }
   $("#nErro").textContent = "";
   const d = { placa, modelo: $("#nModelo").value.trim(), nome: $("#nNome").value.trim(),
-              telefone: $("#nTel").value.replace(/\D/g,""), etapa: 0, concluido: false,
-              tempos: {0: Date.now()}, criadoEm: Date.now() };
+              telefone: $("#nTel").value.replace(/\D/g,""), etapas, checks: {},
+              concluido: false, criadoEm: Date.now() };
   try {
     const id = await store.criar(d);
-    ev.target.reset();
+    ev.target.reset(); renderNovoChecks();
     abrirShare({...d, id});
   } catch(e){ $("#nErro").textContent = "Erro ao registrar: " + e.message; }
 };
 
-/* ---------- Compartilhar ---------- */
+/* ---------- Editar veículo ---------- */
+let editAtual = null, editLista = [];
+function abrirEdit(v){
+  editAtual = v;
+  $("#ePlaca").value = v.placa; $("#eModelo").value = v.modelo || ""; $("#eNome").value = v.nome || ""; $("#eTel").value = v.telefone || "";
+  const atuais = etapasDe(v), ids = new Set(atuais.map(e => e.id));
+  editLista = [...atuais, ...etapasCfg.filter(e => !ids.has(e.id))];
+  renderChecks($("#eEtapas"), editLista, ids);
+  $("#eErro").textContent = "";
+  abrir("mEdit");
+}
+$("#fEdit").onsubmit = async ev => {
+  ev.preventDefault();
+  const placa = placaLimpa($("#ePlaca").value), etapas = lerChecks($("#eEtapas"), editLista);
+  if (placa.length < 7){ $("#eErro").textContent = "Placa inválida."; return; }
+  if (!etapas.length){ $("#eErro").textContent = "Selecione pelo menos uma etapa."; return; }
+  const ch = {}, velho = checksDe(editAtual);
+  etapas.forEach(e => { if (velho[e.id]) ch[e.id] = velho[e.id]; });
+  try {
+    await store.atualizar(editAtual.id, { placa, modelo: $("#eModelo").value.trim(), nome: $("#eNome").value.trim(),
+      telefone: $("#eTel").value.replace(/\D/g,""), etapas, checks: ch });
+    fechar("mEdit");
+  } catch(e){ $("#eErro").textContent = "Erro ao salvar: " + e.message; }
+};
+
+/* ---------- Compartilhar / avisar ---------- */
 let shareAtual = null;
 function abrirShare(v, pronto){
   shareAtual = v;
@@ -323,14 +446,16 @@ function abrirShare(v, pronto){
   $("#shWpp").href = `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`;
   $("#qr").innerHTML = "";
   if (!pronto && window.QRCode) new QRCode($("#qr"), {text: link, width: 200, height: 200});
-  $("#mShare").classList.add("on");
+  abrir("mShare");
 }
-$("#mShare").onclick = e => { if (e.target.id === "mShare" || e.target.closest("[data-close]")) $("#mShare").classList.remove("on"); };
+document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e => {
+  if (e.target === m || e.target.closest("[data-close]")) m.classList.remove("on");
+}));
 $("#shCopiar").onclick = async () => {
   try { await navigator.clipboard.writeText($("#shLink").value); } catch { $("#shLink").select(); document.execCommand("copy"); }
   $("#shCopiar").textContent = "Copiado ✓"; setTimeout(() => $("#shCopiar").textContent = "Copiar link", 1500);
 };
-$("#shVer").onclick = () => { $("#mShare").classList.remove("on"); abrirCliente(shareAtual.id, true); };
+$("#shVer").onclick = () => { fechar("mShare"); abrirCliente(shareAtual.id, true); };
 
 /* ---------- Login ---------- */
 $("#fLogin").onsubmit = async ev => {
