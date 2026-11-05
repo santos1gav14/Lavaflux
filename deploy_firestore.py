@@ -66,4 +66,5 @@ else:
         urllib.request.urlopen(req).read()
         print("Exclusão automática ativada (leva até 24 h para começar a valer)")
     except urllib.error.HTTPError as e:
-        print(f"AVISO: não foi possível ativar a exclusão automática ({e.code}): {e.read().decode()[:300]}")
+        msg = e.read().decode()
+        print("AVISO: exclusão automática nativa exige o plano Blaze; até lá o app faz a limpeza." if "billing" in msg else f"AVISO: não foi possível ativar a exclusão automática ({e.code}): {msg[:300]}")

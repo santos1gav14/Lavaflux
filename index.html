@@ -444,6 +444,7 @@ if (DEMO) {
     lista: (uid, cb) => sub(() => cb([...lav.values()].filter(v => v.est === uid && (!v.concluido || v.criadoEm >= Date.now() - 2*DIA)).sort((a,b) => b.criadoEm - a.criadoEm))),
     anteriores: async (uid, antesDe, n) => [...lav.values()].filter(v => v.est === uid && v.criadoEm < antesDe).sort((a,b) => b.criadoEm - a.criadoEm).slice(0, n),
     ts: ms => ms,
+    limparExpirados: async () => 0,
     um: (id, cb) => sub(() => cb(lav.get(id) || null)),
     async criar(d){ const id = token(); lav.set(id, {...d, id, expiraEm: d.criadoEm + DIAS_GUARDA*DIA});
       const e = ests.get(d.est) || {}, u = e.uso || {}; ests.set(d.est, {...e, uso: {...u, total: (u.total||0)+1, ultimo: d.criadoEm, [mesChave(d.criadoEm)]: (u[mesChave(d.criadoEm)]||0)+1}});
@@ -491,6 +492,13 @@ if (DEMO) {
     anteriores: async (uid, antesDe, n) => (await col("lavagens").where("est","==",uid).where("criadoEm","<",antesDe).orderBy("criadoEm","desc").limit(n).get())
       .docs.map(d => ({id: d.id, ...d.data()})),
     ts: ms => firebase.firestore.Timestamp.fromMillis(ms),
+    // Limpeza sem plano pago: veículos criados há mais de 90 dias cujo "expiraEm" já passou
+    async limparExpirados(uid){
+      const s = await col("lavagens").where("est","==",uid).where("criadoEm","<",Date.now() - DIAS_GUARDA*DIA).orderBy("criadoEm","desc").limit(200).get();
+      const venc = s.docs.filter(d => { const x = d.data().expiraEm; const ms = x && x.toMillis ? x.toMillis() : x; return !ms || ms < Date.now(); });
+      for (let i = 0; i < venc.length; i += 400){ const b = fs.batch(); venc.slice(i, i+400).forEach(d => b.delete(d.ref)); await b.commit(); }
+      return venc.length;
+    },
     um: (id, cb, err) => col("lavagens").doc(id).onSnapshot(d => cb(d.exists ? {id:d.id, ...d.data()} : null), err),
     // Registra o veículo e atualiza os contadores de uso do estabelecimento (uma operação só)
     async criar(d){
@@ -659,6 +667,9 @@ function iniciarPainel(){
     e => { $("#lista").innerHTML = `<div class="card vazio">Não foi possível carregar os veículos. Se acabou de ser aprovado, aguarde alguns minutos e recarregue.</div>`; console.error(e); }));
   renderBanner();
   if (!lerLS(LS_FUNC) && !funcMem) pedirNome(true);
+  // uma vez por dia por aparelho
+  const hoje = new Date().toDateString(), chave = "lavaflux_limpeza_" + uid;
+  if (lerLS(chave) !== hoje) store.limparExpirados(uid).then(() => gravarLS(chave, hoje)).catch(e => console.warn("limpeza", e));
 }
 function renderBanner(){
   const c = contaAtual, el = $("#banner");
