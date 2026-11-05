@@ -2,22 +2,21 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Membro da equipe = usuário logado cujo UID está na coleção "equipe"
+    // Membro da equipe = usuário logado cujo e-mail está nesta lista.
+    // Para adicionar um funcionário: crie o usuário em Authentication
+    // e inclua o e-mail dele aqui (entre aspas, separado por vírgula).
     function ehEquipe() {
       return request.auth != null &&
-             exists(/databases/$(database)/documents/equipe/$(request.auth.uid));
+             request.auth.token.email in [
+               "EMAIL_DO_FUNCIONARIO@exemplo.com"
+             ];
     }
 
     match /lavagens/{id} {
-      // Cliente: pode abrir SOMENTE o documento cujo código ele tem no link.
-      // "get" permite ler um documento pelo ID; "list" (listar todos) fica bloqueado.
+      // Cliente: abre SOMENTE o documento cujo código está no link.
+      // "get" lê um documento pelo ID; "list" (listar todos) fica bloqueado.
       allow get: if true;
       allow list, create, update, delete: if ehEquipe();
-    }
-
-    match /equipe/{uid} {
-      allow read: if request.auth != null && request.auth.uid == uid;
-      allow write: if false; // cadastre a equipe pelo console do Firebase
     }
   }
 }

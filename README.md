@@ -10,14 +10,13 @@ Etapas: Em espera → Lavagem → Secagem → Limpeza interna → Finalização 
 ## Por que o cliente só vê o próprio veículo
 Cada atendimento recebe um código aleatório de 20 caracteres (impossível de adivinhar). As regras do Firestore permitem abrir um documento **pelo código**, mas bloqueiam listar a coleção. Telefone fica guardado, mas a tela do cliente não o exibe.
 
-## Configuração (≈15 min)
-1. **Firebase** → console.firebase.google.com → criar projeto → adicionar app Web → copiar o `firebaseConfig` para o topo do `<script>` no `index.html` (troque também `NOME_LAVAJATO` se quiser).
-2. **Firestore Database** → criar → aba *Regras* → colar o conteúdo de `firestore.rules` → Publicar.
-3. **Authentication** → ativar *E-mail/senha* → aba *Usuários* → adicionar cada funcionário (e-mail + senha). Copie o **UID** de cada um.
-4. **Firestore** → criar coleção `equipe` → um documento por funcionário, com **ID = UID** dele (pode ter um campo `nome`). Só quem está nessa coleção mexe nos veículos — mesmo que alguém crie conta por fora, não consegue nada.
-5. **Hospedagem**: subir o `index.html` num repositório do GitHub e ativar o GitHub Pages (ou usar Firebase Hosting).
+## Configuração
+O `firebaseConfig` já está no `index.html` (projeto `lavaflux-1da77`). Falta, no console do Firebase:
+1. **Firestore Database** → Criar banco → local `southamerica-east1 (São Paulo)` → modo produção → aba *Regras* → colar `firestore.rules` com os e-mails da equipe → Publicar.
+2. **Authentication** → Vamos começar → *E-mail/senha* → Ativar → aba *Usuários* → Adicionar usuário para cada funcionário.
+3. Todo funcionário novo: criar o usuário (passo 2) **e** incluir o e-mail dele na lista de `firestore.rules` (passo 1).
 
-Enquanto o `firebaseConfig` não for preenchido, o app abre em **modo demonstração** (dados só na tela), útil para testar o fluxo.
+Site: https://santos1gav14.github.io/lavaflux/
 
 ## Uso no dia a dia
 1. Cliente chega → equipe registra placa (modelo, nome e WhatsApp opcionais).

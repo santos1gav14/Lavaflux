@@ -139,12 +139,12 @@ button:disabled{opacity:.45;cursor:default}
 /* ================== CONFIGURAÇÃO ================== */
 const NOME_LAVAJATO = "Lavaflux";
 const firebaseConfig = {
-  apiKey: "COLE_AQUI",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyCxUaPVTFyp0zaxOmLJjlTB2QXrBllp0DM",
+  authDomain: "lavaflux-1da77.firebaseapp.com",
+  projectId: "lavaflux-1da77",
+  storageBucket: "lavaflux-1da77.firebasestorage.app",
+  messagingSenderId: "744979919279",
+  appId: "1:744979919279:web:d70c697928294589cd7f5a"
 };
 /* ================================================= */
 
@@ -238,7 +238,7 @@ function iniciarPainel(){
   $("#btSair").classList.toggle("hidden", DEMO);
   if (pararLista) pararLista();
   pararLista = store.lista(l => { lista = l; renderLista(); },
-    e => { $("#lista").innerHTML = `<div class="card vazio">Sem permissão para ver os veículos. Confira se seu usuário está na coleção <b>equipe</b> (veja o LEIA-ME).</div>`; console.error(e); });
+    e => { $("#lista").innerHTML = `<div class="card vazio">Sem permissão para ver os veículos. Confira se o seu e-mail está na lista da equipe nas regras do Firestore.</div>`; console.error(e); });
 }
 
 function renderLista(){
