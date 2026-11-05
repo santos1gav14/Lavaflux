@@ -1,0 +1,25 @@
+name: Publicar no Firebase Hosting
+on:
+  push:
+    branches: [main]
+    paths: [index.html, logo.svg, deploy_hosting.py, .github/workflows/publicar.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/744979919279/locations/global/workloadIdentityPools/github/providers/github
+          service_account: github-deploy@lavaflux-1da77.iam.gserviceaccount.com
+          token_format: access_token
+      - name: Publicar
+        run: python3 deploy_hosting.py
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+          PROJECT: lavaflux-1da77
