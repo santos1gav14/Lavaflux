@@ -116,6 +116,23 @@ footer.rod svg{width:18px;height:18px}
 .et-row{display:flex;gap:6px;align-items:center;margin-bottom:8px}
 .et-row input{margin:0;flex:1}
 .et-row button{padding:9px 11px}
+.banner{border-radius:14px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px}
+.banner .tx{flex:1 1 200px}
+.banner.info{background:var(--soft);color:var(--ink)}
+.banner.alerta{background:#fff1d6;color:#6b4500}
+@media (prefers-color-scheme:dark){.banner.alerta{background:#3a2c0c;color:#f6c560}}
+.banner button{padding:8px 14px}
+.paybox{border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0;text-align:left}
+.paybox h4{margin:0 0 6px;font-size:16px}
+.pixkey{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:10px;word-break:break-all;margin:6px 0}
+.preco{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.preco small{font-size:15px;color:var(--mute);font-weight:600}
+.tiles.t4{grid-template-columns:repeat(4,1fr)}
+#tabsA{overflow-x:auto;scrollbar-width:none}
+#tabsA button{flex:1 0 auto;padding:9px 10px}
+@media(max-width:420px){.tiles.t4{grid-template-columns:repeat(2,1fr)}}
+.plano{font-size:14px;font-weight:600;margin-top:6px}
+.plano.ok{color:var(--ok)}.plano.av{color:var(--warn)}.plano.ve{color:var(--danger)}
 .hidden{display:none!important}
 </style>
 </head>
@@ -155,7 +172,7 @@ footer.rod svg{width:18px;height:18px}
     </form>
     <div class="card" style="text-align:center">
       <p style="margin-bottom:4px"><b>Tem um lava jato?</b></p>
-      <p class="mute">Cadastre seu estabelecimento. Após a aprovação, é só começar a usar.</p>
+      <p class="mute">Cadastre seu estabelecimento e use <b>grátis por 15 dias</b> após a aprovação.</p>
       <button class="w100" id="btIrCadastro">Criar conta do estabelecimento</button>
     </div>
   </section>
@@ -168,6 +185,7 @@ footer.rod svg{width:18px;height:18px}
       <h2>Criar conta do estabelecimento</h2>
       <p class="mute">O nome aparece para os seus clientes e nas mensagens do WhatsApp.</p>
       <label class="f">Nome do estabelecimento *</label><input id="cNome" maxlength="40" required placeholder="Ex.: Lava Jato do Zé">
+      <label class="f">WhatsApp do responsável *</label><input id="cWhats" type="tel" inputmode="tel" required placeholder="(51) 99999-0000">
       <label class="f">E-mail *</label><input id="cEmail" type="email" autocomplete="username" required>
       <label class="f">Senha * (mínimo 6 caracteres)</label><input id="cSenha" type="password" autocomplete="new-password" required minlength="6">
       <label class="f">Repita a senha *</label><input id="cSenha2" type="password" autocomplete="new-password" required minlength="6">
@@ -188,6 +206,7 @@ footer.rod svg{width:18px;height:18px}
     <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm" id="painelNome"></span></div>
       <div style="text-align:right;margin-left:auto"><button id="btNome" class="ghost">👤</button><button id="btAjustes" class="ghost">⚙️ Ajustes</button><button class="ghost" data-sair>Sair</button></div></header>
 
+    <div id="banner"></div>
     <form id="fNovo" class="card">
       <h3>Novo veículo</h3>
       <div class="seg"><label><input type="radio" name="nTipo" value="carro" checked>🚗 Carro</label><label><input type="radio" name="nTipo" value="moto">🏍️ Moto</label></div>
@@ -212,14 +231,15 @@ footer.rod svg{width:18px;height:18px}
   <!-- ===== ADMINISTRADOR ===== -->
   <section id="vAdmin" class="hidden">
     <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span> <span class="mute" style="font-weight:600;font-size:15px">· Admin</span></span></div>
-      <button class="ghost" data-sair>Sair</button></header>
-    <div class="tiles">
+      <div style="margin-left:auto"><button class="ghost" id="btCobranca">💰 Cobrança</button><button class="ghost" data-sair>Sair</button></div></header>
+    <div class="tiles t4">
       <div class="tile"><b id="tPend">0</b><span>Aguardando</span></div>
-      <div class="tile"><b id="tAtv">0</b><span>Ativas</span></div>
-      <div class="tile"><b id="tIna">0</b><span>Desativadas</span></div>
+      <div class="tile"><b id="tTeste">0</b><span>Em teste</span></div>
+      <div class="tile"><b id="tAss">0</b><span>Assinantes</span></div>
+      <div class="tile"><b id="tVenc">0</b><span>Vencendo / vencidas</span></div>
     </div>
     <div class="tabs" id="tabsA">
-      <button data-f="pendente" class="on">Aguardando</button><button data-f="ativo">Ativas</button><button data-f="inativo">Desativadas</button><button data-f="todas">Todas</button>
+      <button data-f="pendente" class="on">Aguardando</button><button data-f="vencendo">Vencendo</button><button data-f="ativo">Ativas</button><button data-f="inativo">Desativadas</button><button data-f="todas">Todas</button>
     </div>
     <div id="adminLista"></div>
   </section>
@@ -265,6 +285,27 @@ footer.rod svg{width:18px;height:18px}
   </form>
 </div></div>
 
+<!-- ===== ASSINATURA (estabelecimento) ===== -->
+<div class="modal" id="mPagar"><div class="sheet">
+  <div class="v-head"><h3>Assinatura Lavaflux</h3><button class="ghost" data-close>✕</button></div>
+  <div id="pagarBox"></div>
+</div></div>
+
+<!-- ===== COBRANÇA (admin) ===== -->
+<div class="modal" id="mCob"><div class="sheet">
+  <div class="v-head"><div><h3>Cobrança</h3><p class="mute">Aparece para os lava jatos na tela de assinatura.</p></div><button class="ghost" data-close>✕</button></div>
+  <label class="f">Valor mensal (R$)</label><input id="cobPreco" inputmode="decimal" placeholder="49,90">
+  <h3 class="sec">Pix</h3>
+  <label class="f">Chave Pix</label><input id="cobPix" placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória">
+  <label class="f">Nome do titular</label><input id="cobPixNome">
+  <h3 class="sec">Cartão (Mercado Pago)</h3>
+  <label class="f">Link da assinatura mensal</label><input id="cobMp" type="url" placeholder="https://www.mercadopago.com.br/subscriptions/checkout?...">
+  <h3 class="sec">Suporte</h3>
+  <label class="f">Seu WhatsApp (para receber comprovantes)</label><input id="cobWhats" type="tel" inputmode="tel" placeholder="(51) 99999-0000">
+  <div class="erro" id="cobErro"></div>
+  <button id="cobSalvar" class="pri w100">Salvar</button>
+</div></div>
+
 <!-- ===== AJUSTES ===== -->
 <div class="modal" id="mCfg"><div class="sheet">
   <div class="v-head"><h3>Ajustes do estabelecimento</h3><button class="ghost" data-close>✕</button></div>
@@ -307,6 +348,8 @@ const HORARIO_PADRAO = {
   3:{aberto:true, abre:"08:00", fecha:"18:00"}, 4:{aberto:true, abre:"08:00", fecha:"18:00"},
   5:{aberto:true, abre:"08:00", fecha:"18:00"}, 6:{aberto:true, abre:"08:00", fecha:"13:00"}
 };
+const DIAS_TESTE = 15, DIAS_MES = 30, DIA = 864e5;
+const PRECO_PADRAO = "49,90";
 const DEMO = firebaseConfig.apiKey.startsWith("COLE");
 
 const $ = s => document.querySelector(s);
@@ -332,6 +375,11 @@ const seuVeic = v => moto(v) ? "sua moto" : "seu carro";
 const prontoV = v => moto(v) ? "pronta" : "pronto";
 const iconeV = v => moto(v) ? "🏍️" : "🚗";
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const diasAte = ms => Math.ceil((ms - Date.now()) / DIA);
+const vencida = c => !!(c && c.venceEm && Date.now() > c.venceEm);
+const emDias = n => n <= 0 ? "hoje" : n === 1 ? "amanhã" : `em ${n} dias`;
+const soDigitos = t => String(t || "").replace(/\D/g, "");
+const telBR = t => { const d = soDigitos(t); return d && d.length <= 11 ? "55" + d : d; };
 
 // Nome do funcionário: salvo no aparelho (o login é do estabelecimento)
 const LS_FUNC = "lavaflux_funcionario";
@@ -375,10 +423,12 @@ let store;
 if (DEMO) {
   // Modo de teste local: ?papel=admin | pendente | inativo (padrão: estabelecimento ativo)
   const papel = new URLSearchParams(location.search).get("papel") || "ativo";
-  const U = {uid: "est1", email: "demo@lavajato.com"};
-  const contas = new Map([["est1",{email:U.email, nome:"Lava Jato Demo", status: papel === "admin" ? "ativo" : papel, criadoEm: Date.now()-864e5*20}],
-    ["est2",{email:"zé@exemplo.com", nome:"Lava Jato do Zé", status:"pendente", criadoEm: Date.now()-36e5}],
-    ["est3",{email:"brilho@exemplo.com", nome:"Brilho Car", status:"inativo", criadoEm: Date.now()-864e5*60}]]);
+  const U = {uid: "est1", email: "demo@lavajato.com"}, N = Date.now();
+  const contas = new Map([["est1",{email:U.email, nome:"Lava Jato Demo", whatsapp:"51999990000", status: ["admin","vencido"].includes(papel) ? "ativo" : papel, plano:"teste", criadoEm: N-DIA*13, venceEm: papel === "vencido" ? N-DIA : N+DIA*2}],
+    ["est2",{email:"zé@exemplo.com", nome:"Lava Jato do Zé", whatsapp:"51988887777", status:"pendente", criadoEm: N-36e5}],
+    ["est3",{email:"brilho@exemplo.com", nome:"Brilho Car", whatsapp:"51977776666", status:"inativo", criadoEm: N-DIA*60}],
+    ["est4",{email:"top@exemplo.com", nome:"Top Wash", whatsapp:"51966665555", status:"ativo", plano:"assinante", criadoEm: N-DIA*50, venceEm: N+DIA*20}]]);
+  let cfgPlat = {preco:"49,90", pix:"12.345.678/0001-90", pixNome:"Santos Serviços", mpLink:"https://www.mercadopago.com.br/subscriptions/checkout?x=demo", suporteWhats:"51911112222"};
   const ests = new Map([["est1",{nome:"Lava Jato Demo"}],["est2",{nome:"Lava Jato do Zé"}],["est3",{nome:"Brilho Car"}]]);
   const lav = new Map(); const subs = new Set();
   const emit = () => subs.forEach(f => f());
@@ -396,9 +446,11 @@ if (DEMO) {
     async atualizar(id,p,ev){ const a = lav.get(id); lav.set(id, {...a, ...p, ...(ev ? {historico:[...(a.historico||[]), {...ev, por:quem(), em:Date.now()}]} : {})}); emit(); },
     async remover(id){ lav.delete(id); emit(); },
     contas: cb => sub(() => cb([...contas].map(([uid,c]) => ({uid, ...c})))),
+    config: cb => sub(() => cb(cfgPlat)),
+    salvarConfig: async o => { cfgPlat = {...cfgPlat, ...o}; emit(); },
+    atualizarConta: async (uid, patch) => { contas.set(uid, {...contas.get(uid), ...patch}); emit(); },
     ests: cb => sub(() => cb(Object.fromEntries(ests))),
     todasLavagens: cb => sub(() => cb([...lav.values()])),
-    setStatus: async (uid, status) => { contas.set(uid, {...contas.get(uid), status}); emit(); }
   };
 } else {
   firebase.initializeApp(firebaseConfig);
@@ -414,8 +466,8 @@ if (DEMO) {
     cadastrar: (e,s) => au.createUserWithEmailAndPassword(e,s),
     souAdmin: async uid => { try { return (await col("admins").doc(uid).get()).exists; } catch { return false; } },
     conta: (uid, cb, err) => snapDoc(col("contas").doc(uid), cb, err),
-    async criarConta(uid, email, nome){
-      await col("contas").doc(uid).set({email, nome, status: "pendente", criadoEm: Date.now()});
+    async criarConta(uid, email, nome, whatsapp){
+      await col("contas").doc(uid).set({email, nome, whatsapp, status: "pendente", criadoEm: Date.now()});
       await col("estabelecimentos").doc(uid).set({nome, etapas: ETAPAS_PADRAO, horario: HORARIO_PADRAO}, {merge: true});
     },
     est: (uid, cb) => snapDoc(col("estabelecimentos").doc(uid), cb),
@@ -429,7 +481,9 @@ if (DEMO) {
     contas: (cb, err) => col("contas").onSnapshot(s => cb(s.docs.map(d => ({uid: d.id, ...d.data()}))), err),
     ests: cb => col("estabelecimentos").onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = d.data()); cb(o); }, () => cb({})),
     todasLavagens: cb => col("lavagens").onSnapshot(s => cb(s.docs.map(d => d.data())), () => cb([])),
-    setStatus: (uid, status) => col("contas").doc(uid).update({status, [status === "ativo" ? "aprovadoEm" : "alteradoEm"]: Date.now()})
+    config: cb => snapDoc(col("config").doc("plataforma"), cb),
+    salvarConfig: o => col("config").doc("plataforma").set(o, {merge: true}),
+    atualizarConta: (uid, patch, pagamento) => col("contas").doc(uid).update(pagamento ? {...patch, pagamentos: firebase.firestore.FieldValue.arrayUnion(pagamento)} : patch)
   };
 }
 
@@ -472,7 +526,7 @@ function renderCliente(){
 $("#btVoltarPainel").onclick = () => { pararTudo(pararCli); history.replaceState(null,"",location.pathname); show("vPainel"); };
 
 /* ---------- Sessão ---------- */
-let usuario = null, pararSessao = [], cadastrando = null;
+let usuario = null, pararSessao = [], cadastrando = null, contaAtual = null, cfgPlat = {};
 function iniciarSessao(u){
   pararTudo(pararSessao); pararTudo(pararPainel); pararTudo(pararAdmin);
   usuario = u;
@@ -480,28 +534,39 @@ function iniciarSessao(u){
   store.souAdmin(u.uid).then(adm => {
     if (usuario !== u) return;
     if (adm) { iniciarAdmin(); return; }
+    pararSessao.push(store.config(c => { cfgPlat = c || {}; avaliarConta(); }));
     pararSessao.push(store.conta(u.uid, c => {
       if (!c){
         if (cadastrando) return;   // cadastro sendo gravado
-        espera("semconta"); return;
+        contaAtual = null; espera("semconta"); return;
       }
-      if (c.status === "ativo") { if (!painelAtivo) iniciarPainel(); }
-      else { pararTudo(pararPainel); painelAtivo = false; espera(c.status, c); }
+      contaAtual = c; avaliarConta();
     }, () => espera("erro")));
   });
 }
+function avaliarConta(){
+  const c = contaAtual; if (!c || !usuario) return;
+  if (c.status === "ativo" && !vencida(c)) { if (!painelAtivo) iniciarPainel(); else renderBanner(); }
+  else { pararTudo(pararPainel); painelAtivo = false; espera(c.status === "ativo" ? "vencido" : c.status, c); }
+}
+setInterval(avaliarConta, 60000);   // bloqueia no momento do vencimento
+
 function espera(tipo, c){
   show("vEspera");
   const box = $("#esperaBox");
   if (tipo === "pendente") box.innerHTML = `<div style="font-size:48px">⏳</div><h2>Cadastro recebido!</h2><p><b>${esc(c.nome)}</b> está aguardando aprovação.</p><p class="mute">Esta tela abre o painel sozinha assim que a conta for aprovada.</p>`;
   else if (tipo === "inativo") box.innerHTML = `<div style="font-size:48px">🔒</div><h2>Conta desativada</h2><p class="mute">O acesso de <b>${esc(c.nome)}</b> está desativado. Entre em contato com o suporte do Lavaflux.</p>`;
-  else if (tipo === "semconta") box.innerHTML = `<div style="font-size:48px">📝</div><h2>Conclua o cadastro</h2><p class="mute">Informe o nome do estabelecimento.</p>
-      <input id="fimNome" maxlength="40" placeholder="Ex.: Lava Jato do Zé"><div class="erro" id="fimErro"></div><button class="pri w100" id="fimBt">Enviar para aprovação</button>`;
+  else if (tipo === "vencido") box.innerHTML = `<div style="font-size:48px">⛔</div><h2>${c.plano === "assinante" ? "Mensalidade vencida" : "Teste grátis encerrado"}</h2>
+      <p>${c.plano === "assinante" ? "A mensalidade" : "O período de teste"} de <b>${esc(c.nome)}</b> venceu em ${data(c.venceEm)} e o painel foi pausado.</p>
+      <p class="mute">Seus dados e os links dos clientes estão guardados. Assine para voltar a usar — o acesso volta assim que o pagamento for confirmado.</p>${pagamentoHtml()}`;
+  else if (tipo === "semconta") box.innerHTML = `<div style="font-size:48px">📝</div><h2>Conclua o cadastro</h2><p class="mute">Informe o nome do estabelecimento e o WhatsApp do responsável.</p>
+      <input id="fimNome" maxlength="40" placeholder="Nome do estabelecimento"><input id="fimWhats" type="tel" inputmode="tel" placeholder="WhatsApp do responsável"><div class="erro" id="fimErro"></div><button class="pri w100" id="fimBt">Enviar para aprovação</button>`;
   else box.innerHTML = `<div style="font-size:48px">⚠️</div><h2>Não foi possível carregar</h2><p class="mute">Verifique a internet e tente de novo.</p>`;
   const bt = $("#fimBt");
   if (bt) bt.onclick = async () => {
-    const n = $("#fimNome").value.trim(); if (!n) return;
-    try { await store.criarConta(usuario.uid, usuario.email, n); } catch(e){ $("#fimErro").textContent = "Erro: " + e.message; }
+    const n = $("#fimNome").value.trim(), w = soDigitos($("#fimWhats").value);
+    if (!n || w.length < 10){ $("#fimErro").textContent = "Preencha o nome e um WhatsApp com DDD."; return; }
+    try { await store.criarConta(usuario.uid, usuario.email, n, w); } catch(e){ $("#fimErro").textContent = "Erro: " + e.message; }
   };
 }
 document.querySelectorAll("[data-sair]").forEach(b => b.onclick = () => store.sair());
@@ -526,11 +591,13 @@ $("#btVoltarLogin").onclick = () => show("vLogin");
 $("#fCad").onsubmit = async ev => {
   ev.preventDefault();
   const nome = $("#cNome").value.trim(), email = $("#cEmail").value.trim(), s1 = $("#cSenha").value, s2 = $("#cSenha2").value;
+  const whats = soDigitos($("#cWhats").value);
+  if (whats.length < 10){ $("#cErro").textContent = "Informe o WhatsApp com DDD."; return; }
   if (s1 !== s2){ $("#cErro").textContent = "As senhas não são iguais."; return; }
   $("#cErro").textContent = ""; cadastrando = {nome};
   try {
     const r = await store.cadastrar(email, s1);
-    await store.criarConta(r.user.uid, email, nome);
+    await store.criarConta(r.user.uid, email, nome, whats);
   } catch(e){
     $("#cErro").textContent = ({ "auth/email-already-in-use": "Este e-mail já tem conta. Volte e entre, ou use \"Esqueci minha senha\".",
       "auth/weak-password": "Senha fraca: use pelo menos 6 caracteres.", "auth/invalid-email": "E-mail inválido." })[e.code] || "Erro ao criar conta: " + e.message;
@@ -554,8 +621,34 @@ function iniciarPainel(){
   }));
   pararPainel.push(store.lista(uid, l => { lista = l; renderLista(); },
     e => { $("#lista").innerHTML = `<div class="card vazio">Não foi possível carregar os veículos. Se acabou de ser aprovado, aguarde alguns minutos e recarregue.</div>`; console.error(e); }));
+  renderBanner();
   if (!lerLS(LS_FUNC) && !funcMem) pedirNome(true);
 }
+function renderBanner(){
+  const c = contaAtual, el = $("#banner");
+  if (!c || !c.venceEm){ el.innerHTML = ""; return; }
+  const n = diasAte(c.venceEm), teste = c.plano !== "assinante";
+  if (!teste && n > 5){ el.innerHTML = ""; return; }
+  const txt = teste ? `🎁 <b>Teste grátis</b>: termina ${emDias(n)} (${data(c.venceEm)}).` : `💳 Sua mensalidade vence ${emDias(n)} (${data(c.venceEm)}).`;
+  el.innerHTML = `<div class="banner ${n <= 3 ? "alerta" : "info"}"><span class="tx">${txt}</span><button class="pri" data-pagar>${teste ? "Assinar" : "Pagar"}</button></div>`;
+}
+function pagamentoHtml(){
+  const c = cfgPlat || {}, preco = c.preco || PRECO_PADRAO;
+  const comprov = c.suporteWhats ? `https://wa.me/${telBR(c.suporteWhats)}?text=${encodeURIComponent(`Olá! Segue o comprovante da assinatura do Lavaflux — ${(contaAtual && contaAtual.nome) || ""} (${(usuario && usuario.email) || ""}).`)}` : "";
+  return `<div style="text-align:center;margin:12px 0 4px"><div class="preco">R$ ${esc(preco)} <small>/ mês</small></div><p class="mute">Sem fidelidade: cancele quando quiser.</p></div>
+    ${c.pix ? `<div class="paybox"><h4>💠 Pagar com Pix</h4><div class="pixkey" id="pixKey">${esc(c.pix)}</div>${c.pixNome ? `<p class="mute">Titular: ${esc(c.pixNome)}</p>` : ""}
+      <button class="w100" data-copiar-pix>Copiar chave Pix</button>
+      ${comprov ? `<a class="btn w100" style="margin-top:8px" target="_blank" rel="noopener" href="${comprov}">📲 Enviar comprovante no WhatsApp</a>` : ""}</div>` : ""}
+    ${c.mpLink ? `<div class="paybox"><h4>💳 Pagar com cartão</h4><p class="mute">Assinatura mensal pelo Mercado Pago — cobra todo mês automaticamente.</p>
+      <a class="btn pri w100" target="_blank" rel="noopener" href="${esc(c.mpLink)}">Assinar com cartão</a></div>` : ""}
+    ${!c.pix && !c.mpLink ? `<p class="mute">Formas de pagamento em configuração. Fale com o suporte do Lavaflux.</p>` : ""}
+    <p class="mute" style="text-align:center">A liberação é feita assim que o pagamento é confirmado.</p>`;
+}
+document.addEventListener("click", async e => {
+  if (e.target.closest("[data-pagar]")){ $("#pagarBox").innerHTML = pagamentoHtml(); abrir("mPagar"); }
+  const cp = e.target.closest("[data-copiar-pix]");
+  if (cp){ try { await navigator.clipboard.writeText((cfgPlat && cfgPlat.pix) || ""); cp.textContent = "Chave copiada ✓"; } catch { cp.textContent = "Copie a chave acima"; } }
+});
 
 function renderChecks(box, l, marcados){
   box.innerHTML = l.map(e => `<label><input type="checkbox" value="${esc(e.id)}" ${marcados.has(e.id) ? "checked" : ""}>${esc(e.nome)}</label>`).join("")
@@ -774,31 +867,52 @@ $("#shVer").onclick = () => { fechar("mShare"); abrirCliente(shareAtual.id, true
 let pararAdmin = [], aContas = [], aEsts = {}, aLav = [], aFiltro = "pendente";
 function iniciarAdmin(){
   show("vAdmin"); document.title = "Lavaflux · Admin";
+  pararAdmin.push(store.config(c => { cfgPlat = c || {}; }));
   pararAdmin.push(store.contas(l => { aContas = l; renderAdmin(); }, e => { $("#adminLista").innerHTML = `<div class="card vazio">Erro ao carregar contas: ${esc(e.message)}</div>`; }));
   pararAdmin.push(store.ests(o => { aEsts = o; renderAdmin(); }));
   pararAdmin.push(store.todasLavagens(l => { aLav = l; renderAdmin(); }));
 }
 const ROTULO = {pendente: ["pe","Aguardando aprovação"], ativo: ["ab","Ativa"], inativo: ["fe","Desativada"]};
+const vencendo = c => c.status === "ativo" && c.venceEm && diasAte(c.venceEm) <= 3;
+function planoHtml(c){
+  if (c.status !== "ativo" || !c.venceEm) return "";
+  const n = diasAte(c.venceEm), ass = c.plano === "assinante";
+  if (vencida(c)) return `<p class="plano ve">⛔ ${ass ? "Mensalidade vencida" : "Teste encerrado"} em ${data(c.venceEm)} — painel bloqueado</p>`;
+  return `<p class="plano ${n <= 3 ? "av" : "ok"}">${ass ? "💳 Assinante" : "🎁 Teste grátis"} até ${data(c.venceEm)} (${n <= 0 ? "vence hoje" : n === 1 ? "falta 1 dia" : `faltam ${n} dias`})</p>`;
+}
+function msgAviso(c){
+  const nome = (aEsts[c.uid] && aEsts[c.uid].nome) || c.nome, preco = cfgPlat.preco || PRECO_PADRAO, ass = c.plano === "assinante";
+  const pag = `Você pode pagar por Pix ou cartão direto no app, no botão "${ass ? "Pagar" : "Assinar"}".`;
+  if (vencida(c)) return `Olá, ${nome}! Aqui é do Lavaflux. ${ass ? "Sua mensalidade" : "Seu período de teste gratuito"} terminou em ${data(c.venceEm)} e o acesso ao painel foi pausado. Seus dados e os links dos clientes estão guardados. Para voltar a usar, é só ${ass ? "renovar" : "assinar"} o plano mensal de R$ ${preco}, sem fidelidade — cancele quando quiser. ${pag} Qualquer dúvida, estou à disposição!`;
+  const n = diasAte(c.venceEm);
+  return `Olá, ${nome}! Aqui é do Lavaflux. ${ass ? "Sua mensalidade vence" : "Seu período de teste gratuito termina"} ${emDias(n)} (${data(c.venceEm)}). Para continuar usando sem interrupção, ${ass ? "renove" : "assine"} o plano mensal de R$ ${preco}, sem fidelidade — cancele quando quiser. ${pag} Qualquer dúvida, estou à disposição!`;
+}
 function renderAdmin(){
-  const cont = s => aContas.filter(c => c.status === s).length;
-  $("#tPend").textContent = cont("pendente"); $("#tAtv").textContent = cont("ativo"); $("#tIna").textContent = cont("inativo");
+  const ativas = aContas.filter(c => c.status === "ativo");
+  $("#tPend").textContent = aContas.filter(c => c.status === "pendente").length;
+  $("#tTeste").textContent = ativas.filter(c => c.plano !== "assinante" && !vencida(c)).length;
+  $("#tAss").textContent = ativas.filter(c => c.plano === "assinante" && !vencida(c)).length;
+  $("#tVenc").textContent = aContas.filter(vencendo).length;
   const agora = Date.now(), d30 = agora - 30*864e5, stats = {};
   aLav.forEach(v => { const s = stats[v.est] = stats[v.est] || {total:0, mes:0, ultimo:0};
     s.total++; if (v.criadoEm >= d30) s.mes++; if (v.criadoEm > s.ultimo) s.ultimo = v.criadoEm; });
-  const l = aContas.filter(c => aFiltro === "todas" || c.status === aFiltro).sort((a,b) => (b.criadoEm||0) - (a.criadoEm||0));
-  if (!l.length){ $("#adminLista").innerHTML = `<div class="card vazio">Nenhuma conta ${aFiltro === "pendente" ? "aguardando aprovação" : aFiltro === "ativo" ? "ativa" : aFiltro === "inativo" ? "desativada" : ""}.</div>`; return; }
+  const l = aContas.filter(c => aFiltro === "todas" || (aFiltro === "vencendo" ? vencendo(c) : c.status === aFiltro))
+    .sort((a,b) => aFiltro === "vencendo" ? a.venceEm - b.venceEm : (b.criadoEm||0) - (a.criadoEm||0));
+  if (!l.length){ $("#adminLista").innerHTML = `<div class="card vazio">Nenhuma conta ${({pendente:"aguardando aprovação", vencendo:"vencendo nos próximos 3 dias", ativo:"ativa", inativo:"desativada"})[aFiltro] || ""}.</div>`; return; }
   $("#adminLista").innerHTML = l.map(c => {
     const nome = (aEsts[c.uid] && aEsts[c.uid].nome) || c.nome, s = stats[c.uid] || {total:0, mes:0, ultimo:0};
     const [cls, txt] = ROTULO[c.status] || ["pe", c.status];
     const base = Math.max(s.ultimo || 0, c.aprovadoEm || c.criadoEm || 0);
     const semUso = c.status === "ativo" && base < agora - 14*864e5;
+    const zap = c.whatsapp ? `<a class="btn ${vencendo(c) ? "pri" : ""}" target="_blank" rel="noopener" href="https://wa.me/${telBR(c.whatsapp)}?text=${encodeURIComponent(c.status === "ativo" && c.venceEm ? msgAviso(c) : `Olá, ${(aEsts[c.uid] && aEsts[c.uid].nome) || c.nome}! Aqui é do Lavaflux.`)}">📲 ${vencendo(c) ? "Avisar no WhatsApp" : "WhatsApp"}</a>` : "";
     const bts = c.status === "pendente"
-      ? `<button class="ok grow" data-st="ativo" data-u="${c.uid}">✓ Aprovar</button><button class="danger" data-st="inativo" data-u="${c.uid}">Recusar</button>`
-      : c.status === "ativo" ? `<button class="danger" data-st="inativo" data-u="${c.uid}">Desativar</button>`
-      : `<button class="ok" data-st="ativo" data-u="${c.uid}">Reativar</button>`;
+      ? `<button class="ok grow" data-st="ativo" data-u="${c.uid}">✓ Aprovar (${DIAS_TESTE} dias grátis)</button><button class="danger" data-st="inativo" data-u="${c.uid}">Recusar</button>${zap}`
+      : c.status === "ativo" ? `<button class="ok grow" data-pago="${c.uid}">💰 Pagamento recebido (+${DIAS_MES} dias)</button>${zap}<button class="ghost danger" data-st="inativo" data-u="${c.uid}">Desativar</button>`
+      : `<button class="ok" data-st="ativo" data-u="${c.uid}">Reativar</button>${zap}`;
     return `<div class="card">
       <div class="v-head" style="margin-bottom:4px"><div><h3 style="margin:0">${esc(nome)}</h3><p class="mute" style="margin:2px 0 0">${esc(c.email)}</p></div><span class="pill ${cls}">${txt}</span></div>
-      <div class="stats"><span>Cadastro: <b>${data(c.criadoEm)}</b></span><span>Veículos: <b>${s.total}</b></span><span>Últimos 30 dias: <b>${s.mes}</b></span><span>Último uso: <b>${s.ultimo ? data(s.ultimo) : "nunca"}</b></span></div>
+      ${planoHtml(c)}
+      <div class="stats"><span>WhatsApp: <b>${esc(c.whatsapp || "—")}</b></span><span>Cadastro: <b>${data(c.criadoEm)}</b></span><span>Veículos: <b>${s.total}</b></span><span>Últimos 30 dias: <b>${s.mes}</b></span><span>Último uso: <b>${s.ultimo ? data(s.ultimo) : "nunca"}</b></span></div>
       ${semUso ? `<p class="mute" style="color:var(--warn);margin:6px 0 0">⚠️ Sem uso há mais de 14 dias</p>` : ""}
       <div class="acts">${bts}</div></div>`;
   }).join("");
@@ -808,11 +922,38 @@ $("#tabsA").onclick = e => {
   aFiltro = b.dataset.f; $("#tabsA").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); renderAdmin();
 };
 $("#adminLista").onclick = async e => {
+  const pg = e.target.closest("[data-pago]");
+  if (pg){
+    const c = aContas.find(x => x.uid === pg.dataset.pago); if (!c) return;
+    const base = Math.max(c.venceEm || 0, Date.now()), ate = base + DIAS_MES * DIA;
+    if (!confirm(`Confirmar pagamento de ${(aEsts[c.uid] && aEsts[c.uid].nome) || c.nome}?\nO acesso fica liberado até ${data(ate)}.`)) return;
+    try { await store.atualizarConta(c.uid, {plano: "assinante", venceEm: ate, ultimoPagamento: Date.now()}, {em: Date.now(), ate, valor: cfgPlat.preco || PRECO_PADRAO}); }
+    catch(err){ alert("Erro: " + err.message); }
+    return;
+  }
   const b = e.target.closest("[data-st]"); if (!b) return;
   const c = aContas.find(x => x.uid === b.dataset.u); if (!c) return;
   const acao = b.dataset.st === "ativo" ? (c.status === "pendente" ? "Aprovar" : "Reativar") : (c.status === "pendente" ? "Recusar" : "Desativar");
-  if (!confirm(`${acao} ${(aEsts[c.uid] && aEsts[c.uid].nome) || c.nome}?`)) return;
-  try { await store.setStatus(c.uid, b.dataset.st); } catch(err){ alert("Erro: " + err.message); }
+  const extra = acao === "Aprovar" ? `\nO teste grátis vai até ${data(Date.now() + DIAS_TESTE * DIA)}.` : "";
+  if (!confirm(`${acao} ${(aEsts[c.uid] && aEsts[c.uid].nome) || c.nome}?${extra}`)) return;
+  const patch = {status: b.dataset.st, alteradoEm: Date.now()};
+  if (acao === "Aprovar" && !c.venceEm) Object.assign(patch, {aprovadoEm: Date.now(), plano: "teste", venceEm: Date.now() + DIAS_TESTE * DIA});
+  try { await store.atualizarConta(c.uid, patch); } catch(err){ alert("Erro: " + err.message); }
+};
+$("#btCobranca").onclick = () => {
+  const c = cfgPlat || {};
+  $("#cobPreco").value = c.preco || PRECO_PADRAO; $("#cobPix").value = c.pix || ""; $("#cobPixNome").value = c.pixNome || "";
+  $("#cobMp").value = c.mpLink || ""; $("#cobWhats").value = c.suporteWhats || ""; $("#cobErro").textContent = "";
+  abrir("mCob");
+};
+$("#cobSalvar").onclick = async () => {
+  const mp = $("#cobMp").value.trim();
+  if (mp && !/^https:\/\//.test(mp)){ $("#cobErro").textContent = "O link do Mercado Pago deve começar com https://"; return; }
+  try {
+    await store.salvarConfig({ preco: $("#cobPreco").value.trim() || PRECO_PADRAO, pix: $("#cobPix").value.trim(), pixNome: $("#cobPixNome").value.trim(),
+      mpLink: mp, suporteWhats: soDigitos($("#cobWhats").value) });
+    fechar("mCob");
+  } catch(e){ $("#cobErro").textContent = "Erro ao salvar: " + e.message; }
 };
 
 /* ---------- Início ---------- */

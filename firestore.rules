@@ -5,9 +5,10 @@ service cloud.firestore {
     function logado() { return request.auth != null; }
     // Administrador da plataforma: tem documento em /admins/{uid}
     function admin() { return logado() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
-    // Estabelecimento aprovado
+    // Estabelecimento aprovado e dentro do período pago / de teste
     function ativo() {
-      return logado() && get(/databases/$(database)/documents/contas/$(request.auth.uid)).data.status == "ativo";
+      let c = get(/databases/$(database)/documents/contas/$(request.auth.uid)).data;
+      return logado() && c.status == "ativo" && (!("venceEm" in c) || c.venceEm > request.time.toMillis());
     }
 
     match /admins/{uid} {
@@ -21,8 +22,15 @@ service cloud.firestore {
       allow list: if admin();
       allow create: if logado() && request.auth.uid == uid
         && request.resource.data.status == "pendente"
-        && request.resource.data.keys().hasOnly(["email", "nome", "status", "criadoEm"]);
+        && request.resource.data.keys().hasOnly(["email", "nome", "whatsapp", "status", "criadoEm"]);
       allow update, delete: if admin();
+    }
+
+    // Configuração da plataforma (preço, Pix, link de assinatura, WhatsApp de suporte)
+    match /config/{doc} {
+      allow get: if logado();
+      allow list: if false;
+      allow write: if admin();
     }
 
     // Dados públicos do estabelecimento (nome, etapas, horário) — o cliente lê
