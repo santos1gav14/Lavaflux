@@ -266,7 +266,7 @@ footer.rod svg{width:18px;height:18px}
       <div><label class="f">Modelo</label><input id="eModelo" placeholder="Onix prata"></div>
     </div>
     <div class="row">
-      <div><label class="f">Nome do cliente</label><input id="eNome"></div>
+      <div><label class="f">Nome do cliente</label><input id="eNome" placeholder="Ana"></div>
       <div><label class="f">WhatsApp</label><input id="eTel" type="tel" inputmode="tel"></div>
     </div>
     <label class="f">Etapas deste veículo</label>
@@ -800,10 +800,12 @@ $("#fNovo").onsubmit = async ev => {
 };
 
 /* ---------- Exemplo de modelo conforme carro/moto ---------- */
-const EXEMPLO_MODELO = {carro: "Onix prata", moto: "CG 150 vermelha"};
+const EXEMPLO_MODELO = {carro: "Onix prata", moto: "CG 150 vermelha"}, EXEMPLO_NOME = {carro: "Ana", moto: "João"};
 function ajustarExemplo(radioName, inputSel){
   const r = document.querySelector(`input[name=${radioName}]:checked`);
-  $(inputSel).placeholder = EXEMPLO_MODELO[r ? r.value : "carro"];
+  const t = r ? r.value : "carro";
+  $(inputSel).placeholder = EXEMPLO_MODELO[t];
+  const nome = $(inputSel === "#nModelo" ? "#nNome" : "#eNome"); if (nome) nome.placeholder = EXEMPLO_NOME[t];
 }
 document.querySelectorAll("input[name=nTipo]").forEach(r => r.addEventListener("change", () => ajustarExemplo("nTipo", "#nModelo")));
 document.querySelectorAll("input[name=eTipo]").forEach(r => r.addEventListener("change", () => ajustarExemplo("eTipo", "#eModelo")));
