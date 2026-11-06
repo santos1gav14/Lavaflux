@@ -222,7 +222,7 @@ body.modo-demo #vCliente{position:sticky;top:12px}
   <section id="vPainel" class="hidden" aria-label="Painel do estabelecimento">
     <p class="rotulo-visao">Visão da equipe</p>
     <header class="top demo-oculto"><div class="brand"><svg><use href="#logo"/></svg><span class="nm" id="painelNome"></span></div>
-      <div class="topbts"><button id="btNome" class="ghost">👤</button><button id="btEquipe" class="ghost so-dono">👥 Equipe</button><button id="btAjustes" class="ghost so-dono">⚙️ Ajustes</button><button class="ghost" data-sair>Sair</button></div></header>
+      <div class="topbts"><button id="btNome" class="ghost">👤</button><button id="btEquipe" class="ghost so-dono">👥 Equipe</button><button id="btAjustes" class="ghost so-dono">⚙️ Ajustes</button><button class="ghost so-dono" data-senha>🔑 Senha</button><button class="ghost" data-sair>Sair</button></div></header>
 
     <div id="banner"></div>
     <div id="guia"></div>
@@ -324,7 +324,7 @@ body.modo-demo #vCliente{position:sticky;top:12px}
   <!-- ===== ADMINISTRADOR DA PLATAFORMA ===== -->
   <section id="vAdmin" class="hidden">
     <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span> <span class="mute" style="font-weight:600;font-size:15px">· Admin</span></span></div>
-      <div class="topbts"><button class="ghost" id="btCobranca">💰 Cobrança</button><button class="ghost" data-sair>Sair</button></div></header>
+      <div class="topbts"><button class="ghost" id="btCobranca">💰 Cobrança</button><button class="ghost" data-senha>🔑 Senha</button><button class="ghost" data-sair>Sair</button></div></header>
     <div class="tiles t4">
       <div class="tile"><b id="tPend">0</b><span>Aguardando</span></div>
       <div class="tile"><b id="tTeste">0</b><span>Em teste</span></div>
@@ -402,6 +402,19 @@ body.modo-demo #vCliente{position:sticky;top:12px}
   <h3 class="sec">Acessos</h3>
   <div id="eqLista"><p class="mute">Carregando…</p></div>
   <p class="mute" style="margin-top:10px">Para trocar a senha de alguém, revogue o acesso e crie um novo usuário. Ações antigas continuam no histórico com o nome registrado na época.</p>
+</div></div>
+
+<!-- ===== ALTERAR SENHA (proprietário e administrador) ===== -->
+<div class="modal" id="mSenha" role="dialog" aria-modal="true" aria-labelledby="snTit"><div class="sheet">
+  <form id="fSenha2" novalidate>
+    <div class="v-head"><div><h3 id="snTit">Alterar senha</h3><p class="mute" id="snEmail"></p></div><button type="button" class="ghost" data-close aria-label="Fechar">✕</button></div>
+    <label class="f" for="snAtual">Senha atual</label><input id="snAtual" type="password" autocomplete="current-password">
+    <label class="f" for="snNova">Nova senha (mínimo 6 caracteres)</label><input id="snNova" type="password" autocomplete="new-password">
+    <label class="f" for="snNova2">Repita a nova senha</label><input id="snNova2" type="password" autocomplete="new-password">
+    <div class="erro" id="snErro" role="alert"></div>
+    <button class="pri w100" id="snBt">Salvar nova senha</button>
+    <p class="mute" style="margin-top:10px;text-align:center">Não lembra a senha atual? Saia e use "Esqueci minha senha" na tela de login.</p>
+  </form>
 </div></div>
 
 <!-- ===== ASSINATURA (proprietário) ===== -->
@@ -608,6 +621,7 @@ if (DEMO) {
   }
   store = {
     onAuth: cb => cb(U), entrar: async()=>{}, sair: async()=>{ location.href = "/"; }, esqueci: async()=>{},
+    trocarSenha: async (atual) => { if (atual !== "123456") { const e = new Error("x"); e.code = "auth/wrong-password"; throw e; } },
     cadastrar: async()=>{}, souAdmin: async()=> papel === "admin",
     membroGet: async uid => membros.get(uid) || null, membroWatch: (uid, cb) => sub(() => cb(membros.get(uid) || null)),
     conta: (uid, cb) => sub(() => cb(contas.get(uid) || null)),
@@ -655,6 +669,12 @@ if (DEMO) {
     entrar: (e,s) => au.signInWithEmailAndPassword(e,s),
     sair: () => au.signOut(),
     esqueci: e => au.sendPasswordResetEmail(e, {url: location.origin + location.pathname}),
+    // Confirma a senha atual antes de trocar (exigência de segurança do Firebase)
+    async trocarSenha(atual, nova){
+      const u = au.currentUser;
+      await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, atual));
+      await u.updatePassword(nova);
+    },
     cadastrar: (e,s) => au.createUserWithEmailAndPassword(e,s),
     souAdmin: async uid => { try { return (await col("admins").doc(uid).get()).exists; } catch { return false; } },
     membroGet: async uid => { try { const d = await col("membros").doc(uid).get(); return d.exists ? d.data() : null; } catch { return null; } },
@@ -1372,6 +1392,30 @@ $("#shCopiar").onclick = async () => {
   $("#shCopiar").textContent = "Copiado ✓"; setTimeout(() => $("#shCopiar").textContent = "Copiar link", 1500);
 };
 $("#shVer").onclick = () => { fechar("mShare"); abrirCliente(shareAtual.id, true); };
+
+/* ---------- Alterar senha (proprietário e administrador; funcionário pede novo acesso ao proprietário) ---------- */
+document.querySelectorAll("[data-senha]").forEach(b => b.onclick = () => {
+  $("#fSenha2").reset(); $("#snErro").textContent = ""; $("#snEmail").textContent = usuario ? usuario.email : "";
+  abrir("mSenha"); setTimeout(() => $("#snAtual").focus(), 50);
+});
+$("#fSenha2").onsubmit = async ev => {
+  ev.preventDefault();
+  const atual = $("#snAtual").value, nova = $("#snNova").value, nova2 = $("#snNova2").value, erro = m => $("#snErro").innerHTML = m;
+  if (!atual) return erro("Informe a senha atual.");
+  if (nova.length < 6) return erro("A nova senha precisa ter pelo menos 6 caracteres.");
+  if (nova !== nova2) return erro("As novas senhas não são iguais.");
+  if (nova === atual) return erro("A nova senha precisa ser diferente da atual.");
+  erro(""); $("#snBt").disabled = true; $("#snBt").textContent = "Salvando…";
+  try {
+    await store.trocarSenha(atual, nova);
+    $("#fSenha2").reset();
+    erro(`<span class="okmsg">Senha alterada. Use a nova senha no próximo login.</span>`);
+  } catch(e){
+    erro(({"auth/wrong-password": "Senha atual incorreta.", "auth/invalid-credential": "Senha atual incorreta.", "auth/invalid-login-credentials": "Senha atual incorreta.",
+      "auth/too-many-requests": "Muitas tentativas. Aguarde alguns minutos e tente de novo.", "auth/weak-password": "Senha fraca: use pelo menos 6 caracteres.",
+      "auth/network-request-failed": "Sem conexão. Verifique a internet e tente de novo."})[e.code] || "Não foi possível alterar a senha agora. Tente de novo.");
+  } finally { $("#snBt").disabled = false; $("#snBt").textContent = "Salvar nova senha"; }
+};
 
 /* ---------- Administrador da plataforma ---------- */
 let pararAdmin = [], aContas = [], aEsts = {}, aFiltro = "pendente";

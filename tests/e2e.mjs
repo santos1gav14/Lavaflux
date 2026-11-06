@@ -130,6 +130,19 @@ await dono.fill("#busca", "");
 const uso = (await (await fetch(`${FS}/estabelecimentos/${uidDono}`)).json()).fields.uso.mapValue.fields.total.integerValue;
 t(uso === "1", "contador de uso conta só o veículo real (" + uso + ")");
 
+// 9. Proprietário troca a própria senha e entra com a nova
+await dono.click("#vPainel [data-senha]");
+await dono.fill("#snAtual", "errada"); await dono.fill("#snNova", "novaSenha9"); await dono.fill("#snNova2", "novaSenha9"); await dono.click("#snBt");
+await dono.waitForSelector("#snErro:has-text('incorreta')", {timeout: 10000}); t(true, "troca de senha recusa senha atual errada");
+await dono.fill("#snAtual", "segredo1"); await dono.click("#snBt");
+await dono.waitForSelector("#snErro:has-text('Senha alterada')", {timeout: 10000}); t(true, "proprietário troca a senha");
+await dono.click("#mSenha [data-close]"); await dono.click("#vPainel [data-sair]");
+await dono.waitForSelector("#fLogin:visible");
+await dono.fill("#lEmail", "dono@teste.com"); await dono.fill("#lSenha", "segredo1"); await dono.click("#fLogin button.pri");
+await dono.waitForSelector("#lErro:has-text('incorretos')", {timeout: 10000}); t(true, "senha antiga deixa de funcionar");
+await dono.fill("#lSenha", "novaSenha9"); await dono.click("#fLogin button.pri");
+await dono.waitForSelector("#painelNome:has-text('Lava Jato Teste')", {timeout: 15000}); t(true, "entra com a senha nova");
+
 await b.close();
 console.log(`\nPonta a ponta: ${ok} passaram, ${falhas} falharam`);
 process.exit(falhas ? 1 : 0);
