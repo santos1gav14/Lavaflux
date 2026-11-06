@@ -642,7 +642,7 @@ if (DEMO) {
   const cfgUso = EMU ? {...firebaseConfig, projectId: "demo-lavaflux"} : firebaseConfig;
   firebase.initializeApp(cfgUso);
   const fs = firebase.firestore(), au = firebase.auth();
-  if (EMU){ fs.useEmulator("localhost", 8080); au.useEmulator("http://localhost:9099"); }
+  if (EMU){ fs.useEmulator("localhost", 8080); au.useEmulator("http://localhost:9099", {disableWarnings: true}); }
   else fs.enablePersistence({synchronizeTabs: true}).catch(() => {});   // cache no aparelho: ao reabrir, só o que mudou é lido
   au.languageCode = "pt-BR";
   const FV = firebase.firestore.FieldValue, TS = ms => firebase.firestore.Timestamp.fromMillis(ms);
@@ -709,7 +709,7 @@ if (DEMO) {
     async remover(id){ const b = fs.batch(); b.delete(privRef(id)); b.delete(col("lavagens").doc(id)); await b.commit(); },
     membros: (est, cb, err) => col("membros").where("est","==",est).onSnapshot(s => cb(s.docs.map(d => ({uid: d.id, ...d.data()}))), err),
     async criarMembro(est, codigo, usuarioM, nome, senha){
-      if (!app2){ app2 = firebase.initializeApp(cfgUso, "cadastroEquipe"); if (EMU) app2.auth().useEmulator("http://localhost:9099"); }
+      if (!app2){ app2 = firebase.initializeApp(cfgUso, "cadastroEquipe"); if (EMU) app2.auth().useEmulator("http://localhost:9099", {disableWarnings: true}); }
       const au2 = app2.auth();
       await au2.setPersistence(firebase.auth.Auth.Persistence.NONE);
       const cred = await au2.createUserWithEmailAndPassword(emailFunc(usuarioM, codigo), senha);
