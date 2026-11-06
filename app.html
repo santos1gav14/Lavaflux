@@ -800,6 +800,7 @@ function iniciarSessao(u){
   pararTudo(pararSessao); pararTudo(pararPainel); pararTudo(pararAdmin); painelAtivo = false;
   usuario = u; sessao = {papel: null, est: null, membro: null}; contaAtual = null;
   if (!u){ show(location.hash === "#cadastro" ? "vCadastro" : "vLogin"); return; }
+  if (location.hash === "#cadastro") history.replaceState(null, "", location.pathname + location.search);   // ao sair depois, volta para o login
   store.souAdmin(u.uid).then(async adm => {
     if (usuario !== u) return;
     if (adm) { sessao.papel = "admin"; iniciarAdmin(); return; }
