@@ -1,0 +1,26 @@
+name: Prévia para revisão
+on:
+  push:
+    branches: [revisao]
+    paths: [index.html, app.html, img/**, logo.svg, og.png, deploy_hosting.py, .github/workflows/previa.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  previa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/744979919279/locations/global/workloadIdentityPools/github/providers/github
+          service_account: github-deploy@lavaflux-1da77.iam.gserviceaccount.com
+          token_format: access_token
+      - name: Publicar só no canal de prévia (não altera o site em produção nem as regras do banco)
+        run: python3 deploy_hosting.py
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+          PROJECT: lavaflux-1da77
+          CHANNEL: revisao

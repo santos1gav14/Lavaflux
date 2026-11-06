@@ -1,0 +1,2 @@
+{ "name": "lavaflux-testes", "private": true, "type": "module",
+  "dependencies": { "@firebase/rules-unit-testing": "^4.0.1", "firebase": "^11.0.0", "playwright": "^1.48.0", "serve": "^14.2.4", "firebase-tools": "^14.0.0" } }

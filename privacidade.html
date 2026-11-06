@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Política de privacidade (rascunho) · Lavaflux</title>
+<style>
+body{margin:0;background:#f2f6fc;color:#13213a;font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 20px 64px}
+.rascunho{background:#fff1d6;color:#6b4500;border:2px solid #e2b04a;border-radius:12px;padding:14px 16px;margin-bottom:24px}
+h1{font-size:30px;line-height:1.2}h2{font-size:21px;margin-top:32px}
+.pend{background:#fde4e1;color:#8a1f16;border-radius:4px;padding:0 4px;font-weight:600}
+li{margin:4px 0}
+</style>
+</head>
+<body>
+<main>
+<div class="rascunho"><b>RASCUNHO — NÃO PUBLICAR.</b> Este texto descreve o tratamento de dados identificado no código do Lavaflux em 06/11/2026. Os trechos <span class="pend">destacados</span> precisam ser preenchidos ou decididos pelo responsável, e o documento inteiro deve ser revisado por um profissional jurídico antes da publicação. Ele não está incluído na publicação do site.</div>
+
+<h1>Política de privacidade do Lavaflux</h1>
+<p>Última atualização: <span class="pend">[data da publicação]</span></p>
+
+<h2>1. Quem somos</h2>
+<p>O Lavaflux é um aplicativo web para lava jatos acompanharem as etapas de lavagem de veículos e compartilharem esse andamento com seus clientes por um link.</p>
+<p>Responsável pelo Lavaflux: <span class="pend">[nome ou razão social]</span>, <span class="pend">[CPF/CNPJ]</span>, <span class="pend">[endereço]</span>. Contato para assuntos de privacidade: <span class="pend">[e-mail ou canal]</span>. Encarregado pelo tratamento de dados: <span class="pend">[nome e contato, ou justificativa de dispensa]</span>.</p>
+<p><span class="pend">[Definir com assessoria jurídica: em relação aos dados dos clientes dos lava jatos, o Lavaflux atua como operador e cada estabelecimento como controlador? Ajustar todo o texto conforme essa definição.]</span></p>
+
+<h2>2. Quais dados o Lavaflux trata</h2>
+<p><b>Conta do estabelecimento</b></p>
+<ul>
+  <li>Nome do estabelecimento, e-mail e WhatsApp do responsável.</li>
+  <li>Senha: gerenciada pelo serviço de autenticação do Google Firebase; o Lavaflux não tem acesso à senha.</li>
+  <li>Situação da conta (aguardando aprovação, ativa, desativada), plano (teste ou assinante), datas de aprovação e vencimento, e registros de pagamentos confirmados (data, valor e período liberado).</li>
+  <li>Configurações: etapas de serviço, horário de funcionamento e contadores de uso (quantidade de veículos registrados por mês e data do último registro).</li>
+</ul>
+<p><b>Funcionários com acesso individual</b></p>
+<ul>
+  <li>Nome, nome de usuário e situação do acesso (ativo ou revogado), cadastrados pelo proprietário.</li>
+  <li>Credencial de acesso gerenciada pelo Google Firebase.</li>
+  <li>Quando se usa o login do proprietário, o nome digitado em "Quem está usando este celular?" fica salvo apenas no navegador daquele aparelho.</li>
+</ul>
+<p><b>Veículos e clientes dos lava jatos</b></p>
+<ul>
+  <li>Placa, tipo (carro ou moto), modelo e, se informado, o primeiro nome do cliente.</li>
+  <li>WhatsApp do cliente, se informado, usado para abrir a conversa com a mensagem pronta.</li>
+  <li>Etapas do serviço e horários em que cada uma foi marcada, horário de conclusão e horário de entrega.</li>
+  <li>Histórico de ações (registro, marcações, conclusão, entrega, edições) com o nome de quem registrou e o horário.</li>
+</ul>
+
+<h2>3. O que aparece no link do cliente</h2>
+<p>Quem tem o link de acompanhamento vê: nome do estabelecimento, horário de funcionamento, placa, tipo e modelo do veículo, primeiro nome do cliente (se informado), etapas, horários das marcações e se o veículo está pronto ou foi entregue.</p>
+<p>O link <b>não</b> mostra o telefone do cliente nem os nomes da equipe. Cada link usa um código aleatório de 20 caracteres, e não é possível listar os veículos de outros clientes a partir dele.</p>
+<p><span class="pend">[Atenção: registros criados antes da atualização de privacidade podem conter telefone e histórico no documento público até a execução da migração descrita no relatório técnico.]</span></p>
+
+<h2>4. Para que os dados são usados</h2>
+<ul>
+  <li>Mostrar ao cliente o andamento do serviço do próprio veículo.</li>
+  <li>Permitir que a equipe registre etapas, conclusão e entrega, e consulte o histórico.</li>
+  <li>Preparar mensagens para o WhatsApp, enviadas manualmente pela equipe.</li>
+  <li>Gerenciar o cadastro, a aprovação, o período de teste e a assinatura do estabelecimento.</li>
+  <li>Prestar suporte.</li>
+</ul>
+<p>Bases legais aplicáveis: <span class="pend">[definir com assessoria jurídica para cada finalidade]</span>.</p>
+
+<h2>5. Serviços de terceiros identificados</h2>
+<ul>
+  <li><b>Google Firebase</b> (Authentication, Cloud Firestore e Hosting): autenticação, banco de dados e hospedagem. O banco foi configurado na região de São Paulo (southamerica-east1) <span class="pend">[confirmar no console do Firebase]</span>.</li>
+  <li><b>Google Fonts</b>: fontes do site de divulgação.</li>
+  <li><b>cdnjs (Cloudflare)</b>: biblioteca usada para gerar o QR code no painel.</li>
+  <li><b>WhatsApp</b>: o Lavaflux apenas abre a conversa (link wa.me) com o texto pronto; o envio é feito pelo usuário no WhatsApp.</li>
+  <li><b>Mercado Pago</b>: se o estabelecimento optar por pagar com cartão, é direcionado ao link de assinatura do Mercado Pago.</li>
+</ul>
+<p><span class="pend">[Revisar se há outros provedores, transferência internacional de dados e os termos de cada provedor.]</span></p>
+
+<h2>6. Por quanto tempo guardamos</h2>
+<ul>
+  <li><b>Veículos</b>: o registro é configurado para ser apagado 90 dias após a conclusão do serviço (ou 90 dias após o registro, se não for concluído). Enquanto a exclusão automática nativa do Firebase não estiver ativa, a limpeza é feita pelo próprio app quando o proprietário abre o painel. <span class="pend">[Confirmar o prazo e ativar a exclusão automática nativa antes de publicar.]</span></li>
+  <li><b>Conta do estabelecimento, funcionários e pagamentos</b>: <span class="pend">[definir prazos]</span>.</li>
+</ul>
+
+<h2>7. Armazenamento no aparelho</h2>
+<p>O app guarda no navegador: a sessão de login, uma cópia dos dados do painel para abrir mais rápido, o nome informado em "Quem está usando este celular?" e a data da última limpeza automática. <span class="pend">[Revisar necessidade de aviso de cookies.]</span></p>
+
+<h2>8. Segurança</h2>
+<p>O acesso aos dados é controlado por regras no banco: cada estabelecimento só acessa os próprios veículos; funcionários só acessam o pátio do estabelecimento ao qual estão vinculados; o proprietário pode revogar acessos. <span class="pend">[Revisar redação; não prometer segurança absoluta.]</span></p>
+
+<h2>9. Direitos dos titulares</h2>
+<p><span class="pend">[Descrever como o titular solicita acesso, correção ou exclusão, prazos de resposta e o papel de cada estabelecimento em relação aos dados dos seus clientes.]</span></p>
+
+<h2>10. Alterações</h2>
+<p><span class="pend">[Definir como os usuários serão avisados de mudanças nesta política.]</span></p>
+</main>
+</body>
+</html>

@@ -12,7 +12,8 @@ SITE = os.environ.get("SITE")
 QP = os.environ.get("QUOTA_PROJECT")
 DIR = os.environ.get("DIR", ".")
 API = "https://firebasehosting.googleapis.com/v1beta1"
-ARQUIVOS = ["index.html", "app.html", "logo.svg", "og.png"]
+ARQUIVOS = ["index.html", "app.html", "logo.svg", "og.png", "img/painel.png", "img/cliente.png"]
+# privacidade.html e termos.html são RASCUNHOS: entram aqui só depois de revisados e aprovados
 
 
 def call(method, url, body=None, raw=None):
@@ -52,5 +53,15 @@ pf = call("POST", f"{API}/{versao}:populateFiles", {"files": hashes})
 for h in pf.get("uploadRequiredHashes", []):
     call("POST", f"{pf['uploadUrl']}/{h}", raw=comprimidos[h])
 call("PATCH", f"{API}/{versao}?update_mask=status", {"status": "FINALIZED"})
-call("POST", f"{API}/sites/{SITE}/releases?versionName={versao}", {})
-print(f"Publicado em https://{SITE}.web.app")
+CANAL = os.environ.get("CHANNEL")   # canal de prévia: endereço separado, não altera o site em produção
+if CANAL:
+    req = urllib.request.Request(f"{API}/sites/{SITE}/channels?channelId={CANAL}", data=json.dumps({"ttl": "1209600s"}).encode(), method="POST",
+                                 headers={"Authorization": "Bearer " + T, "Content-Type": "application/json", **({"x-goog-user-project": QP} if QP else {})})
+    try: urllib.request.urlopen(req).read()
+    except urllib.error.HTTPError as e:
+        if e.code != 409: sys.exit(f"ERRO {e.code} ao criar canal: {e.read().decode()[:300]}")
+    call("POST", f"{API}/sites/{SITE}/channels/{CANAL}/releases?versionName={versao}", {})
+    print("Prévia publicada em", call("GET", f"{API}/sites/{SITE}/channels/{CANAL}").get("url"))
+else:
+    call("POST", f"{API}/sites/{SITE}/releases?versionName={versao}", {})
+    print(f"Publicado em https://{SITE}.web.app")

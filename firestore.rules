@@ -3,22 +3,37 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     function logado() { return request.auth != null; }
+    function doc(caminho) { return /databases/$(database)/documents/$(caminho); }
+
     // Administrador da plataforma: tem documento em /admins/{uid}
     function admin() { return logado() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
-    // Estabelecimento aprovado e dentro do período pago / de teste
-    function ativo() {
-      let c = get(/databases/$(database)/documents/contas/$(request.auth.uid)).data;
-      return logado() && c.status == "ativo" && (!("venceEm" in c) || c.venceEm > request.time.toMillis());
+
+    // Proprietário: o uid do estabelecimento é o uid do login do proprietário
+    function donoDe(est) { return logado() && request.auth.uid == est; }
+
+    // Funcionário com login próprio, ativo, vinculado a este estabelecimento
+    function funcDe(est) {
+      let m = /databases/$(database)/documents/membros/$(request.auth.uid);
+      return logado() && exists(m) && get(m).data.est == est && get(m).data.ativo == true;
     }
+
+    // Conta do estabelecimento aprovada e dentro do período pago / de teste
+    function contaOk(est) {
+      let c = get(/databases/$(database)/documents/contas/$(est)).data;
+      return c.status == "ativo" && (!("venceEm" in c) || c.venceEm > request.time.toMillis());
+    }
+
+    // Quem pode operar o pátio deste estabelecimento
+    function equipe(est) { return (donoDe(est) || funcDe(est)) && contaOk(est); }
 
     match /admins/{uid} {
       allow get: if logado() && request.auth.uid == uid;
       allow list, write: if false;
     }
 
-    // Dados privados da conta (e-mail e status) — só o dono e o admin
+    // Dados privados da conta (e-mail, WhatsApp, status, plano)
     match /contas/{uid} {
-      allow get: if logado() && (request.auth.uid == uid || admin());
+      allow get: if logado() && (request.auth.uid == uid || admin() || funcDe(uid));
       allow list: if admin();
       allow create: if logado() && request.auth.uid == uid
         && request.resource.data.status == "pendente"
@@ -26,10 +41,26 @@ service cloud.firestore {
       allow update, delete: if admin();
     }
 
-    // Configuração da plataforma (preço, Pix, link de assinatura, WhatsApp de suporte)
-    match /config/{doc} {
+    // Funcionários com login individual — só o proprietário cria, altera ou revoga
+    match /membros/{uid} {
+      allow get: if logado() && (request.auth.uid == uid || donoDe(resource.data.est) || admin());
+      allow list: if logado() && resource.data.est == request.auth.uid;
+      allow create: if donoDe(request.resource.data.est)
+        && request.resource.data.keys().hasOnly(["est", "nome", "usuario", "ativo", "criadoEm", "alteradoEm"])
+        && request.resource.data.ativo is bool;
+      allow update: if donoDe(resource.data.est) && request.resource.data.est == resource.data.est
+        && request.resource.data.usuario == resource.data.usuario;
+      allow delete: if donoDe(resource.data.est);
+    }
+
+    // Configuração da plataforma (preço, Pix, link de assinatura) — usuários logados
+    match /config/plataforma {
       allow get: if logado();
-      allow list: if false;
+      allow write: if admin();
+    }
+    // Contato público de suporte, exibido no site
+    match /config/publico {
+      allow get: if true;
       allow write: if admin();
     }
 
@@ -37,18 +68,30 @@ service cloud.firestore {
     match /estabelecimentos/{uid} {
       allow get: if true;
       allow list: if admin();
-      allow create, update: if admin() || (logado() && request.auth.uid == uid);
+      allow create: if admin() || donoDe(uid);
+      allow update: if admin() || donoDe(uid)
+        // funcionário só atualiza os contadores de uso ao registrar um veículo
+        || (funcDe(uid) && contaOk(uid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["uso"]));
       allow delete: if admin();
     }
 
-    // Veículos: o cliente abre só o documento cujo código está no link
+    // Veículo — dados mínimos para o cliente acompanhar pelo link (código aleatório de 20 caracteres)
     match /lavagens/{id} {
       allow get: if true;
-      allow list: if admin() || (ativo() && resource.data.est == request.auth.uid);
-      allow create: if ativo() && request.resource.data.est == request.auth.uid;
-      allow update: if ativo() && resource.data.est == request.auth.uid
-                    && request.resource.data.est == request.auth.uid;
-      allow delete: if admin() || (ativo() && resource.data.est == request.auth.uid);
+      allow list: if admin() || equipe(resource.data.est);
+      allow create: if equipe(request.resource.data.est);
+      allow update: if equipe(resource.data.est) && request.resource.data.est == resource.data.est;
+      allow delete: if admin() || (donoDe(resource.data.est) && contaOk(resource.data.est));
+
+      // Dados que o cliente não vê: telefone e histórico com nomes da equipe
+      match /privado/{doc} {
+        allow get: if admin() || equipe(resource.data.est);
+        allow list: if false;
+        allow create: if equipe(request.resource.data.est)
+          && getAfter(/databases/$(database)/documents/lavagens/$(id)).data.est == request.resource.data.est;
+        allow update: if equipe(resource.data.est) && request.resource.data.est == resource.data.est;
+        allow delete: if admin() || (donoDe(resource.data.est) && contaOk(resource.data.est));
+      }
     }
   }
 }
