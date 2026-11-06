@@ -385,7 +385,7 @@ body.modo-demo #vCliente{position:sticky;top:12px}
   <div class="v-head"><div><h3 id="eqTit">Equipe</h3><p class="mute">Cada funcionário entra com login próprio e só acessa o pátio: não vê ajustes, assinatura nem a equipe.</p></div><button class="ghost" data-close aria-label="Fechar">✕</button></div>
   <div class="card" style="margin-bottom:10px">
     <p class="mute" style="margin-bottom:2px">Código do lava jato</p>
-    <div class="codigo" id="eqCodigo">——</div>
+    <div class="row" style="align-items:center"><div class="codigo" id="eqCodigo" style="flex:1 1 auto">——</div><button type="button" id="eqCopiarCod" style="flex:0 0 auto">Copiar código</button></div>
     <p class="mute" style="margin:6px 0">Link de acesso da equipe (já preenche o código):</p>
     <div class="row"><input id="eqLink" readonly onclick="this.select()" style="margin:0" aria-label="Link de acesso da equipe"><button type="button" id="eqCopiar" style="flex:0 0 auto">Copiar</button></div>
   </div>
@@ -1202,7 +1202,13 @@ $("#eqLista").onclick = async e => {
     else if (b.dataset.del){ if (confirm("Excluir este acesso? O usuário não poderá ser reutilizado; crie um novo se precisar.")) await store.removerMembro(b.dataset.del); }
   } catch(err){ alert("Não foi possível alterar o acesso. Tente de novo."); }
 };
-$("#eqCopiar").onclick = async () => { try { await navigator.clipboard.writeText($("#eqLink").value); $("#eqCopiar").textContent = "Copiado ✓"; } catch { $("#eqLink").select(); } };
+async function copiarTexto(bt, texto, rotulo){
+  try { await navigator.clipboard.writeText(texto); bt.textContent = "Copiado ✓"; }
+  catch { bt.textContent = "Não foi possível copiar"; }
+  setTimeout(() => bt.textContent = rotulo, 1800);
+}
+$("#eqCopiar").onclick = () => copiarTexto($("#eqCopiar"), $("#eqLink").value, "Copiar");
+$("#eqCopiarCod").onclick = () => { const c = $("#eqCodigo").textContent.trim(); if (/^[a-z0-9]{6}$/.test(c)) copiarTexto($("#eqCopiarCod"), c, "Copiar código"); };
 $("#fMembro").onsubmit = async ev => {
   ev.preventDefault();
   const nome = $("#mbNome").value.trim(), us = $("#mbUsuario").value.trim().toLowerCase(), senha = $("#mbSenha").value, erro = m => $("#mbErro").textContent = m;
