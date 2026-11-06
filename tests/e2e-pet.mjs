@@ -81,7 +81,14 @@ await dono.fill("#busca", "LUN"); t((await dono.$$("#lista .nomepet")).length ==
 await dono.fill("#busca", ""); await dono.click("#vPainel [data-sair]");
 await dono.waitForSelector("#fLogin:visible");
 await dono.fill("#lEmail", "dono@teste.com"); await dono.fill("#lSenha", "novaSenha9"); await dono.click("#fLogin button.pri");
-await dono.waitForSelector("#esperaBox:has-text('Esta conta é do Lavaflux')", {timeout: 15000}); t(true, "conta do Lavaflux é orientada a entrar pelo endereço certo");
+await dono.waitForSelector("#lErro:has-text('é do Lavaflux e não funciona no Petflux')", {timeout: 15000});
+t(await dono.isVisible("#fLogin") && !(await dono.isVisible("#vPainel")), "conta do Lavaflux não entra no Petflux (sai e mostra o aviso)");
+
+// 7. Segregação no cadastro e no painel do administrador
+await dono.goto(`${SITE}/app?produto=pet&emu=1#cadastro`); await dono.waitForSelector("#fCad:visible");
+await dono.fill("#cNome", "Outro Pet"); await dono.fill("#cWhats", "51977776666"); await dono.fill("#cEmail", "dono@teste.com");
+await dono.fill("#cSenha", "qualquer1"); await dono.fill("#cSenha2", "qualquer1"); await dono.click("#cBt");
+await dono.waitForSelector("#cErro:has-text('use outro e-mail para o pet shop')", {timeout: 15000}); t(true, "e-mail do Lavaflux não vira conta do Petflux");
 
 await b.close();
 console.log(`\nPetflux ponta a ponta: ${ok} passaram, ${falhas} falharam`);

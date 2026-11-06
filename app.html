@@ -934,7 +934,13 @@ function iniciarSessao(u){
 const outroProduto = c => !MODO_DEMO && c && prodDe(c) !== PRODUTO;
 function avaliarConta(){
   const c = contaAtual; if (!c || !usuario || !sessao.papel || sessao.papel === "admin") return;
-  if (outroProduto(c)){ pararTudo(pararPainel); painelAtivo = false; espera("outro", c); return; }
+  // Contas segregadas: conta (ou funcionário) de outro produto não entra aqui — sai e mostra o aviso no login
+  if (outroProduto(c)){
+    pararTudo(pararPainel); painelAtivo = false; contaAtual = null;
+    const aviso = `Este acesso é do ${nomeProd(c)} e não funciona no ${MARCA.nome}. Entre por ${prodDe(c) === "petflux" ? "petflux" : "lavaflux"}.web.app.`;
+    store.sair().then(() => setTimeout(() => { $("#lErro").textContent = aviso; $("#fErro").textContent = aviso; }, 50));
+    return;
+  }
   if (c.status === "ativo" && !vencida(c)) { if (!painelAtivo) iniciarPainel(); else renderBanner(); }
   else {
     pararTudo(pararPainel); painelAtivo = false;
@@ -953,8 +959,6 @@ function espera(tipo, c){
       <p>${c.plano === "assinante" ? "A mensalidade" : "O período de teste"} de <b>${esc(c.nome)}</b> venceu em ${data(c.venceEm)} e o painel foi pausado.</p>
       <p class="mute">Seus dados e os links dos clientes estão guardados. Assine para voltar a usar — o acesso volta assim que o pagamento for confirmado.</p>${pagamentoHtml()}`;
   else if (tipo === "func-bloq") box.innerHTML = `<div style="font-size:48px">⏸️</div><h2>Acesso pausado</h2><p class="mute">O painel deste ${PET ? "pet shop" : "lava jato"} está pausado no momento. Fale com o proprietário.</p>`;
-  else if (tipo === "outro"){ const pet = prodDe(c) === "petflux", site = pet ? "petflux.web.app" : "lavaflux.web.app";
-    box.innerHTML = `<div style="font-size:48px">${pet ? "🐾" : "🚗"}</div><h2>Esta conta é do ${nomeProd(c)}</h2><p class="mute">Entre pelo endereço do ${nomeProd(c)}.</p><a class="btn pri w100" href="https://${site}/app">Abrir ${site}</a>`; }
   else if (tipo === "revogado") box.innerHTML = `<div style="font-size:48px">🔒</div><h2>Acesso revogado</h2><p class="mute">Este acesso de funcionário não está mais ativo. Peça um novo acesso ao proprietário do ${PET ? "pet shop" : "lava jato"}.</p>`;
   else if (tipo === "semconta") box.innerHTML = `<div style="font-size:48px">📝</div><h2>Conclua o cadastro</h2><p class="mute">Informe o nome do estabelecimento e o WhatsApp do responsável.</p>
       <input id="fimNome" maxlength="40" placeholder="Nome do estabelecimento" aria-label="Nome do estabelecimento"><input id="fimWhats" type="tel" inputmode="tel" placeholder="WhatsApp do responsável" aria-label="WhatsApp do responsável"><div class="erro" id="fimErro"></div><button class="pri w100" id="fimBt">Enviar para aprovação</button>`;
@@ -1013,7 +1017,8 @@ $("#fCad").onsubmit = async ev => {
     const r = await store.cadastrar(email, s1);
     await store.criarConta(r.user.uid, email, nome, whats);
   } catch(e){
-    erro(({ "auth/email-already-in-use": "Este e-mail já tem conta. Volte e entre, ou use \"Esqueci minha senha\".",
+    erro(({ "auth/email-already-in-use": PET ? "Este e-mail já está cadastrado (no Petflux ou no Lavaflux). Se já é cliente do Petflux, volte e entre; se a conta é do Lavaflux, use outro e-mail para o pet shop."
+                                             : "Este e-mail já está cadastrado (no Lavaflux ou no Petflux). Se já é cliente do Lavaflux, volte e entre; se a conta é do Petflux, use outro e-mail para o lava jato.",
       "auth/weak-password": "Senha fraca: use pelo menos 6 caracteres.", "auth/invalid-email": "E-mail inválido.",
       "auth/network-request-failed": "Sem conexão. Verifique a internet: seus dados continuam preenchidos." })[e.code] || "Não foi possível criar a conta agora. Seus dados continuam preenchidos; tente de novo.");
   } finally { cadastrando = null; $("#cBt").disabled = false; $("#cBt").textContent = "Criar conta"; }
@@ -1605,7 +1610,8 @@ let pararAdmin = [], aContas = [], aEsts = {}, aFiltro = "pendente";
 function iniciarAdmin(){
   show("vAdmin"); document.title = MARCA.nome + " · Admin";
   pararAdmin.push(store.config(c => { cfgPlat = c || {}; }));
-  pararAdmin.push(store.contas(l => { aContas = l; renderAdmin(); }, e => { $("#adminLista").innerHTML = `<div class="card vazio">Erro ao carregar contas: ${esc(e.message)}</div>`; }));
+  // Cada produto tem a sua base de clientes: o admin do Petflux só vê contas do Petflux, e o do Lavaflux só as do Lavaflux
+  pararAdmin.push(store.contas(l => { aContas = l.filter(c => prodDe(c) === PRODUTO); renderAdmin(); }, e => { $("#adminLista").innerHTML = `<div class="card vazio">Erro ao carregar contas: ${esc(e.message)}</div>`; }));
   pararAdmin.push(store.ests(o => { aEsts = o; renderAdmin(); }));
 }
 const ROTULO = {pendente: ["pe","Aguardando aprovação"], ativo: ["ab","Ativa"], inativo: ["fe","Desativada"]};
