@@ -2,7 +2,7 @@ name: Publicar no Firebase Hosting
 on:
   push:
     branches: [main]
-    paths: [index.html, app.html, og.png, logo.svg, deploy_hosting.py, firestore.rules, deploy_firestore.py, .github/workflows/publicar.yml]
+    paths: [index.html, app.html, og.png, logo.svg, img/**, pet/**, deploy_hosting.py, firestore.rules, deploy_firestore.py, .github/workflows/publicar.yml]
   workflow_dispatch:
 permissions:
   contents: read
@@ -28,3 +28,9 @@ jobs:
         env:
           TOKEN: ${{ steps.auth.outputs.access_token }}
           PROJECT: lavaflux-1da77
+      - name: Publicar Petflux
+        run: python3 deploy_hosting.py
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+          PROJECT: lavaflux-1da77
+          PRODUTO: pet

@@ -26,6 +26,10 @@ service cloud.firestore {
     // Quem pode operar o pátio deste estabelecimento
     function equipe(est) { return (donoDe(est) || funcDe(est)) && contaOk(est); }
 
+    // Fotos do pet (Petflux): imagem já reduzida no celular, com limite de tamanho
+    function fotoOk(d, campo) { return !(campo in d) || d[campo] == null || (d[campo] is string && d[campo].size() < 200000); }
+    function fotosOk(d) { return fotoOk(d, "foto") && fotoOk(d, "fotoPronto"); }
+
     match /admins/{uid} {
       allow get: if logado() && request.auth.uid == uid;
       allow list, write: if false;
@@ -37,7 +41,8 @@ service cloud.firestore {
       allow list: if admin();
       allow create: if logado() && request.auth.uid == uid
         && request.resource.data.status == "pendente"
-        && request.resource.data.keys().hasOnly(["email", "nome", "whatsapp", "status", "criadoEm"]);
+        && request.resource.data.keys().hasOnly(["email", "nome", "whatsapp", "produto", "status", "criadoEm"])
+        && (!("produto" in request.resource.data) || request.resource.data.produto in ["lavaflux", "petflux"]);
       allow update, delete: if admin();
     }
 
@@ -79,8 +84,8 @@ service cloud.firestore {
     match /lavagens/{id} {
       allow get: if true;
       allow list: if admin() || equipe(resource.data.est);
-      allow create: if equipe(request.resource.data.est);
-      allow update: if equipe(resource.data.est) && request.resource.data.est == resource.data.est;
+      allow create: if equipe(request.resource.data.est) && fotosOk(request.resource.data);
+      allow update: if equipe(resource.data.est) && request.resource.data.est == resource.data.est && fotosOk(request.resource.data);
       allow delete: if admin() || (donoDe(resource.data.est) && contaOk(resource.data.est));
 
       // Dados que o cliente não vê: telefone e histórico com nomes da equipe

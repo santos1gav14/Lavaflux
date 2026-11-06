@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Publica index.html e logo.svg no Firebase Hosting (API REST).
+"""Publica o site e o app no Firebase Hosting (API REST).
 
-Variáveis: TOKEN (access token), PROJECT, SITE (opcional), QUOTA_PROJECT (opcional), DIR (opcional).
+Variáveis: TOKEN (access token), PROJECT, SITE (opcional), QUOTA_PROJECT (opcional), DIR (opcional),
+PRODUTO (opcional: "pet" publica o Petflux, com o mesmo app e a página/logo da pasta pet/).
 Usado pelo GitHub Actions a cada atualização e pelo setup-hosting.sh na primeira vez.
 """
 import os, sys, json, gzip, hashlib, urllib.request, urllib.error
@@ -13,6 +14,9 @@ QP = os.environ.get("QUOTA_PROJECT")
 DIR = os.environ.get("DIR", ".")
 API = "https://firebasehosting.googleapis.com/v1beta1"
 ARQUIVOS = ["index.html", "app.html", "logo.svg", "og.png", "img/painel.png", "img/cliente.png"]
+PET = os.environ.get("PRODUTO") == "pet"
+# No Petflux, o app é o mesmo arquivo; a página inicial, a logo e as imagens vêm da pasta pet/
+ORIGEM = {f: (f if f == "app.html" or not PET else "pet/" + f) for f in ARQUIVOS}
 # privacidade.html e termos.html são RASCUNHOS: entram aqui só depois de revisados e aprovados
 
 
@@ -35,15 +39,27 @@ def call(method, url, body=None, raw=None):
 
 
 if not SITE:
-    sites = call("GET", f"{API}/projects/{P}/sites").get("sites", [])
-    if not sites:
-        sys.exit("ERRO: nenhum site de Hosting encontrado no projeto.")
-    proprios = [s for s in sites if s.get("type") != "DEFAULT_SITE"]
-    SITE = (proprios or sites)[0]["name"].split("/")[-1]
+    sites = [s["name"].split("/")[-1] for s in call("GET", f"{API}/projects/{P}/sites").get("sites", [])]
+    if PET:
+        SITE = next((s for s in sites if s.startswith("petflux")), None)
+        if not SITE:   # primeira publicação: cria o site do Petflux (o nome precisa estar livre no Firebase)
+            for nome in ["petflux", "petflux-app", "petflux-br"]:
+                req = urllib.request.Request(f"{API}/projects/{P}/sites?siteId={nome}", data=b"{}", method="POST",
+                                             headers={"Authorization": "Bearer " + T, "Content-Type": "application/json", **({"x-goog-user-project": QP} if QP else {})})
+                try:
+                    urllib.request.urlopen(req).read(); SITE = nome; print("Site criado:", nome); break
+                except urllib.error.HTTPError as e:
+                    print(f"Nome {nome} indisponível ({e.code}): {e.read().decode()[:200]}")
+            if not SITE:
+                sys.exit("ERRO: não foi possível criar o site do Petflux.")
+    else:
+        SITE = "lavaflux" if "lavaflux" in sites else next((s for s in sites if not s.startswith("petflux")), None)
+        if not SITE:
+            sys.exit("ERRO: nenhum site de Hosting encontrado no projeto.")
 
 comprimidos, hashes = {}, {}
 for f in ARQUIVOS:
-    b = gzip.compress(open(os.path.join(DIR, f), "rb").read(), mtime=0)
+    b = gzip.compress(open(os.path.join(DIR, ORIGEM[f]), "rb").read(), mtime=0)
     h = hashlib.sha256(b).hexdigest()
     comprimidos[h], hashes["/" + f] = b, h
 

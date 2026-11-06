@@ -21,4 +21,4 @@ jobs:
       - name: Servir o site localmente
         run: (npx --prefix tests serve -l 5000 . > /tmp/serve.log 2>&1 &) && sleep 3 && curl -sf http://localhost:5000/app > /dev/null
       - name: Emuladores + testes
-        run: npx --prefix tests firebase emulators:exec --project demo-lavaflux --only firestore,auth "node tests/regras.test.mjs && node tests/e2e.mjs"
+        run: npx --prefix tests firebase emulators:exec --project demo-lavaflux --only firestore,auth "node tests/regras.test.mjs && node tests/e2e.mjs && node tests/e2e-pet.mjs"

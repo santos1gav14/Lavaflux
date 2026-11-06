@@ -178,6 +178,18 @@ body.modo-demo #vCliente{position:sticky;top:12px}
 }
 @media(min-width:980px){body.modo-demo .visoes{display:none}}
 @media(max-width:979px){body.modo-demo .rotulo-visao{display:none}}
+.avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--line);flex:none;background:var(--soft)}
+.avatar.g{width:112px;height:112px;margin:0 auto 10px;display:block;border:3px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.fotopronto{width:100%;max-width:300px;aspect-ratio:1;object-fit:cover;border-radius:16px;margin:6px auto 10px;display:block;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+body.pet{--bg:#f1f7f6;--pri:#0e9384;--pri2:#08675d;--soft:#dff3ef;--line:#d4e5e2}
+@media (prefers-color-scheme:dark){body.pet{--bg:#08161a;--card:#0f2227;--pri:#2cc4ad;--pri2:#16a08b;--soft:#123a37;--line:#1f3a3c}}
+.nomepet{font-weight:800;font-size:19px;letter-spacing:-.01em}
+.fotobox{display:flex;align-items:center;gap:10px;margin:0 0 12px;flex-wrap:wrap}
+.fotobox img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--line)}
+.so-pet{display:none}
+body.pet .so-pet{display:block}
+body.pet .so-pet.flex{display:flex}
+body.pet .so-lava{display:none!important}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .hidden{display:none!important}
 </style>
@@ -186,6 +198,17 @@ body.modo-demo #vCliente{position:sticky;top:12px}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <linearGradient id="lgLogo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b9bff"/><stop offset="1" stop-color="#0a4fb5"/></linearGradient>
+    <linearGradient id="lgPet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2cc4ad"/><stop offset="1" stop-color="#0b7a6c"/></linearGradient>
+    <symbol id="logoPet" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="13" fill="url(#lgPet)"/>
+      <ellipse cx="22.5" cy="30.5" rx="8.6" ry="7.2" fill="#fff"/>
+      <ellipse cx="12.6" cy="21.6" rx="3.4" ry="4.3" transform="rotate(-18 12.6 21.6)" fill="#fff"/>
+      <ellipse cx="18.6" cy="14.8" rx="3.5" ry="4.5" transform="rotate(-6 18.6 14.8)" fill="#fff"/>
+      <ellipse cx="26.6" cy="14.8" rx="3.5" ry="4.5" transform="rotate(6 26.6 14.8)" fill="#fff"/>
+      <ellipse cx="32.6" cy="21.6" rx="3.4" ry="4.3" transform="rotate(18 32.6 21.6)" fill="#fff"/>
+      <path d="M17.6 31.4c1.6-1 3.2-1 4.9 0s3.3 1 4.9 0" stroke="#14a491" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M37.5 9.5l1.1 2.6 2.6 1.1-2.6 1.1-1.1 2.6-1.1-2.6-2.6-1.1 2.6-1.1z" fill="#d6fff8"/>
+    </symbol>
     <symbol id="logo" viewBox="0 0 48 48">
       <rect width="48" height="48" rx="13" fill="url(#lgLogo)"/>
       <path d="M22.5 8.5C17 15.8 12 21.6 12 27.6a10.5 10.5 0 0 0 21 0c0-6-5-11.8-10.5-19.1z" fill="#fff"/>
@@ -199,9 +222,9 @@ body.modo-demo #vCliente{position:sticky;top:12px}
 
   <!-- ===== DEMONSTRAÇÃO (só em /app?demo=1) ===== -->
   <div class="demobar" id="demoBar" role="region" aria-label="Demonstração">
-    <h2>Demonstração do Lavaflux</h2>
+    <h2 id="demoTit">Demonstração do Lavaflux</h2>
     <p class="mute" style="margin-bottom:6px">Dados fictícios. Nada é salvo, nenhuma mensagem é enviada e nada é cobrado.</p>
-    <ol>
+    <ol id="demoPassos">
       <li>Na <b>Visão da equipe</b>, toque nas etapas do carro <b>RIO2A18</b>.</li>
       <li>Veja a <b>Visão do cliente</b> mudar na hora.</li>
       <li>Toque em <b>Concluir lavagem</b> e depois em <b>Entregue ao cliente</b>.</li>
@@ -210,11 +233,11 @@ body.modo-demo #vCliente{position:sticky;top:12px}
       <button type="button" id="demoReiniciar" style="flex:0 1 auto">↺ Reiniciar demonstração</button>
       <a class="btn pri" href="/app#cadastro" id="demoCta" style="flex:1 1 220px">Começar meus 15 dias grátis</a>
     </div>
-    <p class="okmsg hidden" id="demoFim" style="margin:10px 0 0">Pronto! Você viu o fluxo completo. Para usar no seu lava jato, comece o teste grátis.</p>
+    <p class="okmsg hidden" id="demoFim" style="margin:10px 0 0">Pronto! Você viu o fluxo completo. Para usar no seu <span class="neg">lava jato</span>, comece o teste grátis.</p>
   </div>
   <div class="seg visoes" role="tablist" aria-label="Escolher visão">
     <button type="button" role="tab" data-visao="equipe" class="on" aria-selected="true">Visão da equipe</button>
-    <button type="button" role="tab" data-visao="cliente" aria-selected="false">Visão do cliente</button>
+    <button type="button" role="tab" data-visao="cliente" aria-selected="false" id="visaoCliBt">Visão do cliente</button>
   </div>
 
   <div id="painelGrid">
@@ -227,34 +250,41 @@ body.modo-demo #vCliente{position:sticky;top:12px}
     <div id="banner"></div>
     <div id="guia"></div>
     <form id="fNovo" class="card demo-oculto" novalidate>
-      <h3>Novo veículo</h3>
-      <div class="seg"><label><input type="radio" name="nTipo" value="carro" checked>🚗 Carro</label><label><input type="radio" name="nTipo" value="moto">🏍️ Moto</label></div>
+      <h3 id="tNovo">Novo veículo</h3>
+      <div class="seg" id="segNTipo"><label><input type="radio" name="nTipo" value="carro" checked>🚗 Carro</label><label><input type="radio" name="nTipo" value="moto">🏍️ Moto</label></div>
+      <div class="seg so-pet flex"><label><input type="radio" name="nSexo" value="macho" checked>♂ Macho</label><label><input type="radio" name="nSexo" value="femea">♀ Fêmea</label></div>
       <div class="row">
-        <div><label class="f" for="nPlaca">Placa *</label><input id="nPlaca" maxlength="8" placeholder="ABC1D23" style="text-transform:uppercase" autocomplete="off"></div>
-        <div><label class="f" for="nModelo">Modelo</label><input id="nModelo" placeholder="Onix prata"></div>
+        <div><label class="f" for="nPlaca" id="lbNPlaca">Placa *</label><input id="nPlaca" maxlength="8" placeholder="ABC1D23" style="text-transform:uppercase" autocomplete="off"></div>
+        <div><label class="f" for="nModelo" id="lbNModelo">Modelo</label><input id="nModelo" placeholder="Onix prata"></div>
       </div>
       <div class="row">
-        <div><label class="f" for="nNome">Nome do cliente</label><input id="nNome" placeholder="Ana"></div>
+        <div><label class="f" for="nNome" id="lbNNome">Nome do cliente</label><input id="nNome" placeholder="Ana"></div>
         <div><label class="f" for="nTel">WhatsApp</label><input id="nTel" type="tel" inputmode="tel" placeholder="(51) 99999-0000"></div>
       </div>
-      <label class="f">Etapas deste veículo</label>
+      <div class="so-pet">
+        <label class="f">Depois do atendimento</label>
+        <div class="seg"><label><input type="radio" name="nEntrega" value="retirada" checked>🏪 Tutor busca</label><label><input type="radio" name="nEntrega" value="casa">🏠 Entregar em casa</label></div>
+        <div class="fotobox"><img id="nFotoPrev" class="hidden" alt="Foto do pet"><button type="button" id="nFotoBt">📷 Foto do pet</button><button type="button" class="ghost hidden" id="nFotoTira">Remover foto</button>
+          <input type="file" id="nFotoIn" accept="image/*" capture="environment" class="hidden"></div>
+      </div>
+      <label class="f" id="lbNEtapas">Etapas deste veículo</label>
       <div class="cks" id="nEtapas"></div>
       <div class="erro" id="nErro" role="alert"></div>
       <button class="pri w100">Registrar e gerar link</button>
     </form>
 
-    <div class="busca"><input type="search" id="busca" placeholder="Buscar placa" aria-label="Buscar veículo pela placa" autocomplete="off"></div>
+    <div class="busca"><input type="search" id="busca" placeholder="Buscar placa" aria-label="Buscar pela placa" autocomplete="off"></div>
     <div class="tabs" id="tabsV" role="tablist" aria-label="Situação dos veículos" style="margin-top:10px">
-      <button data-tab="patio" class="on" role="tab">No pátio <span id="cPa"></span></button>
+      <button data-tab="patio" class="on" role="tab"><span id="tbPatio">No pátio</span> <span id="cPa"></span></button>
       <button data-tab="pronto" role="tab">Prontos <span id="cPr"></span></button>
-      <button data-tab="retirado" role="tab">Retirados <span id="cRe"></span></button>
+      <button data-tab="retirado" role="tab"><span id="tbRet">Retirados</span> <span id="cRe"></span></button>
     </div>
     <div id="lista" aria-live="polite"></div>
   </section>
 
   <!-- ===== CLIENTE ===== -->
   <section id="vCliente" class="hidden" aria-label="Acompanhamento do cliente">
-    <p class="rotulo-visao">Visão do cliente</p>
+    <p class="rotulo-visao" id="rotuloCli">Visão do cliente</p>
     <header class="top demo-oculto"><button id="btVoltarPainel" class="ghost hidden">← Painel</button></header>
     <div id="cliente"><div class="card vazio">Carregando…</div></div>
   </section>
@@ -262,7 +292,7 @@ body.modo-demo #vCliente{position:sticky;top:12px}
 
   <!-- ===== LOGIN ===== -->
   <section id="vLogin" class="hidden">
-    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span></span></div></header>
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm"><span class="marca">Lava<span class="fx">flux</span></span></span></div></header>
     <div class="card">
       <h2>Entrar</h2>
       <div class="seg" role="tablist" aria-label="Tipo de acesso" id="tipoLogin">
@@ -270,7 +300,7 @@ body.modo-demo #vCliente{position:sticky;top:12px}
         <button type="button" role="tab" data-tipo="func" aria-selected="false">Funcionário</button>
       </div>
       <form id="fLogin">
-        <p class="mute">Acesso do proprietário do lava jato. <a href="/" style="color:var(--pri)">Conheça o Lavaflux</a></p>
+        <p class="mute"><span id="txAcessoDono">Acesso do proprietário do lava jato.</span> <a href="/" style="color:var(--pri)">Conheça o <span class="marca">Lava<span class="fx">flux</span></span></a></p>
         <label class="f" for="lEmail">E-mail</label><input id="lEmail" type="email" autocomplete="username" required>
         <label class="f" for="lSenha">Senha</label><input id="lSenha" type="password" autocomplete="current-password" required>
         <div class="erro" id="lErro" role="alert"></div>
@@ -279,8 +309,8 @@ body.modo-demo #vCliente{position:sticky;top:12px}
         <div style="text-align:center"><button type="button" class="linkbtn" id="btEsqueci">Esqueci minha senha</button></div>
       </form>
       <form id="fLoginFunc" class="hidden">
-        <p class="mute">Use o código do lava jato, o usuário e a senha que o proprietário criou para você.</p>
-        <label class="f" for="fCodigo">Código do lava jato</label><input id="fCodigo" autocomplete="off" autocapitalize="none" maxlength="6" required>
+        <p class="mute" id="txAcessoFunc">Use o código do lava jato, o usuário e a senha que o proprietário criou para você.</p>
+        <label class="f" for="fCodigo" id="lbCodigo">Código do lava jato</label><input id="fCodigo" autocomplete="off" autocapitalize="none" maxlength="6" required>
         <label class="f" for="fUsuario">Usuário</label><input id="fUsuario" autocomplete="username" autocapitalize="none" maxlength="20" required>
         <label class="f" for="fSenha">Senha</label><input id="fSenha" type="password" autocomplete="current-password" required>
         <div class="erro" id="fErro" role="alert"></div>
@@ -289,7 +319,7 @@ body.modo-demo #vCliente{position:sticky;top:12px}
       </form>
     </div>
     <div class="card" style="text-align:center">
-      <p style="margin-bottom:4px"><b>Tem um lava jato?</b></p>
+      <p style="margin-bottom:4px"><b id="txTemNegocio">Tem um lava jato?</b></p>
       <p class="mute">Use <b>grátis por 15 dias</b> após a aprovação, sem cartão.</p>
       <button class="w100" id="btIrCadastro">Criar conta do estabelecimento</button>
     </div>
@@ -297,7 +327,7 @@ body.modo-demo #vCliente{position:sticky;top:12px}
 
   <!-- ===== CADASTRO ===== -->
   <section id="vCadastro" class="hidden">
-    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span></span></div>
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm"><span class="marca">Lava<span class="fx">flux</span></span></span></div>
       <button class="ghost" id="btVoltarLogin">← Entrar</button></header>
     <form id="fCad" class="card" novalidate>
       <h2>Criar conta do estabelecimento</h2>
@@ -316,14 +346,14 @@ body.modo-demo #vCliente{position:sticky;top:12px}
 
   <!-- ===== AGUARDANDO / BLOQUEIOS ===== -->
   <section id="vEspera" class="hidden">
-    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span></span></div>
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm"><span class="marca">Lava<span class="fx">flux</span></span></span></div>
       <button class="ghost" data-sair>Sair</button></header>
     <div class="card" style="text-align:center;padding:32px 20px" id="esperaBox"></div>
   </section>
 
   <!-- ===== ADMINISTRADOR DA PLATAFORMA ===== -->
   <section id="vAdmin" class="hidden">
-    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm">Lava<span class="fx">flux</span> <span class="mute" style="font-weight:600;font-size:15px">· Admin</span></span></div>
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span class="nm"><span class="marca">Lava<span class="fx">flux</span></span> <span class="mute" style="font-weight:600;font-size:15px">· Admin</span></span></div>
       <div class="topbts"><button class="ghost" id="btCobranca">💰 Cobrança</button><button class="ghost" data-senha>🔑 Senha</button><button class="ghost" data-sair>Sair</button></div></header>
     <div class="tiles t4">
       <div class="tile"><b id="tPend">0</b><span>Aguardando</span></div>
@@ -343,28 +373,38 @@ body.modo-demo #vCliente{position:sticky;top:12px}
   <div class="v-head"><div><h3 id="shTit">Link do cliente</h3><p class="mute" id="shInfo"></p></div><button class="ghost" data-close aria-label="Fechar">✕</button></div>
   <div id="shLinkBox"><input id="shLink" readonly onclick="this.select()" aria-label="Link de acompanhamento"></div>
   <p class="mute" id="shExplica"></p>
+  <div class="so-pet" id="shFotoBox"><img id="shFoto" class="fotopronto hidden" alt="Foto do pet">
+    <button type="button" class="w100" id="shFotoBt">📷 Tirar foto do pet pronto</button><input type="file" id="shFotoIn" accept="image/*" capture="environment" class="hidden"></div>
   <div class="msgprev" id="shMsg"></div>
+  <button type="button" class="btn pri w100 so-pet" id="shCompart" style="margin-bottom:8px">📤 Compartilhar com foto</button>
   <div class="row"><button id="shCopiar" class="shSo">Copiar link</button><a id="shWpp" class="btn zap" target="_blank" rel="noopener">Abrir WhatsApp com a mensagem</a></div>
   <p class="mute" id="shAviso" style="margin-top:8px"></p>
   <div id="qr" class="shSo"></div>
-  <p class="mute shSo" style="text-align:center">O cliente também pode escanear o QR code no balcão.</p>
+  <p class="mute shSo" style="text-align:center" id="shQrTx">O cliente também pode escanear o QR code no balcão.</p>
   <button id="shVer" class="shSo w100">Ver como o cliente vê</button>
 </div></div>
 
 <!-- ===== EDITAR VEÍCULO ===== -->
 <div class="modal" id="mEdit" role="dialog" aria-modal="true" aria-label="Editar veículo"><div class="sheet">
   <form id="fEdit" novalidate>
-    <div class="v-head"><h3>Editar veículo</h3><button type="button" class="ghost" data-close aria-label="Fechar">✕</button></div>
-    <div class="seg"><label><input type="radio" name="eTipo" value="carro" checked>🚗 Carro</label><label><input type="radio" name="eTipo" value="moto">🏍️ Moto</label></div>
+    <div class="v-head"><h3 id="tEdit">Editar veículo</h3><button type="button" class="ghost" data-close aria-label="Fechar">✕</button></div>
+    <div class="seg" id="segETipo"><label><input type="radio" name="eTipo" value="carro" checked>🚗 Carro</label><label><input type="radio" name="eTipo" value="moto">🏍️ Moto</label></div>
+    <div class="seg so-pet flex"><label><input type="radio" name="eSexo" value="macho" checked>♂ Macho</label><label><input type="radio" name="eSexo" value="femea">♀ Fêmea</label></div>
     <div class="row">
-      <div><label class="f" for="ePlaca">Placa *</label><input id="ePlaca" maxlength="8" style="text-transform:uppercase"></div>
-      <div><label class="f" for="eModelo">Modelo</label><input id="eModelo" placeholder="Onix prata"></div>
+      <div><label class="f" for="ePlaca" id="lbEPlaca">Placa *</label><input id="ePlaca" maxlength="8" style="text-transform:uppercase"></div>
+      <div><label class="f" for="eModelo" id="lbEModelo">Modelo</label><input id="eModelo" placeholder="Onix prata"></div>
     </div>
     <div class="row">
-      <div><label class="f" for="eNome">Nome do cliente</label><input id="eNome" placeholder="Ana"></div>
+      <div><label class="f" for="eNome" id="lbENome">Nome do cliente</label><input id="eNome" placeholder="Ana"></div>
       <div><label class="f" for="eTel">WhatsApp</label><input id="eTel" type="tel" inputmode="tel"></div>
     </div>
-    <label class="f">Etapas deste veículo</label>
+    <div class="so-pet">
+      <label class="f">Depois do atendimento</label>
+      <div class="seg"><label><input type="radio" name="eEntrega" value="retirada" checked>🏪 Tutor busca</label><label><input type="radio" name="eEntrega" value="casa">🏠 Entregar em casa</label></div>
+      <div class="fotobox"><img id="eFotoPrev" class="hidden" alt="Foto do pet"><button type="button" id="eFotoBt">📷 Trocar foto</button><button type="button" class="ghost hidden" id="eFotoTira">Remover foto</button>
+        <input type="file" id="eFotoIn" accept="image/*" capture="environment" class="hidden"></div>
+    </div>
+    <label class="f" id="lbEEtapas">Etapas deste veículo</label>
     <div class="cks" id="eEtapas"></div>
     <div class="erro" id="eErro" role="alert"></div>
     <button class="pri w100">Salvar alterações</button>
@@ -382,7 +422,7 @@ body.modo-demo #vCliente{position:sticky;top:12px}
 
 <!-- ===== EQUIPE (proprietário) ===== -->
 <div class="modal" id="mEquipe" role="dialog" aria-modal="true" aria-labelledby="eqTit"><div class="sheet">
-  <div class="v-head"><div><h3 id="eqTit">Equipe</h3><p class="mute">Cada funcionário entra com login próprio e só acessa o pátio: não vê ajustes, assinatura nem a equipe.</p></div><button class="ghost" data-close aria-label="Fechar">✕</button></div>
+  <div class="v-head"><div><h3 id="eqTit">Equipe</h3><p class="mute" id="txEquipe">Cada funcionário entra com login próprio e só acessa o pátio: não vê ajustes, assinatura nem a equipe.</p></div><button class="ghost" data-close aria-label="Fechar">✕</button></div>
   <div class="card" style="margin-bottom:10px">
     <p class="mute" style="margin-bottom:2px">Envie este código ao seu funcionário:</p>
     <div class="row" style="align-items:center"><div class="codigo" id="eqCodigo" style="flex:1 1 auto">——</div><button type="button" id="eqCopiarCod" style="flex:0 0 auto">Copiar código</button></div>
@@ -419,7 +459,7 @@ body.modo-demo #vCliente{position:sticky;top:12px}
 
 <!-- ===== ASSINATURA (proprietário) ===== -->
 <div class="modal" id="mPagar" role="dialog" aria-modal="true" aria-label="Assinatura"><div class="sheet">
-  <div class="v-head"><h3>Assinatura Lavaflux</h3><button class="ghost" data-close aria-label="Fechar">✕</button></div>
+  <div class="v-head"><h3 id="tAssin">Assinatura Lavaflux</h3><button class="ghost" data-close aria-label="Fechar">✕</button></div>
   <div id="pagarBox"></div>
 </div></div>
 
@@ -445,12 +485,12 @@ body.modo-demo #vCliente{position:sticky;top:12px}
   <p class="mute">Aparece na tela do cliente e nas mensagens do WhatsApp.</p>
   <input id="cfgNome" maxlength="40" aria-label="Nome do estabelecimento">
   <h3 class="sec">Etapas</h3>
-  <p class="mute">Serviços pelos quais os veículos passam. A equipe marca cada um quando é feito, em qualquer ordem.</p>
+  <p class="mute" id="txEtapasCfg">Serviços pelos quais os veículos passam. A equipe marca cada um quando é feito, em qualquer ordem.</p>
   <div id="cfgLista"></div>
   <button id="cfgAdd" class="w100" style="margin:4px 0 12px">+ Adicionar etapa</button>
-  <p class="mute">Vale para os próximos veículos registrados. Para mudar um veículo que já está no pátio, use ✏️ Editar nele.</p>
+  <p class="mute" id="txEtapasVale">Vale para os próximos veículos registrados. Para mudar um veículo que já está no pátio, use ✏️ Editar nele.</p>
   <h3 class="sec">Horário de funcionamento</h3>
-  <p class="mute">Aparece para o cliente e na mensagem de veículo pronto.</p>
+  <p class="mute" id="txNomeCfg">Aparece para o cliente e na mensagem de veículo pronto.</p>
   <div id="horLista" style="margin-bottom:12px"></div>
   <div class="erro" id="cfgErro"></div>
   <button id="cfgSalvar" class="pri w100">Salvar ajustes</button>
@@ -479,7 +519,15 @@ const MODO_DEMO = PARAMS.has("demo");                       // demonstração p�
 const EMU = PARAMS.has("emu") && /^(localhost|127\.0\.0\.1)$/.test(location.hostname);   // testes automatizados
 const DEMO = MODO_DEMO || firebaseConfig.apiKey.startsWith("COLE");
 
-const ETAPAS_PADRAO = ["Lavagem externa","Secagem","Limpeza interna","Finalização"].map((nome,i) => ({id:"p"+i, nome}));
+// Produto: o mesmo app atende o Lavaflux (lava jatos) e o Petflux (banho e tosa). O endereço define qual é.
+const PET = /petflux/.test(location.hostname) || PARAMS.get("produto") === "pet";
+const PRODUTO = PET ? "petflux" : "lavaflux";
+const MARCA = PET ? {nome: "Petflux", a: "Pet", b: "flux", logo: "#logoPet", cor: "#0e9384", cor2: "#08675d", soft: "#e0f5f1"}
+                  : {nome: "Lavaflux", a: "Lava", b: "flux", logo: "#logo"};
+const prodDe = c => (c && c.produto) || "lavaflux";            // contas antigas são do Lavaflux
+const nomeProd = c => prodDe(c) === "petflux" ? "Petflux" : "Lavaflux";
+const ETAPAS_PADRAO = (PET ? ["Banho","Secagem","Tosa","Corte de unhas","Limpeza de ouvidos","Perfume e acessório"]
+                           : ["Lavagem externa","Secagem","Limpeza interna","Finalização"]).map((nome,i) => ({id:"p"+i, nome}));
 const DIAS = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 const HORARIO_PADRAO = {
   0:{aberto:false, abre:"08:00", fecha:"12:00"},
@@ -509,15 +557,23 @@ function token(n = 20, alfabeto = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvw
   return [...crypto.getRandomValues(new Uint8Array(n))].map(x => alfabeto[x % alfabeto.length]).join("");
 }
 const linkCliente = id => location.origin + "/?c=" + id;
-const placaLimpa = s => s.toUpperCase().replace(/[^A-Z0-9]/g,"");
+const placaLimpa = s => PET ? cap(String(s).trim().replace(/\s+/g, " ").slice(0, 20)) : s.toUpperCase().replace(/[^A-Z0-9]/g,"");
+const idValido = s => PET ? s.length >= 2 : s.length >= 7;
+const ERRO_ID = PET ? "Informe o nome do pet." : "Placa inválida: informe 7 letras e números (ex.: ABC1D23).";
+const buscaNorm = s => PET ? String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() : placaLimpa(s);
 const etapasDe = v => Array.isArray(v.etapas) && v.etapas.length ? v.etapas : ETAPAS_PADRAO;
 const checksDe = v => v.checks || {};
 const tsDe = x => (x && typeof x === "object") ? x.em : x;
 const moto = v => v.tipo === "moto";
-const seuVeic = v => moto(v) ? "sua moto" : "seu carro";
-const prontoV = v => moto(v) ? "pronta" : "pronto";
-const iconeV = v => moto(v) ? "🏍️" : "🚗";
-const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const fem = v => PET ? v.sexo === "femea" : moto(v);                 // concordância das mensagens
+const art = v => fem(v) ? "a" : "o";
+const seuVeic = v => PET ? `${art(v)} ${v.placa}` : (moto(v) ? "sua moto" : "seu carro");
+const prontoV = v => fem(v) ? "pronta" : "pronto";
+const iconeV = v => PET ? (v.tipo === "gato" ? "🐱" : "🐶") : (moto(v) ? "🏍️" : "🚗");
+const casa = v => PET && v.entrega === "casa";
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+const idHtml = v => PET ? `<span class="nomepet">${esc(v.placa)}</span>` : `<span class="placa">${esc(v.placa)}</span>`;
+const avatarHtml = (v, g) => PET && v.foto ? `<img class="avatar${g ? " g" : ""}" src="${esc(v.foto)}" alt="Foto de ${esc(v.placa)}">` : "";
 const diasAte = ms => Math.ceil((ms - Date.now()) / DIA);
 const vencida = c => !!(c && c.venceEm && Date.now() > c.venceEm);
 const emDias = n => n <= 0 ? "hoje" : n === 1 ? "amanhã" : `em ${n} dias`;
@@ -536,6 +592,7 @@ function desde(ms){
 // Situação do veículo. "Pronto" (lavagem concluída, ainda no pátio) e "Retirado" (entregue) são registrados separadamente.
 function situacaoV(v){
   if (v.retirado) return "retirado";
+  if (v.saiuEntrega) return "saiu";
   if (v.concluido) return "pronto";
   return et_feitas(v) > 0 ? "lavando" : "aguardando";
 }
@@ -549,6 +606,36 @@ function progHtml(v, fim){
   const p = progresso(v);
   return `<div class="prog"><div class="rot"><span>Etapas concluídas</span><span><b>${p.feitas} de ${p.total}</b></span></div>
     <div class="bar ${fim ? "fim" : ""}" role="progressbar" aria-valuemin="0" aria-valuemax="${p.total}" aria-valuenow="${p.feitas}" aria-label="${p.feitas} de ${p.total} etapas concluídas"><i style="width:${p.pct}%"></i></div></div>`;
+}
+
+// Fotos do pet: reduzidas no próprio celular (máx. 480 px) e guardadas junto do atendimento
+function lerFoto(arquivo){
+  return new Promise((ok, falha) => {
+    const img = new Image(), url = URL.createObjectURL(arquivo);
+    img.onload = () => {
+      const k = Math.min(1, 480 / Math.max(img.width, img.height)), c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      let d = c.toDataURL("image/jpeg", .72); if (d.length > 140000) d = c.toDataURL("image/jpeg", .5);
+      ok(d);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); falha(new Error("imagem")); };
+    img.src = url;
+  });
+}
+function ligarFoto(btn, input, prev, tira, alvo){
+  $(btn).onclick = () => $(input).click();
+  $(input).onchange = async e => {
+    const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+    try { alvo.foto = await lerFoto(f); $(prev).src = alvo.foto; $(prev).classList.remove("hidden"); $(tira).classList.remove("hidden"); }
+    catch { alert("Não foi possível ler a foto. Tente outra imagem."); }
+  };
+  $(tira).onclick = () => { alvo.foto = null; $(prev).classList.add("hidden"); $(tira).classList.add("hidden"); };
+}
+async function compartilharComFoto(foto, texto){
+  const blob = await (await fetch(foto)).blob(), arq = new File([blob], "pet.jpg", {type: "image/jpeg"});
+  if (!navigator.canShare || !navigator.canShare({files: [arq]})) throw new Error("sem-suporte");
+  await navigator.share({files: [arq], text: texto});
 }
 
 // Nome informado no aparelho quando se usa o login do proprietário
@@ -602,22 +689,30 @@ function autor(){
 if (DEMO) {
   const papel = MODO_DEMO ? "ativo" : (PARAMS.get("papel") || "ativo");   // ?papel= só para testes locais
   const N = Date.now(), U = {uid: "est1", email: "demo@lavajato.com"};
-  const contas = new Map([["est1",{email:U.email, nome:"Lava Jato Exemplo", whatsapp:"51999990000", status: ["admin","vencido"].includes(papel) ? "ativo" : papel, plano: MODO_DEMO ? "assinante" : "teste", criadoEm: N-DIA*13, venceEm: papel === "vencido" ? N-DIA : MODO_DEMO ? N+DIA*300 : N+DIA*2}]]);
+  const NOME_DEMO = PET ? "Pet Shop Exemplo" : "Lava Jato Exemplo";
+  const avatarDemo = (emoji, cor) => "data:image/svg+xml," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="${cor}"/><text x="50" y="66" font-size="52" text-anchor="middle">${emoji}</text></svg>`);
+  const contas = new Map([["est1",{email:U.email, nome:NOME_DEMO, produto: PRODUTO, whatsapp:"51999990000", status: ["admin","vencido"].includes(papel) ? "ativo" : papel, plano: MODO_DEMO ? "assinante" : "teste", criadoEm: N-DIA*13, venceEm: papel === "vencido" ? N-DIA : MODO_DEMO ? N+DIA*300 : N+DIA*2}]]);
   if (!MODO_DEMO) {
     contas.set("est2",{email:"ze@exemplo.com", nome:"Lava Jato do Zé", whatsapp:"51988887777", status:"pendente", criadoEm: N-36e5});
     contas.set("est3",{email:"brilho@exemplo.com", nome:"Brilho Car", whatsapp:"51977776666", status:"inativo", criadoEm: N-DIA*60});
     contas.set("est4",{email:"top@exemplo.com", nome:"Top Wash", whatsapp:"51966665555", status:"ativo", plano:"assinante", criadoEm: N-DIA*50, venceEm: N+DIA*20});
   }
   let cfgDemo = MODO_DEMO ? {} : {preco:"49,90", pix:"00.000.000/0000-00", pixNome:"Titular de teste", mpLink:"https://www.mercadopago.com.br/subscriptions/checkout?x=teste", suporteWhats:"51900000000"};
-  const ests = new Map([["est1",{nome:"Lava Jato Exemplo", etapas: ETAPAS_PADRAO, horario: HORARIO_PADRAO, codigoEquipe:"ex4mp1", onboarding: MODO_DEMO || PARAMS.has("semguia") ? {concluido:true} : undefined}]]);
+  const ests = new Map([["est1",{nome:NOME_DEMO, produto: PRODUTO, etapas: ETAPAS_PADRAO, horario: HORARIO_PADRAO, codigoEquipe:"ex4mp1", onboarding: MODO_DEMO || PARAMS.has("semguia") ? {concluido:true} : undefined}]]);
   const lav = new Map(), priv = new Map(), membros = new Map(); const subs = new Set();
   const emit = () => subs.forEach(f => f());
   const sub = f => { subs.add(f); f(); return () => subs.delete(f); };
   if (MODO_DEMO) {
     const et = ETAPAS_PADRAO, sem = (id, d, p) => { lav.set(id, {id, est:"est1", etapas: et, checks:{}, concluido:false, retirado:false, ...d}); priv.set(id, {est:"est1", telefone:"", historico:[{acao:"registrou", por:"Carlos", porTipo:"funcionario", em: d.criadoEm}], ...p}); };
-    sem("demoA", {tipo:"carro", placa:"RIO2A18", modelo:"Onix prata", nome:"Ana", criadoEm: N-12*6e4});
-    sem("demoB", {tipo:"moto", placa:"MOT0C55", modelo:"CG 150 vermelha", nome:"João", criadoEm: N-38*6e4, checks:{p0:N-30*6e4, p1:N-22*6e4}});
-    sem("demoC", {tipo:"carro", placa:"BRA4E21", modelo:"HB20 branco", nome:"Carla", criadoEm: N-75*6e4, checks:{p0:N-70*6e4,p1:N-60*6e4,p2:N-45*6e4,p3:N-20*6e4}, concluido:true, fimEm:N-18*6e4});
+    if (PET){
+      sem("demoA", {tipo:"cao", sexo:"macho", entrega:"casa", placa:"Thor", modelo:"Shih-tzu", nome:"Ana", foto: avatarDemo("🐶","#ffe7c2"), criadoEm: N-12*6e4});
+      sem("demoB", {tipo:"gato", sexo:"femea", entrega:"retirada", placa:"Mel", modelo:"Siamês", nome:"João", foto: avatarDemo("🐱","#e3ecff"), criadoEm: N-38*6e4, checks:{p0:N-30*6e4, p1:N-22*6e4}});
+      sem("demoC", {tipo:"cao", sexo:"macho", entrega:"retirada", placa:"Bob", modelo:"Golden", nome:"Carla", foto: avatarDemo("🐕","#e0f5f1"), criadoEm: N-95*6e4, checks:{p0:N-90*6e4,p1:N-80*6e4,p2:N-60*6e4,p3:N-45*6e4,p4:N-40*6e4,p5:N-30*6e4}, concluido:true, fimEm:N-28*6e4});
+    } else {
+      sem("demoA", {tipo:"carro", placa:"RIO2A18", modelo:"Onix prata", nome:"Ana", criadoEm: N-12*6e4});
+      sem("demoB", {tipo:"moto", placa:"MOT0C55", modelo:"CG 150 vermelha", nome:"João", criadoEm: N-38*6e4, checks:{p0:N-30*6e4, p1:N-22*6e4}});
+      sem("demoC", {tipo:"carro", placa:"BRA4E21", modelo:"HB20 branco", nome:"Carla", criadoEm: N-75*6e4, checks:{p0:N-70*6e4,p1:N-60*6e4,p2:N-45*6e4,p3:N-20*6e4}, concluido:true, fimEm:N-18*6e4});
+    }
   }
   store = {
     onAuth: cb => cb(U), entrar: async()=>{}, sair: async()=>{ location.href = "/"; }, esqueci: async()=>{},
@@ -668,7 +763,8 @@ if (DEMO) {
     onAuth: cb => au.onAuthStateChanged(cb),
     entrar: (e,s) => au.signInWithEmailAndPassword(e,s),
     sair: () => au.signOut(),
-    esqueci: e => au.sendPasswordResetEmail(e, {url: location.origin + location.pathname}),
+    // o retorno após redefinir a senha só é configurado para o domínio do Lavaflux
+    esqueci: e => /(^|\.)lavaflux\.web\.app$/.test(location.hostname) ? au.sendPasswordResetEmail(e, {url: location.origin + location.pathname}) : au.sendPasswordResetEmail(e),
     // Confirma a senha atual antes de trocar (exigência de segurança do Firebase)
     async trocarSenha(atual, nova){
       const u = au.currentUser;
@@ -681,8 +777,8 @@ if (DEMO) {
     membroWatch: (uid, cb) => snapDoc(col("membros").doc(uid), cb),
     conta: (uid, cb, err) => snapDoc(col("contas").doc(uid), cb, err),
     async criarConta(uid, email, nome, whatsapp){
-      await col("contas").doc(uid).set({email, nome, whatsapp, status: "pendente", criadoEm: Date.now()});
-      await col("estabelecimentos").doc(uid).set({nome, etapas: ETAPAS_PADRAO, horario: HORARIO_PADRAO, onboarding: {passo: 1}}, {merge: true});
+      await col("contas").doc(uid).set({email, nome, whatsapp, produto: PRODUTO, status: "pendente", criadoEm: Date.now()});
+      await col("estabelecimentos").doc(uid).set({nome, produto: PRODUTO, etapas: ETAPAS_PADRAO, horario: HORARIO_PADRAO, onboarding: {passo: 1}}, {merge: true});
     },
     est: (uid, cb) => snapDoc(col("estabelecimentos").doc(uid), cb),
     salvarEst: (uid, o) => col("estabelecimentos").doc(uid).set(o, {merge: true}),
@@ -771,25 +867,32 @@ function renderCliente(){
   if (!cliCarregado) return;
   if (!v || !v.placa){ el.innerHTML = `<div class="card vazio"><h2>Link não encontrado</h2><p>Este link expirou ou não existe. Os acompanhamentos ficam disponíveis por ${DIAS_GUARDA} dias após o serviço.</p></div>`; return; }
   const nomeEstab = (cliEst && cliEst.nome) || "", hor = (cliEst && cliEst.horario) || HORARIO_PADRAO;
-  if (!MODO_DEMO) document.title = nomeEstab || "Acompanhe seu veículo";
+  if (!MODO_DEMO) document.title = nomeEstab || (PET ? "Acompanhe seu pet" : "Acompanhe seu veículo");
   const et = etapasDe(v), ch = checksDe(v), p = progresso(v), sit = situacaoV(v);
   const dia0 = d => new Date(d).setHours(0,0,0,0), dif = Math.round((dia0(Date.now()) - dia0(v.criadoEm)) / DIA);
   const quando = dif === 0 ? "de hoje" : dif === 1 ? "de ontem" : "de " + data(v.criadoEm);
-  const antigo = dif > 0 && sit !== "retirado" ? `<div class="banner alerta"><span class="tx">⚠️ Este acompanhamento é de um <b>atendimento anterior</b> (${data(v.criadoEm)}). Se ${seuVeic(v)} está no ${esc(nomeEstab || "lava jato")} hoje, peça o link novo.</span></div>` : "";
+  const antigo = dif > 0 && sit !== "retirado" ? `<div class="banner alerta"><span class="tx">⚠️ Este acompanhamento é de um <b>atendimento anterior</b> (${data(v.criadoEm)}). Se ${esc(seuVeic(v))} está no ${esc(nomeEstab || (PET ? "pet shop" : "lava jato"))} hoje, peça o link novo.</span></div>` : "";
   let hero;
-  if (sit === "retirado") hero = `<div class="card hero entregue"><div class="ic">🤝</div><div class="st">${moto(v) ? "Moto entregue" : "Carro entregue"}</div><p class="mute">Retirad${moto(v) ? "a" : "o"} em ${data(v.retiradoEm)} às ${hora(v.retiradoEm)}. Obrigado pela preferência!</p></div>`;
+  const fotoP = PET && sit !== "aguardando" && sit !== "lavando" && v.fotoPronto ? `<img class="fotopronto" src="${esc(v.fotoPronto)}" alt="${esc(v.placa)} depois do atendimento">` : "";
+  if (PET && sit === "retirado") hero = `<div class="card hero entregue"><div class="ic">${casa(v) ? "🏠" : "🤝"}</div><div class="st">${casa(v) ? "Entregue em casa" : "Entregue"}</div>${fotoP}<p class="mute">${esc(cap(seuVeic(v)))} foi entregue em ${data(v.retiradoEm)} às ${hora(v.retiradoEm)}. Obrigado pela preferência!</p></div>`;
+  else if (PET && sit === "saiu") hero = `<div class="card hero pronto"><div class="ic">🛵</div><div class="st">Saiu para entrega</div>${fotoP}<p class="mute">${esc(cap(seuVeic(v)))} saiu às ${hora(v.saiuEm)} e logo chega em casa.</p></div>`;
+  else if (PET && sit === "pronto") hero = `<div class="card hero pronto"><div class="ic">✅</div><div class="st">${dif > 0 ? "Atendimento concluído" : casa(v) ? `Pront${art(v)}! Em breve sai para entrega` : `Pront${art(v)} para buscar!`}</div>${fotoP}<p class="mute">${dif > 0 ? `Concluído em ${data(v.fimEm)} às ${hora(v.fimEm)}.` : `Concluído às ${hora(v.fimEm)}. ${casa(v) ? "" : esc(lembrete(hor))}`}</p><p class="mute" style="margin:0">Obrigado pela preferência!</p></div>`;
+  else if (PET && sit === "aguardando") hero = `<div class="card hero"><div class="ic">⏳</div><div class="st">Na fila</div><p class="mute">${esc(cap(seuVeic(v)))} chegou e logo será atendid${art(v)}.</p>${progHtml(v)}</div>`;
+  else if (PET) hero = `<div class="card hero"><div class="ic">🛁</div><div class="st">Em atendimento</div><p class="mute">A equipe atualiza as etapas conforme o atendimento avança.</p>${progHtml(v)}</div>`;
+  else if (sit === "retirado") hero = `<div class="card hero entregue"><div class="ic">🤝</div><div class="st">${moto(v) ? "Moto entregue" : "Carro entregue"}</div><p class="mute">Retirad${moto(v) ? "a" : "o"} em ${data(v.retiradoEm)} às ${hora(v.retiradoEm)}. Obrigado pela preferência!</p></div>`;
   else if (sit === "pronto") hero = `<div class="card hero pronto"><div class="ic">✅</div><div class="st">${dif > 0 ? "Serviço concluído" : "Pronto para retirada!"}</div><p class="mute">${dif > 0 ? `Concluído em ${data(v.fimEm)} às ${hora(v.fimEm)}.` : `Concluído às ${hora(v.fimEm)}. ${esc(lembrete(hor))}`}</p><p class="mute" style="margin:0">Obrigado pela preferência!</p></div>`;
   else if (sit === "aguardando") hero = `<div class="card hero"><div class="ic">⏳</div><div class="st">Na fila</div><p class="mute">${cap(seuVeic(v))} foi recebid${moto(v) ? "a" : "o"} e logo será atendid${moto(v) ? "a" : "o"}.</p>${progHtml(v)}</div>`;
   else hero = `<div class="card hero"><div class="ic">🧽</div><div class="st">Em andamento</div><p class="mute">A equipe atualiza as etapas conforme o serviço avança.</p>${progHtml(v)}</div>`;
   const itens = et.map(e => `<li class="${ch[e.id] ? "d" : ""}"><div class="dot" aria-hidden="true">${ch[e.id] ? "✓" : ""}</div><div class="nm">${esc(e.nome)}<span class="sr-only">${ch[e.id] ? " (concluída)" : " (pendente)"}</span></div><div class="hr">${ch[e.id] ? hora(tsDe(ch[e.id])) : ""}</div></li>`).join("");
   el.innerHTML = `
     ${antigo}
-    ${nomeEstab ? `<div class="est-hero"><div class="en">${esc(nomeEstab)}</div><div class="mute">Acompanhe ${seuVeic(v)} em tempo real</div></div>` : ""}
-    <div class="card"><div class="v-head" style="margin:0"><div>${v.nome ? `<p>Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute" style="margin:0">${iconeV(v)} ${esc(v.modelo) || cap(seuVeic(v))}</p><p class="mute" style="margin:4px 0 0">📅 Atendimento ${quando}</p></div><span class="placa">${esc(v.placa)}</span></div></div>
+    ${nomeEstab ? `<div class="est-hero"><div class="en">${esc(nomeEstab)}</div><div class="mute">${PET ? `Acompanhe o atendimento d${art(v)} ${esc(v.placa)} em tempo real` : `Acompanhe ${seuVeic(v)} em tempo real`}</div></div>` : ""}
+    ${PET ? `<div class="card" style="text-align:center">${avatarHtml(v, true)}<div class="nomepet" style="font-size:24px">${iconeV(v)} ${esc(v.placa)}</div>${v.modelo ? `<p class="mute" style="margin:2px 0 0">${esc(v.modelo)}</p>` : ""}${v.nome ? `<p style="margin:8px 0 0">Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute" style="margin:4px 0 0">📅 Atendimento ${quando}${casa(v) ? " · 🏠 entrega em casa" : ""}</p></div>`
+    : `<div class="card"><div class="v-head" style="margin:0"><div>${v.nome ? `<p>Olá, <b>${esc(v.nome)}</b>!</p>` : ""}<p class="mute" style="margin:0">${iconeV(v)} ${esc(v.modelo) || cap(seuVeic(v))}</p><p class="mute" style="margin:4px 0 0">📅 Atendimento ${quando}</p></div><span class="placa">${esc(v.placa)}</span></div></div>`}
     ${hero}
     <div class="card"><h3 style="margin-bottom:4px">Etapas</h3><p class="mute" style="margin:0 0 4px">O horário mostra quando cada etapa foi marcada pela equipe.</p><ul class="cl">${itens}</ul></div>
     ${cardHorario(hor)}
-    <footer class="rod"><svg><use href="#logo"/></svg>Atualiza sozinho · Lavaflux</footer>`;
+    <footer class="rod"><svg><use href="${MARCA.logo}"/></svg>Atualiza sozinho · ${MARCA.nome}</footer>`;
 }
 $("#btVoltarPainel").onclick = () => { pararTudo(pararCli); history.replaceState(null,"",location.pathname); show("vPainel"); };
 
@@ -828,8 +931,10 @@ function iniciarSessao(u){
     }, () => espera("erro")));
   });
 }
+const outroProduto = c => !MODO_DEMO && c && prodDe(c) !== PRODUTO;
 function avaliarConta(){
   const c = contaAtual; if (!c || !usuario || !sessao.papel || sessao.papel === "admin") return;
+  if (outroProduto(c)){ pararTudo(pararPainel); painelAtivo = false; espera("outro", c); return; }
   if (c.status === "ativo" && !vencida(c)) { if (!painelAtivo) iniciarPainel(); else renderBanner(); }
   else {
     pararTudo(pararPainel); painelAtivo = false;
@@ -843,12 +948,14 @@ function espera(tipo, c){
   show("vEspera");
   const box = $("#esperaBox");
   if (tipo === "pendente") box.innerHTML = `<div style="font-size:48px">⏳</div><h2>Cadastro recebido!</h2><p><b>${esc(c.nome)}</b> está aguardando aprovação.</p><p class="mute">Esta tela abre o painel sozinha assim que a conta for aprovada. Os 15 dias grátis começam a contar na aprovação.</p>`;
-  else if (tipo === "inativo") box.innerHTML = `<div style="font-size:48px">🔒</div><h2>Conta desativada</h2><p class="mute">O acesso de <b>${esc(c.nome)}</b> está desativado. Entre em contato com o suporte do Lavaflux.</p>`;
+  else if (tipo === "inativo") box.innerHTML = `<div style="font-size:48px">🔒</div><h2>Conta desativada</h2><p class="mute">O acesso de <b>${esc(c.nome)}</b> está desativado. Entre em contato com o suporte do ${MARCA.nome}.</p>`;
   else if (tipo === "vencido") box.innerHTML = `<div style="font-size:48px">⛔</div><h2>${c.plano === "assinante" ? "Mensalidade vencida" : "Teste grátis encerrado"}</h2>
       <p>${c.plano === "assinante" ? "A mensalidade" : "O período de teste"} de <b>${esc(c.nome)}</b> venceu em ${data(c.venceEm)} e o painel foi pausado.</p>
       <p class="mute">Seus dados e os links dos clientes estão guardados. Assine para voltar a usar — o acesso volta assim que o pagamento for confirmado.</p>${pagamentoHtml()}`;
-  else if (tipo === "func-bloq") box.innerHTML = `<div style="font-size:48px">⏸️</div><h2>Acesso pausado</h2><p class="mute">O painel deste lava jato está pausado no momento. Fale com o proprietário.</p>`;
-  else if (tipo === "revogado") box.innerHTML = `<div style="font-size:48px">🔒</div><h2>Acesso revogado</h2><p class="mute">Este acesso de funcionário não está mais ativo. Peça um novo acesso ao proprietário do lava jato.</p>`;
+  else if (tipo === "func-bloq") box.innerHTML = `<div style="font-size:48px">⏸️</div><h2>Acesso pausado</h2><p class="mute">O painel deste ${PET ? "pet shop" : "lava jato"} está pausado no momento. Fale com o proprietário.</p>`;
+  else if (tipo === "outro"){ const pet = prodDe(c) === "petflux", site = pet ? "petflux.web.app" : "lavaflux.web.app";
+    box.innerHTML = `<div style="font-size:48px">${pet ? "🐾" : "🚗"}</div><h2>Esta conta é do ${nomeProd(c)}</h2><p class="mute">Entre pelo endereço do ${nomeProd(c)}.</p><a class="btn pri w100" href="https://${site}/app">Abrir ${site}</a>`; }
+  else if (tipo === "revogado") box.innerHTML = `<div style="font-size:48px">🔒</div><h2>Acesso revogado</h2><p class="mute">Este acesso de funcionário não está mais ativo. Peça um novo acesso ao proprietário do ${PET ? "pet shop" : "lava jato"}.</p>`;
   else if (tipo === "semconta") box.innerHTML = `<div style="font-size:48px">📝</div><h2>Conclua o cadastro</h2><p class="mute">Informe o nome do estabelecimento e o WhatsApp do responsável.</p>
       <input id="fimNome" maxlength="40" placeholder="Nome do estabelecimento" aria-label="Nome do estabelecimento"><input id="fimWhats" type="tel" inputmode="tel" placeholder="WhatsApp do responsável" aria-label="WhatsApp do responsável"><div class="erro" id="fimErro"></div><button class="pri w100" id="fimBt">Enviar para aprovação</button>`;
   else box.innerHTML = `<div style="font-size:48px">⚠️</div><h2>Não foi possível carregar</h2><p class="mute">Verifique a internet e tente de novo.</p><button class="w100" onclick="location.reload()">Tentar de novo</button>`;
@@ -876,7 +983,7 @@ $("#fLogin").onsubmit = async ev => {
 $("#fLoginFunc").onsubmit = async ev => {
   ev.preventDefault(); $("#fErro").textContent = "";
   const cod = $("#fCodigo").value.trim().toLowerCase(), us = $("#fUsuario").value.trim().toLowerCase();
-  if (!/^[a-z0-9]{6}$/.test(cod)){ $("#fErro").textContent = "O código do lava jato tem 6 letras ou números."; return; }
+  if (!/^[a-z0-9]{6}$/.test(cod)){ $("#fErro").textContent = `O código do ${PET ? "pet shop" : "lava jato"} tem 6 letras ou números.`; return; }
   try { await store.entrar(emailFunc(us, cod), $("#fSenha").value); }
   catch(e){ $("#fErro").textContent = e.code === "auth/network-request-failed" ? "Sem conexão. Verifique a internet e tente de novo." : "Código, usuário ou senha incorretos."; }
 };
@@ -915,7 +1022,7 @@ $("#fCad").onsubmit = async ev => {
 /* ---------- Painel do estabelecimento ---------- */
 let painelAtivo = false, pararPainel = [], lista = [], listaVivo = [], antigos = [], semMaisAntigos = false, aba = "patio", termo = "";
 let estDados = {}, etapasCfg = ETAPAS_PADRAO, horarioCfg = HORARIO_PADRAO;
-const nomeEst = () => estDados.nome || "Lava jato";
+const nomeEst = () => estDados.nome || (PET ? "Pet shop" : "Lava jato");
 function juntarLista(){
   const m = new Map(antigos.map(v => [v.id, v])); listaVivo.forEach(v => m.set(v.id, v));
   lista = [...m.values()].sort((a,b) => b.criadoEm - a.criadoEm); renderLista(); renderGuia();
@@ -942,9 +1049,9 @@ function iniciarPainel(){
     renderNovoChecks(); renderGuia();
   }));
   antigos = []; semMaisAntigos = false;
-  $("#lista").innerHTML = `<div class="card vazio">Carregando veículos…</div>`;
+  $("#lista").innerHTML = `<div class="card vazio">Carregando ${PET ? "atendimentos" : "veículos"}…</div>`;
   pararPainel.push(store.lista(est, l => { listaVivo = l; juntarLista(); },
-    e => { $("#lista").innerHTML = `<div class="card vazio">Não foi possível carregar os veículos. Verifique a internet e recarregue a página. Se a conta acabou de ser aprovada, aguarde alguns minutos.</div>`; console.error(e); }));
+    e => { $("#lista").innerHTML = `<div class="card vazio">Não foi possível carregar ${PET ? "os atendimentos" : "os veículos"}. Verifique a internet e recarregue a página. Se a conta acabou de ser aprovada, aguarde alguns minutos.</div>`; console.error(e); }));
   renderBanner();
   if (ehDono() && !MODO_DEMO){
     if (!lerLS(LS_FUNC) && !funcMem) pedirNome(true);
@@ -963,14 +1070,14 @@ function renderBanner(){
 }
 function pagamentoHtml(){
   const c = cfgPlat || {}, preco = c.preco || PRECO_PADRAO;
-  const comprov = c.suporteWhats ? `https://wa.me/${telBR(c.suporteWhats)}?text=${encodeURIComponent(`Olá! Segue o comprovante da assinatura do Lavaflux — ${(contaAtual && contaAtual.nome) || ""} (${(usuario && usuario.email) || ""}).`)}` : "";
+  const comprov = c.suporteWhats ? `https://wa.me/${telBR(c.suporteWhats)}?text=${encodeURIComponent(`Olá! Segue o comprovante da assinatura do ${MARCA.nome} — ${(contaAtual && contaAtual.nome) || ""} (${(usuario && usuario.email) || ""}).`)}` : "";
   return `<div style="text-align:center;margin:12px 0 4px"><div class="preco">R$ ${esc(preco)} <small>/ mês</small></div><p class="mute">Sem fidelidade: cancele quando quiser.</p></div>
     ${c.pix ? `<div class="paybox"><h4>💠 Pagar com Pix</h4><div class="pixkey" id="pixKey">${esc(c.pix)}</div>${c.pixNome ? `<p class="mute">Titular: ${esc(c.pixNome)}</p>` : ""}
       <button class="w100" data-copiar-pix>Copiar chave Pix</button>
       ${comprov ? `<a class="btn w100" style="margin-top:8px" target="_blank" rel="noopener" href="${comprov}">📲 Abrir WhatsApp para enviar o comprovante</a>` : ""}</div>` : ""}
     ${c.mpLink ? `<div class="paybox"><h4>💳 Pagar com cartão</h4><p class="mute">Assinatura mensal pelo Mercado Pago — cobra todo mês automaticamente.</p>
       <a class="btn pri w100" target="_blank" rel="noopener" href="${esc(c.mpLink)}">Assinar com cartão</a></div>` : ""}
-    ${!c.pix && !c.mpLink ? `<p class="mute">Formas de pagamento em configuração. Fale com o suporte do Lavaflux.</p>` : ""}
+    ${!c.pix && !c.mpLink ? `<p class="mute">Formas de pagamento em configuração. Fale com o suporte do ${MARCA.nome}.</p>` : ""}
     <p class="mute" style="text-align:center">A liberação é feita assim que o pagamento é confirmado.</p>`;
 }
 document.addEventListener("click", async e => {
@@ -988,8 +1095,9 @@ const renderNovoChecks = () => renderChecks($("#nEtapas"), etapasCfg, new Set(et
 
 /* Histórico (privado: só a equipe vê). Diferencia login próprio, login do proprietário e registros antigos. */
 const histAbertos = new Set(), histCache = new Map();
-const ACOES = {registrou:"registrou o veículo", concluiu:"marcou a lavagem como concluída", reabriu:"reabriu o serviço", editou:"editou o cadastro",
-  retirou:"registrou a entrega ao cliente", desfez_retirada:"desfez o registro de entrega", avisou:"abriu o WhatsApp para avisar o cliente"};
+const ACOES = {registrou: PET ? "registrou o atendimento" : "registrou o veículo", concluiu: PET ? "marcou o atendimento como concluído" : "marcou a lavagem como concluída", reabriu:"reabriu o serviço", editou:"editou o cadastro",
+  retirou: PET ? "registrou a entrega" : "registrou a entrega ao cliente", desfez_retirada:"desfez o registro de entrega", avisou:"abriu o WhatsApp para avisar o cliente",
+  saiu:"registrou a saída para entrega", desfez_saida:"desfez a saída para entrega", foto:"adicionou a foto do pet pronto"};
 function autorHtml(x){
   if (x.porTipo === "funcionario") return `<b>${esc(x.por)}</b> <span class="selo" title="Funcionário com login próprio">login próprio</span>`;
   if (x.porTipo === "proprietario") return `<b>${esc(x.por)}</b> <span class="mute">(login do proprietário)</span>`;
@@ -1015,27 +1123,32 @@ $("#lista").addEventListener("toggle", e => {
   if (d.open){ histAbertos.add(d.dataset.hid); carregarHist(d.dataset.hid); } else histAbertos.delete(d.dataset.hid);
 }, true);
 
-const ABAS = {patio:"Nenhum veículo no pátio. Registre um veículo para começar.", pronto:"Nenhum veículo pronto aguardando retirada.", retirado:"Nenhum veículo retirado recentemente."};
-const ROTULO_SIT = {aguardando:["pe","Aguardando"], lavando:["az","Em lavagem"], pronto:["ab","Pronto"], retirado:["fe","Retirado"]};
+const ABAS = PET ? {patio:"Nenhum pet no momento. Registre um atendimento para começar.", pronto:"Nenhum pet pronto aguardando entrega.", retirado:"Nenhum pet entregue recentemente."}
+  : {patio:"Nenhum veículo no pátio. Registre um veículo para começar.", pronto:"Nenhum veículo pronto aguardando retirada.", retirado:"Nenhum veículo retirado recentemente."};
+const ROTULO_SIT = {aguardando:["pe","Aguardando"], lavando:["az", PET ? "Em atendimento" : "Em lavagem"], pronto:["ab","Pronto"], saiu:["az","Saiu para entrega"], retirado:["fe", PET ? "Entregue" : "Retirado"]};
 function cardVeiculo(v, mostrarSit){
   const sit = situacaoV(v), p = progresso(v), et = etapasDe(v), ch = checksDe(v), tudo = p.feitas === p.total;
   const linhaTempo = sit === "retirado" ? `Entregue às ${hora(v.retiradoEm)}${data(v.retiradoEm) !== data(Date.now()) ? " de " + data(v.retiradoEm) : ""}`
-    : sit === "pronto" ? `Pronto às ${hora(v.fimEm)} · aguardando retirada ${desde(v.fimEm).replace("há", "há")}`
-    : `Entrou às ${hora(v.criadoEm)} · ${desde(v.criadoEm)}`;
+    : sit === "saiu" ? `Saiu para entrega às ${hora(v.saiuEm)} · ${desde(v.saiuEm)}`
+    : sit === "pronto" ? `Pronto às ${hora(v.fimEm)} · ${casa(v) ? "aguardando sair para entrega" : PET ? "aguardando o tutor" : "aguardando retirada"} ${desde(v.fimEm)}`
+    : `${PET ? "Chegou" : "Entrou"} às ${hora(v.criadoEm)} · ${desde(v.criadoEm)}`;
   const chips = et.map(e => `<button class="chip ${ch[e.id] ? "on" : ""}" data-act="check" data-id="${v.id}" data-e="${esc(e.id)}" aria-pressed="${!!ch[e.id]}" ${v.concluido ? "disabled" : ""}>${ch[e.id] ? "✓ " : ""}${esc(e.nome)}</button>`).join("");
   const principal = sit === "retirado" ? `<button class="grow" data-act="desfazer" data-id="${v.id}">↶ Desfazer entrega</button>`
-    : sit === "pronto" ? `<button class="ok grow" data-act="retirar" data-id="${v.id}">🤝 Entregue ao cliente</button><button class="grow" data-act="avisar" data-id="${v.id}">📲 Avisar no WhatsApp</button>`
-    : `<button class="${tudo ? "ok" : "pri"} grow" data-act="concluir" data-id="${v.id}">✓ Concluir lavagem</button>`;
-  const secundarias = [`<button class="ghost" data-act="share" data-id="${v.id}">🔗 Link do cliente</button>`,
+    : sit === "saiu" ? `<button class="ok grow" data-act="retirar" data-id="${v.id}">🏠 Entregue em casa</button><button class="grow" data-act="avisarSaiu" data-id="${v.id}">📲 Avisar no WhatsApp</button>`
+    : sit === "pronto" && casa(v) ? `<button class="ok grow" data-act="saiu" data-id="${v.id}">🛵 Saiu para entrega</button><button class="grow" data-act="avisar" data-id="${v.id}">📲 Avisar no WhatsApp</button>`
+    : sit === "pronto" ? `<button class="ok grow" data-act="retirar" data-id="${v.id}">🤝 ${PET ? "Entregue ao tutor" : "Entregue ao cliente"}</button><button class="grow" data-act="avisar" data-id="${v.id}">📲 Avisar no WhatsApp</button>`
+    : `<button class="${tudo ? "ok" : "pri"} grow" data-act="concluir" data-id="${v.id}">✓ ${PET ? "Concluir atendimento" : "Concluir lavagem"}</button>`;
+  const secundarias = [`<button class="ghost" data-act="share" data-id="${v.id}">🔗 ${PET ? "Link do tutor" : "Link do cliente"}</button>`,
     sit !== "retirado" ? `<button class="ghost" data-act="editar" data-id="${v.id}">✏️ Editar</button>` : "",
     sit === "pronto" ? `<button class="ghost" data-act="reabrir" data-id="${v.id}">↶ Reabrir</button>` : "",
+    sit === "saiu" ? `<button class="ghost" data-act="desfazerSaida" data-id="${v.id}">↶ Desfazer saída</button>` : "",
     ehDono() ? `<button class="ghost danger" data-act="remover" data-id="${v.id}">Remover</button>` : ""].join("");
   const [cls, txt] = ROTULO_SIT[sit];
   return `<div class="card">
-    <div class="v-head" style="margin-bottom:4px"><div><span style="font-size:20px;vertical-align:middle;margin-right:6px" aria-hidden="true">${iconeV(v)}</span><span class="placa">${esc(v.placa)}</span>${v.demo ? `<span class="demo-tag">DEMONSTRAÇÃO</span>` : ""}
-      <p class="mute" style="margin:6px 0 0">${esc(v.modelo)}${v.modelo && v.nome ? " · " : ""}${esc(v.nome)}</p></div>${mostrarSit ? `<span class="pill ${cls}">${txt}</span>` : ""}</div>
+    <div class="v-head" style="margin-bottom:4px"><div style="display:flex;gap:10px;align-items:center">${avatarHtml(v)}<div><span style="font-size:20px;vertical-align:middle;margin-right:6px" aria-hidden="true">${iconeV(v)}</span>${idHtml(v)}${v.demo ? `<span class="demo-tag">DEMONSTRAÇÃO</span>` : ""}
+      <p class="mute" style="margin:6px 0 0">${esc(v.modelo)}${v.modelo && v.nome ? " · " : ""}${esc(v.nome)}${casa(v) ? " · 🏠 entrega" : ""}</p></div></div>${mostrarSit ? `<span class="pill ${cls}">${txt}</span>` : ""}</div>
     <div class="tempo">${linhaTempo}</div>
-    ${progHtml(v, sit === "pronto" || sit === "retirado")}
+    ${progHtml(v, sit === "pronto" || sit === "saiu" || sit === "retirado")}
     <div class="chips">${chips}</div>
     <div class="acts">${principal}</div>
     <div class="acts2">${secundarias}</div>
@@ -1044,32 +1157,40 @@ function cardVeiculo(v, mostrarSit){
 }
 function renderLista(){
   if (!painelAtivo) return;
-  const grupos = {aguardando: [], lavando: [], pronto: [], retirado: []};
+  const grupos = {aguardando: [], lavando: [], pronto: [], saiu: [], retirado: []};
   lista.forEach(v => grupos[situacaoV(v)].push(v));
   grupos.aguardando.sort((a,b) => a.criadoEm - b.criadoEm); grupos.lavando.sort((a,b) => a.criadoEm - b.criadoEm);
   grupos.pronto.sort((a,b) => (a.fimEm||0) - (b.fimEm||0)); grupos.retirado.sort((a,b) => (b.retiradoEm||0) - (a.retiradoEm||0));
   const nPatio = grupos.aguardando.length + grupos.lavando.length;
   $("#cPa").textContent = nPatio ? `(${nPatio})` : "";
-  [["cPr","pronto"],["cRe","retirado"]].forEach(([id,k]) => $("#"+id).textContent = grupos[k].length ? `(${grupos[k].length})` : "");
-  const q = placaLimpa(termo);
+  const nPronto = grupos.pronto.length + grupos.saiu.length;
+  $("#cPr").textContent = nPronto ? `(${nPronto})` : "";
+  $("#cRe").textContent = grupos.retirado.length ? `(${grupos.retirado.length})` : "";
+  const q = buscaNorm(termo);
   if (q){
-    const achados = lista.filter(v => (v.placa || "").includes(q));
+    const achados = lista.filter(v => buscaNorm(v.placa || "").includes(q));
     $("#lista").innerHTML = achados.length ? achados.map(v => cardVeiculo(v, true)).join("")
-      : `<div class="card vazio">Nenhum veículo com "${esc(q)}" entre os carregados.${sitAnteriores()}</div>`;
+      : `<div class="card vazio">${PET ? "Nenhum pet" : "Nenhum veículo"} com "${esc(termo.trim())}" entre os carregados.${sitAnteriores()}</div>`;
     return;
   }
   if (aba === "patio"){
     const bloco = (k, tit) => `<h3 class="sec" style="margin:14px 0 8px">${tit} <span class="mute" style="font-weight:600">(${grupos[k].length})</span></h3>` +
       (grupos[k].length ? grupos[k].map(v => cardVeiculo(v, false)).join("") : `<p class="mute" style="margin:0 0 8px">Nenhum.</p>`);
-    $("#lista").innerHTML = nPatio ? bloco("aguardando", "⏳ Aguardando") + bloco("lavando", "🧽 Em lavagem") : `<div class="card vazio">${ABAS.patio}</div>`;
+    $("#lista").innerHTML = nPatio ? bloco("aguardando", "⏳ Aguardando") + bloco("lavando", PET ? "🛁 Em atendimento" : "🧽 Em lavagem") : `<div class="card vazio">${ABAS.patio}</div>`;
+    return;
+  }
+  if (aba === "pronto" && PET){
+    const bloco = (k, tit) => `<h3 class="sec" style="margin:14px 0 8px">${tit} <span class="mute" style="font-weight:600">(${grupos[k].length})</span></h3>` +
+      (grupos[k].length ? grupos[k].map(v => cardVeiculo(v, false)).join("") : `<p class="mute" style="margin:0 0 8px">Nenhum.</p>`);
+    $("#lista").innerHTML = nPronto ? bloco("pronto", "✅ Prontos") + bloco("saiu", "🛵 Saíram para entrega") : `<div class="card vazio">${ABAS.pronto}</div>`;
     return;
   }
   const itens = grupos[aba];
   const rodape = aba === "retirado" ? `<div style="text-align:center;margin:8px 0 4px">${sitAnteriores()}
-      <p class="mute" style="margin-top:8px">Os veículos são apagados automaticamente ${DIAS_GUARDA} dias após a conclusão.</p></div>` : "";
+      <p class="mute" style="margin-top:8px">${PET ? "Os atendimentos" : "Os veículos"} são apagados automaticamente ${DIAS_GUARDA} dias após a conclusão.</p></div>` : "";
   $("#lista").innerHTML = itens.length ? itens.map(v => cardVeiculo(v, false)).join("") + rodape : `<div class="card vazio">${ABAS[aba]}</div>${rodape}`;
 }
-const sitAnteriores = () => MODO_DEMO ? "" : semMaisAntigos ? `<p class="mute">Não há mais veículos anteriores.</p>` : `<p style="margin-top:8px"><button id="btAnteriores">Carregar dias anteriores</button></p>`;
+const sitAnteriores = () => MODO_DEMO ? "" : semMaisAntigos ? `<p class="mute">Não há mais ${PET ? "atendimentos" : "veículos"} anteriores.</p>` : `<p style="margin-top:8px"><button id="btAnteriores">Carregar dias anteriores</button></p>`;
 $("#busca").addEventListener("input", e => { termo = e.target.value; renderLista(); });
 function irAba(k){ aba = k; $("#tabsV").querySelectorAll("button").forEach(x => { const on = x.dataset.tab === k; x.classList.toggle("on", on); x.setAttribute("aria-selected", on); }); renderLista(); }
 $("#tabsV").onclick = e => { const b = e.target.closest("button"); if (b) irAba(b.dataset.tab); };
@@ -1095,45 +1216,60 @@ $("#lista").onclick = async ev => {
       await store.atualizar(v.id, {concluido: true, fimEm, retirado: false, retiradoEm: null, expiraEm: store.ts(fimEm + DIAS_GUARDA*DIA)}, {acao: "concluiu"});
       depois(); irAba("pronto");
       abrirShare({...v, concluido: true, fimEm}, true);
+    } else if (act === "saiu"){
+      const saiuEm = Date.now();
+      await store.atualizar(v.id, {saiuEntrega: true, saiuEm}, {acao: "saiu"}); depois();
+      abrirShare({...v, saiuEntrega: true, saiuEm}, "saiu");
+    } else if (act === "desfazerSaida"){
+      await store.atualizar(v.id, {saiuEntrega: false, saiuEm: null}, {acao: "desfez_saida"}); depois();
     } else if (act === "retirar"){
       await store.atualizar(v.id, {retirado: true, retiradoEm: Date.now()}, {acao: "retirou"}); depois();
     } else if (act === "desfazer"){
       await store.atualizar(v.id, {retirado: false, retiradoEm: null}, {acao: "desfez_retirada"}); depois();
     } else if (act === "reabrir"){
-      await store.atualizar(v.id, {concluido: false, fimEm: null, retirado: false, retiradoEm: null}, {acao: "reabriu"}); depois();
+      await store.atualizar(v.id, {concluido: false, fimEm: null, retirado: false, retiradoEm: null, saiuEntrega: false, saiuEm: null}, {acao: "reabriu"}); depois();
     } else if (act === "editar") abrirEdit(v);
-    else if (act === "remover"){ if (confirm(`Remover ${v.placa}? O link do cliente deixará de funcionar e o histórico será apagado.`)) await store.remover(v.id); }
+    else if (act === "remover"){ if (confirm(`Remover ${v.placa}? O link ${PET ? "do tutor" : "do cliente"} deixará de funcionar e o histórico será apagado.`)) await store.remover(v.id); }
     else if (act === "share") abrirShare(v);
     else if (act === "avisar") abrirShare(v, true);
+    else if (act === "avisarSaiu") abrirShare(v, "saiu");
   } catch(e){ console.error(e); alert("Não foi possível salvar. Verifique a internet e tente de novo."); renderLista(); }
 };
 
 $("#fNovo").onsubmit = async ev => {
   ev.preventDefault();
   const placa = placaLimpa($("#nPlaca").value), etapas = lerChecks($("#nEtapas"), etapasCfg);
-  if (placa.length < 7){ $("#nErro").textContent = "Placa inválida: informe 7 letras e números (ex.: ABC1D23)."; $("#nPlaca").focus(); return; }
+  if (!idValido(placa)){ $("#nErro").textContent = ERRO_ID; $("#nPlaca").focus(); return; }
   if (!etapas.length){ $("#nErro").textContent = "Selecione pelo menos uma etapa."; return; }
   $("#nErro").textContent = "";
   const agora = Date.now();
   const d = { est: sessao.est, tipo: document.querySelector("input[name=nTipo]:checked").value, placa,
               modelo: $("#nModelo").value.trim(), nome: $("#nNome").value.trim(), etapas, checks: {},
               concluido: false, retirado: false, criadoEm: agora, v: 2 };
+  if (PET) Object.assign(d, { sexo: document.querySelector("input[name=nSexo]:checked").value,
+              entrega: document.querySelector("input[name=nEntrega]:checked").value, saiuEntrega: false, ...(fotoNova.foto ? {foto: fotoNova.foto} : {}) });
   const p = { telefone: soDigitos($("#nTel").value), historico: [{acao: "registrou", ...autor(), em: agora}] };
   const bt = ev.target.querySelector("button.pri"); bt.disabled = true;
   try {
     const id = await store.criar(d, p);
     ev.target.reset(); renderNovoChecks(); irAba("patio");
+    fotoNova.foto = null; $("#nFotoPrev").classList.add("hidden"); $("#nFotoTira").classList.add("hidden");
     abrirShare({...d, id, telefone: p.telefone});
     if (ehDono() && guiaAtivo() && (estDados.onboarding || {}).passo === 5) salvarGuia({concluido: true});
   } catch(e){ console.error(e); $("#nErro").textContent = "Não foi possível registrar. Verifique a internet: os dados continuam preenchidos."; }
   finally { bt.disabled = false; }
 };
 
-/* ---------- Exemplo de modelo conforme carro/moto ---------- */
-const EXEMPLO_MODELO = {carro: "Onix prata", moto: "CG 150 vermelha"}, EXEMPLO_NOME = {carro: "Ana", moto: "João"};
+const fotoNova = {foto: null}, fotoEdit = {foto: null};
+ligarFoto("#nFotoBt", "#nFotoIn", "#nFotoPrev", "#nFotoTira", fotoNova);
+ligarFoto("#eFotoBt", "#eFotoIn", "#eFotoPrev", "#eFotoTira", fotoEdit);
+
+/* ---------- Exemplo de modelo conforme o tipo ---------- */
+const EXEMPLO_MODELO = PET ? {cao: "Shih-tzu", gato: "Siamês"} : {carro: "Onix prata", moto: "CG 150 vermelha"};
+const EXEMPLO_NOME = PET ? {cao: "Ana", gato: "João"} : {carro: "Ana", moto: "João"};
 function ajustarExemplo(radioName, inputSel){
   const r = document.querySelector(`input[name=${radioName}]:checked`);
-  const t = r ? r.value : "carro";
+  const t = r ? r.value : (PET ? "cao" : "carro");
   $(inputSel).placeholder = EXEMPLO_MODELO[t];
   const nome = $(inputSel === "#nModelo" ? "#nNome" : "#eNome"); if (nome) nome.placeholder = EXEMPLO_NOME[t];
 }
@@ -1145,7 +1281,14 @@ $("#fNovo").addEventListener("reset", () => setTimeout(() => ajustarExemplo("nTi
 let editAtual = null, editLista = [], editPriv = {};
 async function abrirEdit(v){
   editAtual = v;
-  document.querySelector(`input[name=eTipo][value=${moto(v) ? "moto" : "carro"}]`).checked = true;
+  const tipoV = PET ? (v.tipo === "gato" ? "gato" : "cao") : (moto(v) ? "moto" : "carro");
+  document.querySelector(`input[name=eTipo][value=${tipoV}]`).checked = true;
+  if (PET){
+    document.querySelector(`input[name=eSexo][value=${v.sexo === "femea" ? "femea" : "macho"}]`).checked = true;
+    document.querySelector(`input[name=eEntrega][value=${casa(v) ? "casa" : "retirada"}]`).checked = true;
+    fotoEdit.foto = v.foto || null; fotoEdit.mudou = false;
+    $("#eFotoPrev").src = v.foto || ""; $("#eFotoPrev").classList.toggle("hidden", !v.foto); $("#eFotoTira").classList.toggle("hidden", !v.foto);
+  }
   $("#ePlaca").value = v.placa; $("#eModelo").value = v.modelo || ""; ajustarExemplo("eTipo", "#eModelo"); $("#eNome").value = v.nome || "";
   $("#eTel").value = v.telefone || ""; $("#eTel").placeholder = "Carregando…";
   const atuais = etapasDe(v), ids = new Set(atuais.map(e => e.id));
@@ -1159,12 +1302,14 @@ async function abrirEdit(v){
 $("#fEdit").onsubmit = async ev => {
   ev.preventDefault();
   const placa = placaLimpa($("#ePlaca").value), etapas = lerChecks($("#eEtapas"), editLista);
-  if (placa.length < 7){ $("#eErro").textContent = "Placa inválida: informe 7 letras e números."; return; }
+  if (!idValido(placa)){ $("#eErro").textContent = ERRO_ID; return; }
   if (!etapas.length){ $("#eErro").textContent = "Selecione pelo menos uma etapa."; return; }
   const ch = {}, velho = checksDe(editAtual);
   etapas.forEach(e => { if (velho[e.id]) ch[e.id] = velho[e.id]; });
   const patch = { tipo: document.querySelector("input[name=eTipo]:checked").value, placa,
       modelo: $("#eModelo").value.trim(), nome: $("#eNome").value.trim(), etapas, checks: ch };
+  if (PET) Object.assign(patch, { sexo: document.querySelector("input[name=eSexo]:checked").value,
+      entrega: document.querySelector("input[name=eEntrega]:checked").value, foto: fotoEdit.foto || null });
   if (editAtual.telefone !== undefined && store.apagar) patch.telefone = store.apagar();   // registro antigo: tira o telefone do documento público
   try {
     await store.atualizar(editAtual.id, patch, {acao: "editou"}, {telefone: soDigitos($("#eTel").value)});
@@ -1242,12 +1387,13 @@ $("#fMembro").onsubmit = async ev => {
     ev.target.reset();
     $("#mbErro").innerHTML = `<span class="okmsg">Acesso criado. Passe ao funcionário: código <b>${esc(estDados.codigoEquipe)}</b>, usuário <b>${esc(us)}</b> e a senha.</span>`;
   } catch(e){
-    erro(e.code === "auth/email-already-in-use" ? "Este usuário já existe neste lava jato. Escolha outro." : e.code === "auth/weak-password" ? "Senha fraca: use pelo menos 6 caracteres." : "Não foi possível criar o acesso. Verifique a internet e tente de novo.");
+    erro(e.code === "auth/email-already-in-use" ? `Este usuário já existe neste ${PET ? "pet shop" : "lava jato"}. Escolha outro.` : e.code === "auth/weak-password" ? "Senha fraca: use pelo menos 6 caracteres." : "Não foi possível criar o acesso. Verifique a internet e tente de novo.");
   } finally { $("#mbBt").disabled = false; $("#mbBt").textContent = "Criar acesso"; }
 };
 
 /* ---------- Primeiros passos (proprietário) ---------- */
-const PASSOS = ["Confirmar o nome do lava jato", "Conferir as etapas sugeridas", "Criar uma lavagem de demonstração", "Ver o que o cliente vê", "Cadastrar o primeiro veículo real"];
+const PASSOS = PET ? ["Confirmar o nome do pet shop", "Conferir as etapas sugeridas", "Criar um atendimento de demonstração", "Ver o que o tutor vê", "Cadastrar o primeiro atendimento real"]
+  : ["Confirmar o nome do lava jato", "Conferir as etapas sugeridas", "Criar uma lavagem de demonstração", "Ver o que o cliente vê", "Cadastrar o primeiro veículo real"];
 function guiaAtivo(){
   if (!ehDono() || MODO_DEMO) return false;
   const o = estDados.onboarding;
@@ -1268,11 +1414,11 @@ function renderGuia(){
   else if (passo === 2) corpo = `<p>Estas são as etapas sugeridas. A equipe marca cada uma quando termina, em qualquer ordem.</p>
       <div class="chips" style="margin-bottom:10px">${etapasCfg.map(e => `<span class="chip" style="cursor:default">${esc(e.nome)}</span>`).join("")}</div>
       <div class="row"><button class="pri" data-g="etapas">Usar estas etapas</button><button data-g="ajustar">Ajustar etapas</button></div>`;
-  else if (passo === 3) corpo = `<p>Vamos criar um veículo de teste, marcado como <span class="demo-tag">DEMONSTRAÇÃO</span>. Ele não conta nos seus números e pode ser apagado depois.</p>
-      <button class="pri" data-g="demo">Criar lavagem de demonstração</button>`;
-  else if (passo === 4) corpo = `<p>Marque uma ou duas etapas no veículo de demonstração e abra a tela que o cliente recebe pelo link.</p>
-      <button class="pri" data-g="cliente" ${demoV ? "" : "disabled"}>Abrir a visão do cliente</button>`;
-  else corpo = `<p>Agora é com você: cadastre o primeiro veículo real no formulário abaixo.</p>
+  else if (passo === 3) corpo = `<p>Vamos criar ${PET ? "um atendimento de teste" : "um veículo de teste"}, marcado como <span class="demo-tag">DEMONSTRAÇÃO</span>. Ele não conta nos seus números e pode ser apagado depois.</p>
+      <button class="pri" data-g="demo">${PET ? "Criar atendimento de demonstração" : "Criar lavagem de demonstração"}</button>`;
+  else if (passo === 4) corpo = `<p>Marque uma ou duas etapas ${PET ? "no atendimento" : "no veículo"} de demonstração e abra a tela que ${PET ? "o tutor" : "o cliente"} recebe pelo link.</p>
+      <button class="pri" data-g="cliente" ${demoV ? "" : "disabled"}>${PET ? "Abrir a visão do tutor" : "Abrir a visão do cliente"}</button>`;
+  else corpo = `<p>Agora é com você: cadastre ${PET ? "o primeiro atendimento real" : "o primeiro veículo real"} no formulário abaixo.</p>
       <div class="row"><button class="pri" data-g="real">Ir para o cadastro</button>${demoV ? `<button data-g="apagar">Apagar a demonstração</button>` : ""}</div>`;
   el.innerHTML = `<div class="card guia">
     <div class="v-head" style="margin-bottom:2px"><h3 style="margin:0">Primeiros passos · ${passo} de ${PASSOS.length}</h3><button class="ghost" data-g="pular">Pular por enquanto</button></div>
@@ -1291,7 +1437,9 @@ $("#guia").onclick = async e => {
   if (g === "demo"){
     b.disabled = true; const agora = Date.now();
     try {
-      const id = await store.criar({est: sessao.est, tipo: "carro", placa: "DEM0000", modelo: "Carro de demonstração", nome: "Cliente exemplo", etapas: etapasCfg, checks: {}, concluido: false, retirado: false, criadoEm: agora, demo: true, v: 2},
+      const base = PET ? {tipo: "cao", sexo: "macho", entrega: "retirada", saiuEntrega: false, placa: "Bidu", modelo: "Pet de demonstração", nome: "Tutor exemplo"}
+                       : {tipo: "carro", placa: "DEM0000", modelo: "Carro de demonstração", nome: "Cliente exemplo"};
+      const id = await store.criar({est: sessao.est, ...base, etapas: etapasCfg, checks: {}, concluido: false, retirado: false, criadoEm: agora, demo: true, v: 2},
         {telefone: "", historico: [{acao: "registrou", ...autor(), em: agora}]});
       await salvarGuia({passo: 4, demoId: id}); irAba("patio");
     } catch { b.disabled = false; $("#gErro").textContent = "Não foi possível criar a demonstração. Verifique a internet e tente de novo."; }
@@ -1351,30 +1499,53 @@ $("#cfgSalvar").onclick = async () => {
 /* ---------- Link e aviso pelo WhatsApp ----------
    O Lavaflux não envia mensagens sozinho: ele abre o WhatsApp com o texto pronto e a pessoa confirma o envio. */
 let shareAtual = null;
+function msgPara(v, modo, link, loja){
+  const ola = `Olá${v.nome ? " " + v.nome : ""}!`, quem = cap(seuVeic(v));
+  if (PET){
+    if (modo === "saiu") return `${ola} ${quem} saiu para entrega e logo chega em casa 🛵🐾 Acompanhe: ${link}`;
+    if (modo && casa(v)) return `${ola} ${quem} está ${prontoV(v)} 🐾✨ Em breve sai para entrega. Acompanhe: ${link}`;
+    if (modo) return `${ola} ${quem} está ${prontoV(v)} e cheiros${art(v)} 🐾✨ Pode vir buscar no ${loja}. ${lembrete(horarioCfg)} Obrigado pela preferência!`.replace(/  +/g, " ");
+    return `${ola} Acompanhe o atendimento d${art(v)} ${v.placa} no ${loja}: ${link}`;
+  }
+  return modo
+    ? `${ola} ${quem} (${v.placa}) está ${prontoV(v)} para retirada no ${loja}. ${lembrete(horarioCfg)} Obrigado pela preferência! ${iconeV(v)}✨`.replace(/  +/g," ")
+    : `${ola} Acompanhe a lavagem d${moto(v) ? "a sua moto" : "o seu carro"} (${v.placa}) no ${loja}: ${link}`;
+}
 async function abrirShare(v, pronto){
   shareAtual = v;
-  const link = linkCliente(v.id), loja = nomeEst();
-  $("#shTit").textContent = pronto ? "Avisar o cliente" : "Link do cliente";
+  const link = linkCliente(v.id), loja = nomeEst(), quemCli = PET ? "o tutor" : "o cliente";
+  $("#shTit").textContent = pronto === "saiu" ? "Avisar que saiu para entrega" : pronto ? (PET ? "Avisar o tutor" : "Avisar o cliente") : (PET ? "Link do tutor" : "Link do cliente");
   $("#shInfo").textContent = `${v.placa}${v.nome ? " · " + v.nome : ""}`;
   $("#shLink").value = link;
   $("#shLinkBox").classList.toggle("hidden", !!pronto);
   document.querySelectorAll("#mShare .shSo").forEach(e => e.classList.toggle("hidden", !!pronto));
-  const msg = pronto
-    ? `Olá${v.nome ? " " + v.nome : ""}! ${cap(seuVeic(v))} (${v.placa}) está ${prontoV(v)} para retirada no ${loja}. ${lembrete(horarioCfg)} Obrigado pela preferência! ${iconeV(v)}✨`.replace(/  +/g," ")
-    : `Olá${v.nome ? " " + v.nome : ""}! Acompanhe a lavagem d${moto(v) ? "a sua moto" : "o seu carro"} (${v.placa}) no ${loja}: ${link}`;
+  const msg = msgPara(v, pronto, link, loja);
   $("#shMsg").textContent = msg;
   $("#shExplica").textContent = pronto
-    ? "A tela do cliente já mostra que o veículo está pronto. Para avisar também pelo WhatsApp, abra a conversa com a mensagem pronta e toque em enviar."
-    : "O link mostra o andamento em tempo real. Para mandar ao cliente, abra o WhatsApp com a mensagem pronta e toque em enviar.";
+    ? `A tela d${PET ? "o tutor" : "o cliente"} já mostra a atualização. Para avisar também pelo WhatsApp, abra a conversa com a mensagem pronta e toque em enviar.`
+    : `O link mostra o andamento em tempo real. Para mandar a ${quemCli.slice(2)}, abra o WhatsApp com a mensagem pronta e toque em enviar.`;
+  // Petflux: foto do pet (perfil ou pronto) para compartilhar junto
+  if (PET){
+    const foto = (pronto && v.fotoPronto) || v.foto;
+    $("#shFoto").src = foto || ""; $("#shFoto").classList.toggle("hidden", !foto);
+    $("#shFotoBt").classList.toggle("hidden", pronto !== true);
+    $("#shFotoBt").textContent = v.fotoPronto ? "📷 Trocar a foto do pet pronto" : "📷 Tirar foto do pet pronto";
+    const cmp = $("#shCompart");
+    cmp.classList.toggle("hidden", !foto); cmp.disabled = MODO_DEMO;
+    cmp.onclick = async () => {
+      try { await compartilharComFoto(foto, msg); }
+      catch(e){ if (e.name !== "AbortError") alert("Este celular não permite anexar a foto por aqui. Use \"Abrir WhatsApp com a mensagem\": a foto aparece para o tutor no link."); }
+    };
+  }
   const wpp = $("#shWpp");
   if (MODO_DEMO){
     wpp.removeAttribute("href"); wpp.setAttribute("aria-disabled", "true"); wpp.style.opacity = ".55";
-    $("#shAviso").textContent = "Na demonstração o WhatsApp não é aberto. No uso real, este botão abre a conversa com o texto acima para você conferir e enviar.";
+    $("#shAviso").textContent = "Na demonstração o WhatsApp não é aberto. No uso real, este botão abre a conversa com o texto acima para você conferir e enviar" + (PET ? ", e \"Compartilhar com foto\" anexa a imagem do pet." : ".");
   } else {
     wpp.removeAttribute("aria-disabled"); wpp.style.opacity = "";
     let tel = v.telefone;
     $("#shAviso").textContent = "";
-    if (tel === undefined){ $("#shAviso").textContent = "Carregando o número do cliente…"; try { tel = (await store.privGet(v.id)).telefone || ""; } catch { tel = ""; } }
+    if (tel === undefined){ $("#shAviso").textContent = `Carregando o número d${PET ? "o tutor" : "o cliente"}…`; try { tel = (await store.privGet(v.id)).telefone || ""; } catch { tel = ""; } }
     if (shareAtual !== v) return;
     wpp.href = `https://wa.me/${telBR(tel)}?text=${encodeURIComponent(msg)}`;
     $("#shAviso").textContent = tel ? "O envio acontece no WhatsApp, depois que você tocar em enviar." : "Sem WhatsApp cadastrado: o WhatsApp vai abrir para você escolher o contato.";
@@ -1393,6 +1564,17 @@ $("#shCopiar").onclick = async () => {
   $("#shCopiar").textContent = "Copiado ✓"; setTimeout(() => $("#shCopiar").textContent = "Copiar link", 1500);
 };
 $("#shVer").onclick = () => { fechar("mShare"); abrirCliente(shareAtual.id, true); };
+$("#shFotoBt").onclick = () => $("#shFotoIn").click();
+$("#shFotoIn").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f || !shareAtual) return;
+  try {
+    const foto = await lerFoto(f), v = shareAtual;
+    $("#shFotoBt").disabled = true; $("#shFotoBt").textContent = "Salvando foto…";
+    await store.atualizar(v.id, {fotoPronto: foto}, {acao: "foto"});
+    abrirShare({...v, fotoPronto: foto}, true);
+  } catch { alert("Não foi possível salvar a foto. Verifique a internet e tente de novo."); }
+  finally { $("#shFotoBt").disabled = false; }
+};
 
 /* ---------- Alterar senha (proprietário e administrador; funcionário pede novo acesso ao proprietário) ---------- */
 document.querySelectorAll("[data-senha]").forEach(b => b.onclick = () => {
@@ -1421,7 +1603,7 @@ $("#fSenha2").onsubmit = async ev => {
 /* ---------- Administrador da plataforma ---------- */
 let pararAdmin = [], aContas = [], aEsts = {}, aFiltro = "pendente";
 function iniciarAdmin(){
-  show("vAdmin"); document.title = "Lavaflux · Admin";
+  show("vAdmin"); document.title = MARCA.nome + " · Admin";
   pararAdmin.push(store.config(c => { cfgPlat = c || {}; }));
   pararAdmin.push(store.contas(l => { aContas = l; renderAdmin(); }, e => { $("#adminLista").innerHTML = `<div class="card vazio">Erro ao carregar contas: ${esc(e.message)}</div>`; }));
   pararAdmin.push(store.ests(o => { aEsts = o; renderAdmin(); }));
@@ -1436,10 +1618,10 @@ function planoHtml(c){
 }
 function msgAviso(c){
   const nome = (aEsts[c.uid] && aEsts[c.uid].nome) || c.nome, preco = cfgPlat.preco || PRECO_PADRAO, ass = c.plano === "assinante";
-  const pag = `Você pode pagar por Pix ou cartão direto no app, no botão "${ass ? "Pagar" : "Assinar"}".`;
-  if (vencida(c)) return `Olá, ${nome}! Aqui é do Lavaflux. ${ass ? "Sua mensalidade" : "Seu período de teste gratuito"} terminou em ${data(c.venceEm)} e o acesso ao painel foi pausado. Seus dados e os links dos clientes estão guardados. Para voltar a usar, é só ${ass ? "renovar" : "assinar"} o plano mensal de R$ ${preco}, sem fidelidade — cancele quando quiser. ${pag} Qualquer dúvida, estou à disposição!`;
+  const pag = `Você pode pagar por Pix ou cartão direto no app, no botão "${ass ? "Pagar" : "Assinar"}".`, prod = nomeProd(c);
+  if (vencida(c)) return `Olá, ${nome}! Aqui é do ${prod}. ${ass ? "Sua mensalidade" : "Seu período de teste gratuito"} terminou em ${data(c.venceEm)} e o acesso ao painel foi pausado. Seus dados e os links dos clientes estão guardados. Para voltar a usar, é só ${ass ? "renovar" : "assinar"} o plano mensal de R$ ${preco}, sem fidelidade — cancele quando quiser. ${pag} Qualquer dúvida, estou à disposição!`;
   const n = diasAte(c.venceEm);
-  return `Olá, ${nome}! Aqui é do Lavaflux. ${ass ? "Sua mensalidade vence" : "Seu período de teste gratuito termina"} ${emDias(n)} (${data(c.venceEm)}). Para continuar usando sem interrupção, ${ass ? "renove" : "assine"} o plano mensal de R$ ${preco}, sem fidelidade — cancele quando quiser. ${pag} Qualquer dúvida, estou à disposição!`;
+  return `Olá, ${nome}! Aqui é do ${prod}. ${ass ? "Sua mensalidade vence" : "Seu período de teste gratuito termina"} ${emDias(n)} (${data(c.venceEm)}). Para continuar usando sem interrupção, ${ass ? "renove" : "assine"} o plano mensal de R$ ${preco}, sem fidelidade — cancele quando quiser. ${pag} Qualquer dúvida, estou à disposição!`;
 }
 function renderAdmin(){
   const ativas = aContas.filter(c => c.status === "ativo");
@@ -1457,13 +1639,13 @@ function renderAdmin(){
     const [cls, txt] = ROTULO[c.status] || ["pe", c.status];
     const base = Math.max(s.ultimo || 0, c.aprovadoEm || c.criadoEm || 0);
     const semUso = c.status === "ativo" && base < agora - 14*864e5;
-    const zap = c.whatsapp ? `<a class="btn ${vencendo(c) ? "pri" : ""}" target="_blank" rel="noopener" href="https://wa.me/${telBR(c.whatsapp)}?text=${encodeURIComponent(c.status === "ativo" && c.venceEm ? msgAviso(c) : `Olá, ${(aEsts[c.uid] && aEsts[c.uid].nome) || c.nome}! Aqui é do Lavaflux.`)}">📲 ${vencendo(c) ? "Avisar no WhatsApp" : "WhatsApp"}</a>` : "";
+    const zap = c.whatsapp ? `<a class="btn ${vencendo(c) ? "pri" : ""}" target="_blank" rel="noopener" href="https://wa.me/${telBR(c.whatsapp)}?text=${encodeURIComponent(c.status === "ativo" && c.venceEm ? msgAviso(c) : `Olá, ${(aEsts[c.uid] && aEsts[c.uid].nome) || c.nome}! Aqui é do ${nomeProd(c)}.`)}">📲 ${vencendo(c) ? "Avisar no WhatsApp" : "WhatsApp"}</a>` : "";
     const bts = c.status === "pendente"
       ? `<button class="ok grow" data-st="ativo" data-u="${c.uid}">✓ Aprovar (${DIAS_TESTE} dias grátis)</button><button class="danger" data-st="inativo" data-u="${c.uid}">Recusar</button>${zap}`
       : c.status === "ativo" ? `<button class="ok grow" data-pago="${c.uid}">💰 Pagamento recebido (+${DIAS_MES} dias)</button>${zap}<button class="ghost danger" data-st="inativo" data-u="${c.uid}">Desativar</button>`
       : `<button class="ok" data-st="ativo" data-u="${c.uid}">Reativar</button>${zap}`;
     return `<div class="card">
-      <div class="v-head" style="margin-bottom:4px"><div><h3 style="margin:0">${esc(nome)}</h3><p class="mute" style="margin:2px 0 0">${esc(c.email)}</p></div><span class="pill ${cls}">${txt}</span></div>
+      <div class="v-head" style="margin-bottom:4px"><div><h3 style="margin:0">${esc(nome)} <span class="selo">${prodDe(c) === "petflux" ? "🐾 Petflux" : "🚗 Lavaflux"}</span></h3><p class="mute" style="margin:2px 0 0">${esc(c.email)}</p></div><span class="pill ${cls}">${txt}</span></div>
       ${planoHtml(c)}
       <div class="stats"><span>WhatsApp: <b>${esc(c.whatsapp || "—")}</b></span><span>Cadastro: <b>${data(c.criadoEm)}</b></span><span>Veículos: <b>${s.total}</b></span><span>Este mês: <b>${s.mes}</b></span><span>Último uso: <b>${s.ultimo ? data(s.ultimo) : "nunca"}</b></span></div>
       ${semUso ? `<p class="mute" style="color:var(--warn);margin:6px 0 0">⚠️ Sem uso há mais de 14 dias</p>` : ""}
@@ -1509,6 +1691,37 @@ $("#cobSalvar").onclick = async () => {
   } catch(e){ $("#cobErro").textContent = "Erro ao salvar: " + e.message; }
 };
 
+/* ---------- Aplica marca, cores e textos do produto ---------- */
+(function aplicarProduto(){
+  document.querySelectorAll(".marca").forEach(e => e.innerHTML = `${MARCA.a}<span class="fx">${MARCA.b}</span>`);
+  document.querySelectorAll('use[href="#logo"]').forEach(u => u.setAttribute("href", MARCA.logo));
+  document.title = MARCA.nome; $("#tAssin").textContent = "Assinatura " + MARCA.nome;
+  if (!PET) return;
+  document.body.classList.add("pet");
+  document.querySelector('meta[name="theme-color"]').content = MARCA.cor2;
+  const seg = (nome, marcado) => `<label><input type="radio" name="${nome}" value="cao" ${marcado ? "checked" : ""}>🐶 Cachorro</label><label><input type="radio" name="${nome}" value="gato">🐱 Gato</label>`;
+  $("#segNTipo").innerHTML = seg("nTipo", true); $("#segETipo").innerHTML = seg("eTipo", true);
+  const txt = {tNovo: "Novo atendimento", lbNPlaca: "Nome do pet *", lbNModelo: "Raça", lbNNome: "Nome do tutor", lbNEtapas: "Etapas deste atendimento",
+    tEdit: "Editar atendimento", lbEPlaca: "Nome do pet *", lbEModelo: "Raça", lbENome: "Nome do tutor", lbEEtapas: "Etapas deste atendimento",
+    tbPatio: "No pet shop", tbRet: "Entregues", txTemNegocio: "Tem um pet shop?", txAcessoDono: "Acesso do proprietário do pet shop.",
+    txAcessoFunc: "Use o código do pet shop, o usuário e a senha que o proprietário criou para você.", lbCodigo: "Código do pet shop",
+    txEquipe: "Cada funcionário entra com login próprio e só acessa os atendimentos: não vê ajustes, assinatura nem a equipe.",
+    shQrTx: "O tutor também pode escanear o QR code no balcão.", shVer: "Ver como o tutor vê", visaoCliBt: "Visão do tutor", rotuloCli: "Visão do tutor",
+    demoTit: "Demonstração do Petflux", txEtapasCfg: "Serviços do atendimento. A equipe marca cada um quando é feito, em qualquer ordem.",
+    txEtapasVale: "Vale para os próximos atendimentos. Para mudar um atendimento em andamento, use ✏️ Editar nele.", txNomeCfg: "Aparece para o tutor e na mensagem de pet pronto."};
+  document.querySelectorAll(".neg").forEach(e => e.textContent = "pet shop");
+  Object.entries(txt).forEach(([id, t]) => { const e = document.getElementById(id); if (e) e.textContent = t; });
+  $("#demoPassos").innerHTML = `<li>Na <b>Visão da equipe</b>, toque nas etapas do <b>Thor</b>.</li><li>Veja a <b>Visão do tutor</b> mudar na hora.</li><li>Toque em <b>Concluir atendimento</b>, depois em <b>Saiu para entrega</b> e em <b>Entregue em casa</b>.</li>`;
+  const pl = $("#nPlaca"), pe = $("#ePlaca");
+  [pl, pe].forEach(i => { i.maxLength = 20; i.style.textTransform = "none"; });
+  pl.placeholder = "Thor"; pe.placeholder = "Thor"; $("#nModelo").placeholder = "Shih-tzu"; $("#eModelo").placeholder = "Shih-tzu";
+  $("#busca").placeholder = "Buscar pelo nome do pet"; $("#busca").setAttribute("aria-label", "Buscar pelo nome do pet");
+  $("#tabsV").setAttribute("aria-label", "Situação dos atendimentos");
+  $("#cNome").placeholder = "Ex.: Pet Shop Amigo";
+  document.querySelectorAll("input[name=nTipo]").forEach(r => r.addEventListener("change", () => ajustarExemplo("nTipo", "#nModelo")));
+  document.querySelectorAll("input[name=eTipo]").forEach(r => r.addEventListener("change", () => ajustarExemplo("eTipo", "#eModelo")));
+})();
+
 /* ---------- Demonstração: alternância de visões e reinício ---------- */
 function setVisao(v){
   document.body.dataset.visao = v;
@@ -1517,7 +1730,7 @@ function setVisao(v){
 document.querySelectorAll(".visoes button").forEach(b => b.onclick = () => setVisao(b.dataset.visao));
 $("#demoReiniciar").onclick = () => location.reload();
 if (MODO_DEMO){
-  document.body.classList.add("modo-demo"); document.title = "Demonstração · Lavaflux";
+  document.body.classList.add("modo-demo"); document.title = "Demonstração · " + MARCA.nome;
   ["vPainel","vCliente"].forEach(id => $("#"+id).classList.remove("hidden"));
   // Ao concluir e entregar o carro da demonstração, destaca o convite para o teste grátis
   setInterval(() => { const a = lista.find(x => x.id === "demoA"); if (a && (a.concluido || a.retirado)) $("#demoFim").classList.remove("hidden"); }, 500);

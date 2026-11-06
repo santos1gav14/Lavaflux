@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<script>
+  // Link de acompanhamento do cliente (/?c=código) abre direto no app — mantém os links já enviados
+  if (/[?&]c=/.test(location.search)) location.replace("/app" + location.search);
+</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Petflux — o tutor acompanha o banho e tosa pelo celular</title>
+<meta name="description" content="App para pet shop: a equipe marca as etapas do banho e tosa e o tutor acompanha pelo link, sem instalar nada. 15 dias grátis sem cartão, depois R$ 49,90/mês sem fidelidade.">
+<meta property="og:title" content="Petflux — o tutor acompanha o banho e tosa pelo celular">
+<meta property="og:description" content="Menos mensagens perguntando se o pet já está pronto. Experimente a demonstração ou teste grátis por 15 dias.">
+<meta property="og:image" content="https://petflux.web.app/og.png">
+<meta property="og:url" content="https://petflux.web.app/">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0a3b37">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --placa:#0b6b60;      /* faixa da etiqueta */
+  --noite:#0a3b37;      /* fundo escuro */
+  --agua:#0e9384;       /* verde-água de ação */
+  --espuma:#e8f6f3;     /* fundo claro */
+  --branco:#ffffff;
+  --tinta:#13213a;      /* texto */
+  --cinza:#5b6a82;
+  --linha:#cfe5e1;
+  --zap:#25d366;        /* só para momentos de WhatsApp */
+  --zap-esc:#128c4a;
+  --cond:"Barlow Condensed","Arial Narrow",sans-serif;
+  --corpo:"Barlow",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--branco);color:var(--tinta);font:18px/1.6 var(--corpo);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img,svg{display:block}
+.box{max-width:1120px;margin:0 auto;padding:0 20px}
+:focus-visible{outline:3px solid var(--zap);outline-offset:3px;border-radius:6px}
+
+/* ---------- topo ---------- */
+.topo{position:sticky;top:0;z-index:20;background:rgba(10,59,55,.96);backdrop-filter:blur(8px);color:#fff}
+.topo .box{display:flex;align-items:center;gap:24px;height:64px}
+.marca{display:flex;align-items:center;gap:10px;text-decoration:none;font:800 26px/1 var(--cond);letter-spacing:.01em}
+.marca svg{width:34px;height:34px}
+.marca b{color:#7fe0cf;font-weight:800}
+.nav{display:flex;gap:22px;margin-left:auto;font-size:16px}
+.nav a{text-decoration:none;opacity:.85}
+.nav a:hover{opacity:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 18px/1 var(--corpo);text-decoration:none;border-radius:12px;padding:15px 22px;border:2px solid transparent;cursor:pointer;white-space:nowrap}
+.btn.pri{background:var(--agua);color:#fff}
+.btn.pri:hover{background:#0b7a6c}
+.btn.cla{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
+.btn.cla:hover{border-color:#fff}
+.btn.peq{padding:10px 16px;font-size:16px}
+@media(max-width:820px){.nav{display:none}.topo .entrar{margin-left:auto}}
+
+/* ---------- abertura ---------- */
+.abre{background:var(--noite);color:#fff;overflow:hidden;position:relative;padding:0}
+.abre .box{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding-top:56px;padding-bottom:72px}
+.abre h1{font:800 clamp(46px,7.2vw,86px)/.95 var(--cond);letter-spacing:-.01em;margin:0 0 22px;text-wrap:balance}
+.abre .lead{font-size:20px;line-height:1.55;color:#c7e9e3;max-width:34em;margin:0 0 30px}
+.abre .acoes{display:flex;gap:12px;flex-wrap:wrap}
+.abre .nota{margin-top:16px;font-size:15px;color:#9fd2c8}
+/* faixas da pista, discretas */
+.abre::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120' fill='white' fill-opacity='.05'%3E%3Cellipse cx='30' cy='40' rx='9' ry='11'/%3E%3Cellipse cx='50' cy='30' rx='8' ry='10'/%3E%3Cellipse cx='70' cy='40' rx='9' ry='11'/%3E%3Cpath d='M50 50c-14 0-22 14-22 22 0 7 7 10 12 8 5-2 7-3 10-3s5 1 10 3c5 2 12-1 12-8 0-8-8-22-22-22z'/%3E%3C/svg%3E") 0 0/120px;transform:rotate(-12deg) scale(1.3);pointer-events:none}
+@media(max-width:900px){.abre .box{grid-template-columns:1fr;padding-top:36px}.palco{order:2}}
+
+/* ---------- celular demonstrativo ---------- */
+.palco{position:relative;display:flex;justify-content:center;min-height:560px}
+.cel{width:290px;height:560px;background:#062522;border-radius:44px;padding:12px;box-shadow:0 30px 80px rgba(0,0,0,.45),inset 0 0 0 2px #1d5650;position:relative}
+.tela{background:#f1f7f6;border-radius:34px;height:100%;overflow:hidden;color:var(--tinta);padding:30px 16px 16px;font-size:13px;line-height:1.4}
+.tela .loja{text-align:center;font:800 21px/1.1 var(--cond);margin-bottom:2px}
+.tela .sub{text-align:center;color:var(--cinza);font-size:12px;margin-bottom:12px}
+.mini{background:#fff;border:1px solid var(--linha);border-radius:14px;padding:11px 12px;margin-bottom:9px}
+.mini.vei{display:flex;justify-content:space-between;align-items:center}
+.placa{display:inline-flex;flex-direction:column;border:2px solid #13213a;border-radius:5px;overflow:hidden;background:#fff;font:700 15px/1 var(--cond);letter-spacing:.12em;text-align:center}
+.placa i{display:block;background:var(--placa);color:#fff;font:600 7px/1 var(--corpo);letter-spacing:.2em;padding:2px 6px;font-style:normal}
+.placa span{padding:3px 7px 2px}
+.estado{text-align:center;padding:14px 10px}
+.estado .ic{font-size:30px;line-height:1}
+.estado .st{font:800 22px/1.1 var(--cond);margin:6px 0 4px}
+.estado .bar{height:6px;border-radius:3px;background:var(--linha);overflow:hidden;margin:8px auto 0;max-width:180px}
+.estado .bar i{display:block;height:100%;width:0;background:var(--agua)}
+.estado.pronto{background:var(--zap-esc);color:#fff;border-color:var(--zap-esc)}
+.estado.pronto .bar,.estado.pronto .cont{display:none}
+.estado .cont{font-size:11px;color:var(--cinza);margin-top:6px}
+.lista{list-style:none;margin:0;padding:0}
+.lista li{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--linha);color:var(--cinza);font-weight:600}
+.lista li:last-child{border:0}
+.lista .d{width:20px;height:20px;border-radius:50%;border:2px solid var(--linha);flex:none;display:grid;place-items:center;color:#fff;font-size:11px}
+.lista li.ok{color:var(--tinta)}
+.lista li.ok .d{background:var(--agua);border-color:var(--agua)}
+.lista .h{margin-left:auto;font-weight:500;font-size:11px}
+/* balão do WhatsApp */
+.zap{position:absolute;left:50%;bottom:26px;transform:translate(-50%,20px);width:300px;background:#fff;border-radius:16px;padding:12px 14px 12px 50px;box-shadow:0 18px 40px rgba(0,0,0,.35);font-size:14px;line-height:1.4;color:var(--tinta);opacity:0;transition:opacity .4s,transform .4s}
+.zap::before{content:"";position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:50%;background:var(--zap) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.2 13.8c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z'/%3E%3C/svg%3E") center/18px no-repeat}
+.zap b{display:block;font-size:13px;color:var(--zap-esc)}
+.zap.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:400px){.zap{width:270px}}
+
+/* ---------- seções ---------- */
+section{padding:88px 0}
+h2{font:800 clamp(36px,5vw,56px)/1 var(--cond);margin:0 0 18px;letter-spacing:-.005em;text-wrap:balance}
+.intro{font-size:20px;color:var(--cinza);max-width:36em;margin:0 0 44px}
+
+/* situações típicas: antes x depois */
+.sit-cab{display:grid;grid-template-columns:1fr 1fr;gap:40px;font:700 20px/1 var(--cond);color:var(--cinza);padding-bottom:12px;border-bottom:4px solid var(--noite)}
+.sit-cab span:last-child{color:var(--agua)}
+.sit{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:24px 0;border-bottom:1px solid var(--linha)}
+.sit p{margin:0}
+.sit .antes{font-size:19px}
+.sit .depois{color:var(--cinza);padding-left:22px;border-left:3px solid var(--agua)}
+.sit .depois b{color:var(--tinta)}
+.sit-nota{margin:18px 0 0;font-size:15px;color:var(--cinza)}
+@media(max-width:760px){.sit-cab{display:none}.sit{grid-template-columns:1fr;gap:12px}.sit .antes::before{content:"Sem o Petflux";display:block;font:700 16px/1.4 var(--cond);color:var(--cinza)}.sit .depois::before{content:"Com o Petflux";display:block;font:700 16px/1.4 var(--cond);color:var(--agua)}}
+
+/* passos (sequência real) */
+.passos{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:p;border-top:4px solid var(--noite)}
+.passos li{counter-increment:p;padding:26px 24px 8px 0;position:relative}
+.passos li::before{content:counter(p);display:block;font:800 64px/1 var(--cond);color:var(--agua);margin-bottom:10px}
+.passos h3{font:700 26px/1.1 var(--cond);margin:0 0 8px}
+.passos p{margin:0;color:var(--cinza);font-size:17px}
+@media(max-width:900px){.passos{grid-template-columns:1fr 1fr;row-gap:12px}}
+@media(max-width:520px){.passos{grid-template-columns:1fr}}
+
+/* recursos */
+.recursos{background:var(--noite);color:#fff}
+.recursos .intro{color:#b4ddd6}
+.rec{display:grid;grid-template-columns:repeat(2,1fr);gap:0 64px}
+.rec div{padding:22px 0;border-top:1px solid rgba(255,255,255,.14)}
+.rec h3{font:700 24px/1.15 var(--cond);margin:0 0 6px}
+.rec p{margin:0;color:#b4ddd6;font-size:17px}
+@media(max-width:760px){.rec{grid-template-columns:1fr}}
+
+/* preço */
+.preco .box{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.etiqueta{border:3px solid var(--tinta);border-radius:16px;overflow:hidden;max-width:440px}
+.etiqueta .faixa{background:var(--placa);color:#fff;font:600 14px/1 var(--corpo);letter-spacing:.18em;padding:9px 18px;display:flex;justify-content:space-between}
+.etiqueta .corpo{padding:26px 26px 28px}
+.valor{font:800 clamp(52px,6.4vw,84px)/.9 var(--cond);letter-spacing:-.02em;white-space:nowrap}
+.valor small{font:700 26px/1 var(--cond);color:var(--cinza);margin-left:4px}
+.etiqueta ul{list-style:none;padding:0;margin:22px 0 26px}
+.etiqueta li{padding:7px 0 7px 30px;position:relative}
+.etiqueta li::before{content:"";position:absolute;left:4px;top:15px;width:12px;height:7px;border-left:3px solid var(--agua);border-bottom:3px solid var(--agua);transform:rotate(-45deg)}
+.etiqueta .btn{width:100%}
+.preco .lado p{color:var(--cinza)}
+@media(max-width:820px){.preco .box{grid-template-columns:1fr;gap:32px}}
+
+/* dúvidas */
+.duvidas{background:var(--espuma)}
+.duvidas details{border-top:1px solid var(--linha);padding:18px 0}
+.duvidas details:last-of-type{border-bottom:1px solid var(--linha)}
+.duvidas summary{cursor:pointer;font:700 22px/1.25 var(--cond);list-style:none;display:flex;justify-content:space-between;gap:20px}
+.duvidas summary::after{content:"+";font-size:28px;line-height:.9;color:var(--agua)}
+.duvidas details[open] summary::after{content:"–"}
+.duvidas summary::-webkit-details-marker{display:none}
+.duvidas details p{margin:10px 0 0;color:var(--cinza);max-width:42em}
+.duvidas .box{max-width:860px}
+
+/* chamada final */
+.final{background:var(--agua);color:#fff;text-align:center}
+.final h2{margin-bottom:12px}
+.final p{font-size:20px;margin:0 0 30px;color:#e2f7f3}
+.final .btn{background:#fff;color:var(--noite)}
+.final .btn:hover{background:var(--espuma)}
+
+footer{background:var(--noite);color:#9fd2c8;font-size:15px;padding:30px 0}
+footer .box{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer a{text-decoration:none}
+footer a:hover{color:#fff}
+
+/* legenda das imagens ilustrativas */
+.legenda{font-size:14px;color:#9fd2c8;text-align:center;margin-top:14px}
+.zap small{display:block;font-size:11px;color:var(--cinza);margin-top:4px}
+
+/* demonstração */
+.demo{background:var(--espuma)}
+.demo .box{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
+.demo ul{margin:0 0 28px;padding-left:22px;color:var(--cinza)}
+.demo li{margin:6px 0}
+.demo .btn.cla2{background:#fff;color:var(--noite);border-color:var(--linha)}
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.duas figure{margin:0;background:#fff;border:1px solid var(--linha);border-radius:14px;padding:14px;font-size:15px}
+.duas figcaption{font:700 18px/1.2 var(--cond);color:var(--agua);margin-bottom:6px}
+@media(max-width:820px){.demo .box{grid-template-columns:1fr;gap:28px}}
+
+/* telas reais com dados fictícios */
+.tela-real{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+.tela-real.inv{grid-template-columns:1.1fr .9fr}
+.captura{margin:0}
+.captura img{width:100%;max-width:390px;border-radius:22px;border:1px solid var(--linha);box-shadow:0 18px 50px rgba(10,59,55,.18);margin:0 auto;display:block}
+.captura figcaption{font-size:14px;color:var(--cinza);text-align:center;margin-top:10px}
+.lista-ok{list-style:none;padding:0;margin:0 0 8px}
+.lista-ok li{padding:10px 0 10px 32px;position:relative;border-top:1px solid var(--linha)}
+.lista-ok li::before{content:"";position:absolute;left:4px;top:19px;width:12px;height:7px;border-left:3px solid var(--agua);border-bottom:3px solid var(--agua);transform:rotate(-45deg)}
+.lista-ok b{display:block}
+.lista-ok span{color:var(--cinza);font-size:17px}
+.cliente-sec{background:var(--espuma)}
+@media(max-width:860px){.tela-real,.tela-real.inv{grid-template-columns:1fr;gap:32px}.tela-real.inv .captura{order:2}}
+
+/* suporte */
+.suporte{margin-top:36px;padding:22px 24px;border:2px solid var(--linha);border-radius:16px;background:#fff;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.suporte p{margin:0}
+.btn.zapbtn{background:var(--zap-esc);color:#fff}
+.hidden{display:none!important}
+.pet-av{width:46px;height:46px;border-radius:50%;background:#ffe7c2;display:grid;place-items:center;font-size:26px;flex:none}
+.nomep{font:800 20px/1 var(--cond)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="lgPet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2cc4ad"/><stop offset="1" stop-color="#0b7a6c"/></linearGradient>
+    <symbol id="logo" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="13" fill="url(#lgPet)"/>
+      <ellipse cx="22.5" cy="30.5" rx="8.6" ry="7.2" fill="#fff"/>
+      <ellipse cx="12.6" cy="21.6" rx="3.4" ry="4.3" transform="rotate(-18 12.6 21.6)" fill="#fff"/>
+      <ellipse cx="18.6" cy="14.8" rx="3.5" ry="4.5" transform="rotate(-6 18.6 14.8)" fill="#fff"/>
+      <ellipse cx="26.6" cy="14.8" rx="3.5" ry="4.5" transform="rotate(6 26.6 14.8)" fill="#fff"/>
+      <ellipse cx="32.6" cy="21.6" rx="3.4" ry="4.3" transform="rotate(18 32.6 21.6)" fill="#fff"/>
+      <path d="M17.6 31.4c1.6-1 3.2-1 4.9 0s3.3 1 4.9 0" stroke="#14a491" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M37.5 9.5l1.1 2.6 2.6 1.1-2.6 1.1-1.1 2.6-1.1-2.6-2.6-1.1 2.6-1.1z" fill="#d6fff8"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="topo">
+  <div class="box">
+    <a class="marca" href="/" aria-label="Petflux, início"><svg><use href="#logo"/></svg><span>Pet<b>flux</b></span></a>
+    <nav class="nav" aria-label="Seções">
+      <a href="#demonstracao">Demonstração</a><a href="#equipe">Para a equipe</a><a href="#cliente">Para o tutor</a><a href="#preco">Preço</a><a href="#duvidas">Dúvidas</a>
+    </nav>
+    <a class="btn cla peq entrar" href="/app">Entrar</a>
+  </div>
+</header>
+
+<main>
+  <!-- 1. Proposta de valor -->
+  <section class="abre" aria-labelledby="t-abre">
+    <div class="box">
+      <div>
+        <h1 id="t-abre">O tutor acompanha o banho e tosa pelo celular.</h1>
+        <p class="lead">A equipe marca cada etapa e o tutor vê o andamento pelo link, com a foto do pet, sem instalar nada. Funciona também para quem recebe o pet em casa.</p>
+        <div class="acoes">
+          <a class="btn pri" href="/app#cadastro">Testar grátis por 15 dias</a>
+          <a class="btn cla" href="/app?demo=1">Experimentar demonstração</a>
+        </div>
+        <p class="nota">Sem cartão para começar. 15 dias grátis a partir da aprovação da conta; depois, R$ 49,90 por mês, sem fidelidade.</p>
+      </div>
+
+      <div>
+        <div class="palco" aria-label="Exemplo ilustrativo da tela que o tutor acompanha">
+          <div class="cel" aria-hidden="true">
+            <div class="tela">
+              <div class="loja">Pet Shop do Bairro</div>
+              <div class="sub">Acompanhe o atendimento do Thor</div>
+              <div class="mini vei" style="justify-content:flex-start;gap:10px"><div class="pet-av">🐶</div><div><span class="nomep">Thor</span><br><span style="color:var(--cinza)">Shih-tzu · Olá, Ana!</span></div></div>
+              <div class="mini estado" id="dEstado"><div class="ic" id="dIc">⏳</div><div class="st" id="dSt">Na fila</div><div id="dTx" style="color:var(--cinza)">O Thor chegou.</div><div class="bar"><i id="dBar"></i></div><div class="cont" id="dCont">0 de 4 etapas concluídas</div></div>
+              <div class="mini"><ul class="lista" id="dLista">
+                <li><span class="d"></span>Banho<span class="h"></span></li>
+                <li><span class="d"></span>Secagem<span class="h"></span></li>
+                <li><span class="d"></span>Tosa<span class="h"></span></li>
+                <li><span class="d"></span>Perfume e acessório<span class="h"></span></li>
+              </ul></div>
+            </div>
+          </div>
+          <div class="zap" id="dZap" aria-hidden="true"><b>Pet Shop do Bairro</b>Olá Ana! O Thor está pronto e cheiroso 🐾✨ Pode vir buscar. Lembrando que hoje funcionamos até às 18h.<small>Mensagem preparada pelo Petflux e enviada pela equipe no WhatsApp</small></div>
+        </div>
+        <p class="legenda">Exemplo ilustrativo com dados fictícios.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- O problema, com situações ilustrativas -->
+  <section aria-labelledby="t-sit">
+    <div class="box">
+      <h2 id="t-sit">Menos interrupção para responder “meu pet já está pronto?”</h2>
+      <p class="intro">Com o link, o tutor consulta o andamento quando quiser. Você reduz as ligações e mensagens durante o banho e sabe em que etapa cada pet está.</p>
+      <div class="sit-cab" aria-hidden="true"><span>Sem o Petflux</span><span>Com o Petflux</span></div>
+      <div class="sit">
+        <p class="antes">O tutor manda mensagem para saber se o pet já está pronto, e alguém precisa parar o banho para responder.</p>
+        <p class="depois"><b>Ele abre o link e vê quais etapas já foram concluídas.</b> Quando a equipe marca uma etapa, a tela dele atualiza.</p>
+      </div>
+      <div class="sit">
+        <p class="antes">O pet fica pronto, mas o tutor só descobre depois, e o animal espera mais tempo do que precisava.</p>
+        <p class="depois"><b>Ao concluir, o app abre o WhatsApp com a mensagem pronta</b>, incluindo o horário de fechamento. Pelo celular, dá para compartilhar junto a foto do pet.</p>
+      </div>
+      <div class="sit">
+        <p class="antes">No leva e traz, o tutor não sabe se o pet já saiu do pet shop nem quando vai chegar.</p>
+        <p class="depois"><b>A equipe marca “saiu para entrega” e depois “entregue”</b>, e a tela do tutor mostra cada passo com o horário.</p>
+      </div>
+      <p class="sit-nota">Situações ilustrativas do dia a dia de um pet shop, não são depoimentos de clientes.</p>
+    </div>
+  </section>
+
+  <!-- 2. Demonstração interativa -->
+  <section class="demo" id="demonstracao" aria-labelledby="t-demo">
+    <div class="box">
+      <div>
+        <h2 id="t-demo">Experimente agora, sem cadastro</h2>
+        <p class="intro" style="margin-bottom:20px">A demonstração mostra as duas telas ao mesmo tempo, com dados fictícios. Marque as etapas na tela da equipe e veja a do tutor mudar na hora.</p>
+        <ul>
+          <li>Nada é salvo e nenhuma mensagem é enviada.</li>
+          <li>Funciona no celular: alterne entre as duas visões com um toque.</li>
+          <li>Leva menos de um minuto.</li>
+        </ul>
+        <a class="btn pri" href="/app?demo=1">Experimentar demonstração</a>
+      </div>
+      <div class="duas" aria-hidden="true">
+        <figure><figcaption>Visão da equipe</figcaption>Toca nas etapas conforme o atendimento avança e registra quando o pet está pronto, quando sai para entrega e quando é entregue.</figure>
+        <figure><figcaption>Visão do tutor</figcaption>Vê a foto do pet, as etapas concluídas, o horário de cada marcação e quando ele está pronto.</figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Funcionamento para a equipe -->
+  <section id="equipe" aria-labelledby="t-equipe">
+    <div class="box">
+      <div class="tela-real">
+        <figure class="captura"><img src="/img/painel.png" alt="Painel da equipe com pets em atendimento, prontos e entregues" width="390" loading="lazy"><figcaption>Tela real do painel, com dados fictícios.</figcaption></figure>
+        <div>
+          <h2 id="t-equipe">Para a equipe: rápido entre um banho e outro</h2>
+          <p class="intro" style="margin-bottom:24px">Botões grandes, poucas ações e tudo separado por situação: na fila, em atendimento, pronto, saiu para entrega e entregue.</p>
+          <ol class="passos" style="grid-template-columns:1fr 1fr">
+            <li><h3>Registre o pet</h3><p>Nome, cachorro ou gato, foto e as etapas daquele atendimento. Diga se o tutor busca ou se vai entregar em casa.</p></li>
+            <li><h3>Envie o link</h3><p>O WhatsApp abre com a mensagem pronta para enviar ao tutor. No balcão, ele também pode escanear o QR code.</p></li>
+            <li><h3>Marque as etapas</h3><p>Em qualquer ordem. O tutor vê cada marcação com o horário.</p></li>
+            <li><h3>Conclua e entregue</h3><p>Tire a foto do pet pronto e avise o tutor. Se for entrega em casa, marque “saiu para entrega” e depois “entregue”.</p></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Experiência do cliente -->
+  <section class="cliente-sec" id="cliente" aria-labelledby="t-cliente">
+    <div class="box">
+      <div class="tela-real inv">
+        <div>
+          <h2 id="t-cliente">Para o tutor: um link, sem aplicativo</h2>
+          <p class="intro" style="margin-bottom:24px">Ele abre pelo WhatsApp ou pelo QR code e acompanha pelo navegador do celular.</p>
+          <ul class="lista-ok">
+            <li><b>Etapas concluídas</b><span>A barra mostra quantas etapas já foram concluídas. Não é uma previsão de horário.</span></li>
+            <li><b>Horário de cada marcação</b><span>Cada etapa mostra quando foi marcada pela equipe.</span></li>
+            <li><b>Foto do pet</b><span>A foto de perfil aparece no topo, e a do pet pronto aparece quando o atendimento termina.</span></li>
+            <li><b>Pronto, saiu para entrega e entregue</b><span>Para quem busca no pet shop ou recebe em casa.</span></li>
+            <li><b>Horário de funcionamento</b><span>Com aviso de aberto ou fechado.</span></li>
+            <li><b>Só os dados do próprio pet</b><span>Cada link tem um código próprio e não mostra o telefone do tutor nem os nomes da equipe.</span></li>
+          </ul>
+        </div>
+        <figure class="captura"><img src="/img/cliente.png" alt="Tela do tutor com o andamento do banho e tosa" width="390" loading="lazy"><figcaption>Tela real do tutor, com dados fictícios.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Recursos -->
+  <section class="recursos" id="recursos" aria-labelledby="t-rec">
+    <div class="box">
+      <h2 id="t-rec">Recursos principais</h2>
+      <p class="intro">O que vem incluído no plano.</p>
+      <div class="rec">
+        <div><h3>Etapas do seu jeito</h3><p>Banho, tosa, unhas, ouvidos, hidratação: cadastre seus serviços e escolha quais cada pet vai fazer.</p></div>
+        <div><h3>Acesso para toda a equipe</h3><p>Cada funcionário entra com login próprio e só vê os atendimentos. O proprietário cria e revoga os acessos.</p></div>
+        <div><h3>Registro de quem marcou</h3><p>O histórico de cada atendimento mostra quem registrou cada etapa, a conclusão e a entrega, com horário.</p></div>
+        <div><h3>Mensagens prontas para o WhatsApp</h3><p>Link do acompanhamento, aviso de pronto e de saída para entrega com o nome do seu pet shop. Pelo celular, dá para compartilhar com a foto.</p></div>
+        <div><h3>Leva e traz</h3><p>Para cada pet, escolha se o tutor busca ou se vocês entregam em casa. A tela mostra “saiu para entrega” e “entregue”.</p></div>
+        <div><h3>Foto e busca pelo nome</h3><p>Cada atendimento pode ter a foto do pet. Encontre qualquer um digitando parte do nome.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Preço e teste grátis -->
+  <section class="preco" id="preco" aria-labelledby="t-preco">
+    <div class="box">
+      <div class="lado">
+        <h2 id="t-preco">Um plano, tudo incluído</h2>
+        <p class="intro">15 dias grátis a partir da aprovação da conta, sem cartão. Depois, assinatura mensal, sem fidelidade.</p>
+        <p>O pagamento é por Pix ou cartão de crédito, direto no painel. Se não assinar ao fim do teste, o painel é pausado e nada é cobrado.</p>
+      </div>
+      <div class="etiqueta">
+        <div class="faixa"><span>PETFLUX</span><span>MENSAL</span></div>
+        <div class="corpo">
+          <div class="valor">R$ 49,90<small>/mês</small></div>
+          <ul>
+            <li>Atendimentos ilimitados</li>
+            <li>Acesso para toda a equipe</li>
+            <li>Link e QR code para cada tutor</li>
+            <li>Mensagens prontas para o WhatsApp</li>
+            <li>Cancele quando quiser</li>
+          </ul>
+          <a class="btn pri" href="/app#cadastro">Testar grátis por 15 dias</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Dúvidas e suporte -->
+  <section class="duvidas" id="duvidas" aria-labelledby="t-duv">
+    <div class="box">
+      <h2 id="t-duv">Dúvidas</h2>
+      <details><summary>O tutor precisa baixar algum aplicativo?</summary><p>Não. Ele recebe um link pelo WhatsApp, ou escaneia o QR code, e acompanha pelo navegador do celular.</p></details>
+      <details><summary>As mensagens do WhatsApp são enviadas automaticamente?</summary><p>Não. O Petflux prepara a mensagem e abre o WhatsApp; quem confere e envia é a sua equipe. No celular, o botão “Compartilhar com foto” abre o menu do aparelho para escolher o WhatsApp com a foto do pet anexada. O que atualiza sozinho é a tela do link: quando a equipe marca uma etapa, o tutor vê na hora.</p></details>
+      <details><summary>Como a equipe acessa?</summary><p>O proprietário cria um acesso para cada funcionário, com usuário e senha. O funcionário entra pelo navegador e vê apenas os atendimentos; ajustes, assinatura e equipe ficam só com o proprietário, que pode revogar um acesso a qualquer momento.</p></details>
+      <details><summary>Como começo o teste grátis?</summary><p>Crie a conta com o nome do pet shop, seu WhatsApp e um e-mail. Os 15 dias começam a contar quando a conta é aprovada. Não pedimos cartão.</p></details>
+      <details><summary>O que acontece quando o teste acaba?</summary><p>Se você não assinar, o painel é pausado e nada é cobrado. Os dados ficam guardados caso queira voltar.</p></details>
+      <details><summary>Tem fidelidade ou multa para cancelar?</summary><p>Não. A assinatura é mensal e você cancela quando quiser.</p></details>
+      <details><summary>Por quanto tempo o link do tutor funciona?</summary><p>Os registros dos atendimentos, incluindo as fotos, são apagados 90 dias depois da conclusão do serviço; depois disso o link deixa de funcionar.</p></details>
+      <div class="suporte hidden" id="suporte">
+        <p><b>Ainda com dúvida?</b><br><span style="color:var(--cinza)">Fale com o suporte do Petflux pelo WhatsApp.</span></p>
+        <a class="btn zapbtn" id="suporteBt" target="_blank" rel="noopener">Falar no WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="final" aria-labelledby="t-final">
+    <div class="box">
+      <h2 id="t-final">Comece pelo seu pet shop</h2>
+      <p>15 dias grátis, sem cartão. Ou experimente a demonstração antes.</p>
+      <a class="btn" href="/app#cadastro">Criar conta do pet shop</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="box">
+    <a class="marca" href="/" style="font-size:22px;color:#fff"><svg style="width:28px;height:28px"><use href="#logo"/></svg><span>Pet<b>flux</b></span></a>
+    <span>© <span id="ano"></span> Petflux · <a href="/app">Entrar no painel</a><span class="legal hidden"> · <a href="/termos">Termos de uso</a> · <a href="/privacidade">Privacidade</a></span></span>
+  </div>
+</footer>
+
+<script>
+// Links de Termos e Privacidade só aparecem depois que os textos forem revisados e publicados
+const LEGAL_PUBLICADO = false;
+if (LEGAL_PUBLICADO) document.querySelectorAll(".legal").forEach(e => e.classList.remove("hidden"));
+document.getElementById("ano").textContent = new Date().getFullYear();
+
+// Suporte: usa o WhatsApp configurado pelo administrador (config/publico). Se não houver, a caixa não aparece.
+fetch("https://firestore.googleapis.com/v1/projects/lavaflux-1da77/databases/(default)/documents/config/publico?key=AIzaSyCxUaPVTFyp0zaxOmLJjlTB2QXrBllp0DM")
+  .then(r => r.ok ? r.json() : null)
+  .then(d => {
+    const w = d && d.fields && d.fields.suporteWhats && d.fields.suporteWhats.stringValue;
+    const n = (w || "").replace(/\D/g, ""); if (n.length < 10) return;
+    document.getElementById("suporteBt").href = "https://wa.me/" + (n.length <= 11 ? "55" + n : n) + "?text=" + encodeURIComponent("Olá! Tenho uma dúvida sobre o Petflux.");
+    document.getElementById("suporte").classList.remove("hidden");
+  }).catch(() => {});
+
+// Exemplo do celular: um único número (n) define marcações, horários, barra e contador — nunca ficam diferentes
+(function(){
+  const itens = [...document.querySelectorAll("#dLista li")], est = document.getElementById("dEstado"),
+        ic = document.getElementById("dIc"), st = document.getElementById("dSt"), tx = document.getElementById("dTx"),
+        bar = document.getElementById("dBar"), cont = document.getElementById("dCont"), zap = document.getElementById("dZap");
+  const total = itens.length, horas = ["10:12","10:26","10:34","10:41"];
+  function estado(n){                       // n = etapas concluídas (0..total); total+1 = pronto
+    const feitas = Math.min(n, total), pronto = n > total;
+    itens.forEach((li,i) => { const ok = i < feitas; li.classList.toggle("ok", ok); li.querySelector(".d").textContent = ok ? "✓" : ""; li.querySelector(".h").textContent = ok ? horas[i] : ""; });
+    bar.style.width = (feitas / total * 100) + "%";
+    cont.textContent = `${feitas} de ${total} etapas concluídas`;
+    est.classList.toggle("pronto", pronto);
+    if (pronto){ ic.textContent = "✅"; st.textContent = "Pronto para buscar!"; tx.textContent = "Concluído às 10:45."; tx.style.color = "#e3fff0"; }
+    else if (feitas === 0){ ic.textContent = "⏳"; st.textContent = "Na fila"; tx.textContent = "O Thor chegou."; tx.style.color = ""; }
+    else { ic.textContent = "🛁"; st.textContent = "Em atendimento"; tx.textContent = "A equipe atualiza as etapas."; tx.style.color = ""; }
+    zap.classList.toggle("on", pronto);
+  }
+  window.__estadoDemo = estado;   // usado nos testes automatizados
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches){ estado(total + 1); return; }
+  let n = 0;
+  (function passo(){
+    estado(n);
+    const espera = n > total ? 5000 : n === 0 ? 1800 : 1300;
+    n = n > total ? 0 : n + 1;
+    setTimeout(passo, espera);
+  })();
+})();
+</script>
+</body>
+</html>

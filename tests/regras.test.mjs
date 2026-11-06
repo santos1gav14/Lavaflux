@@ -107,6 +107,10 @@ await t("link do cliente de conta vencida continua abrindo", () => assertSucceed
 // Cadastro e configuração
 await t("novo cadastro cria conta pendente", () => assertSucceeds(setDoc(doc(dono("novo1"), "contas/novo1"), {email: "n@x.com", nome: "N", whatsapp: "51999999999", status: "pendente", criadoEm: agora})));
 await t("novo cadastro NÃO se cria já ativo", () => assertFails(setDoc(doc(dono("novo2"), "contas/novo2"), {email: "n@x.com", nome: "N", whatsapp: "5199", status: "ativo", criadoEm: agora})));
+await t("cadastro do Petflux grava o produto", () => assertSucceeds(setDoc(doc(dono("pet1"), "contas/pet1"), {email: "p@x.com", nome: "Pet", whatsapp: "51999999999", produto: "petflux", status: "pendente", criadoEm: agora})));
+await t("cadastro NÃO aceita produto desconhecido", () => assertFails(setDoc(doc(dono("pet2"), "contas/pet2"), {email: "p@x.com", nome: "Pet", whatsapp: "5199", produto: "outro", status: "pendente", criadoEm: agora})));
+await t("atendimento com foto do pet dentro do limite", () => assertSucceeds(updateDoc(doc(A, "lavagens/N1"), {foto: "data:image/jpeg;base64," + "a".repeat(100000), fotoPronto: null})));
+await t("foto grande demais é recusada", () => assertFails(updateDoc(doc(A, "lavagens/N1"), {fotoPronto: "x".repeat(250000)})));
 await t("site lê o contato público de suporte", () => assertSucceeds(getDoc(doc(anon, "config/publico"))));
 await t("visitante NÃO lê dados de cobrança", () => assertFails(getDoc(doc(anon, "config/plataforma"))));
 await t("estabelecimento NÃO altera contato de suporte", () => assertFails(setDoc(doc(A, "config/publico"), {suporteWhats: "1"})));
