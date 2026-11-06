@@ -94,7 +94,7 @@ t((await co.textContent("#conteudo")).includes("Sem noturno às sextas"), "coord
 // 7. Fechamento
 await co.click("[data-act=mes][data-k='-1']"); await co.click("[data-aba=fech]");
 await co.waitForSelector("#conteudo .tab");
-const fech = await co.textContent("#conteudo .tab");
+const fech = (await co.textContent("#conteudo .tab")).replace(/\s+/g, " ");   // o real usa espaço não separável
 t(fech.includes("Bruno") && fech.includes("R$ 1.000,00") && !fech.includes("Ana"), "fechamento soma os plantões por médico");
 
 // 8. Revogação e segregação
