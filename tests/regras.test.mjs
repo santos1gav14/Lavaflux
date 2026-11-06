@@ -117,6 +117,63 @@ await t("estabelecimento NÃO altera contato de suporte", () => assertFails(setD
 await t("admin altera contato de suporte", () => assertSucceeds(setDoc(doc(ADM, "config/publico"), {suporteWhats: "51911111111"})));
 await t("admin aprova conta", () => assertSucceeds(updateDoc(doc(ADM, "contas/estP"), {status: "ativo", venceEm: agora + 15*DIA})));
 
+// ================== Escalaflux ==================
+await env.withSecurityRulesDisabled(async ctx => {
+  const db = ctx.firestore();
+  await setDoc(doc(db, "esc_contas/sv1"), {status: "ativo", venceEm: agora + 10*DIA, email: "c@x.com", nome: "PS"});
+  await setDoc(doc(db, "esc_contas/sv2"), {status: "ativo", venceEm: agora + 10*DIA, email: "d@x.com", nome: "UTI"});
+  await setDoc(doc(db, "esc_contas/svV"), {status: "ativo", venceEm: agora - DIA, email: "v@x.com", nome: "Vencido"});
+  await setDoc(doc(db, "esc_servicos/sv1"), {nome: "PS", codigo: "abc123", turnos: []});
+  await setDoc(doc(db, "esc_medicos/md1"), {servico: "sv1", nome: "Ana", usuario: "ana", ativo: true});
+  await setDoc(doc(db, "esc_medicos/md2"), {servico: "sv1", nome: "Bruno", usuario: "bruno", ativo: true});
+  await setDoc(doc(db, "esc_medicos/mdR"), {servico: "sv1", nome: "Rev", usuario: "rev", ativo: false});
+  await setDoc(doc(db, "esc_medicos/mdX"), {servico: "sv2", nome: "Xavier", usuario: "x", ativo: true});
+  const base = {servico: "sv1", mes: "2026-12", data: "2026-12-10", turno: "t1", turnoNome: "Diurno", inicio: "07:00", fim: "19:00", valor: 1000, troca: null, hist: []};
+  await setDoc(doc(db, "esc_plantoes/V1"), {...base, status: "vago", medico: null, medicoNome: ""});
+  await setDoc(doc(db, "esc_plantoes/E1"), {...base, status: "escalado", medico: "md1", medicoNome: "Ana"});
+  await setDoc(doc(db, "esc_plantoes/X1"), {...base, servico: "sv2", status: "vago", medico: null, medicoNome: ""});
+});
+const COORD = dono("sv1"), COORD2 = dono("sv2"), COORDV = dono("svV");
+const med = uid => env.authenticatedContext(uid, {email: `${uid}.abc123@medico.escalaflux.app`}).firestore();
+const MD1 = med("md1"), MD2 = med("md2"), MDR = med("mdR"), MDX = med("mdX");
+const plq = (db, s) => getDocs(query(collection(db, "esc_plantoes"), where("servico", "==", s), where("mes", "==", "2026-12")));
+const histEv = [{acao: "x", por: "y", em: agora}];
+
+await t("ESC: coordenação lista a escala do próprio serviço", () => assertSucceeds(plq(COORD, "sv1")));
+await t("ESC: coordenação NÃO lista escala de outro serviço", () => assertFails(plq(COORD, "sv2")));
+await t("ESC: médico lista a escala do seu serviço", () => assertSucceeds(plq(MD1, "sv1")));
+await t("ESC: médico NÃO lista escala de outro serviço", () => assertFails(plq(MD1, "sv2")));
+await t("ESC: médico revogado NÃO lê a escala", () => assertFails(plq(MDR, "sv1")));
+await t("ESC: visitante NÃO lê plantões", () => assertFails(getDoc(doc(anon, "esc_plantoes/V1"))));
+await t("ESC: conta de lava jato NÃO lê a escala", () => assertFails(plq(A, "sv1")));
+await t("ESC: médico NÃO escala outro médico num vago", () => assertFails(updateDoc(doc(MD1, "esc_plantoes/V1"), {status: "escalado", medico: "md2", medicoNome: "Bruno"})));
+await t("ESC: médico NÃO muda o valor ao pegar o vago", () => assertFails(updateDoc(doc(MD1, "esc_plantoes/V1"), {status: "escalado", medico: "md1", medicoNome: "Ana", valor: 9999})));
+await t("ESC: médico pega plantão vago", () => assertSucceeds(updateDoc(doc(MD2, "esc_plantoes/V1"), {status: "escalado", medico: "md2", medicoNome: "Bruno", hist: histEv})));
+await t("ESC: segundo médico NÃO pega o plantão já ocupado", () => assertFails(updateDoc(doc(MD1, "esc_plantoes/V1"), {status: "escalado", medico: "md1", medicoNome: "Ana"})));
+await t("ESC: médico NÃO oferece plantão de colega para troca", () => assertFails(updateDoc(doc(MD2, "esc_plantoes/E1"), {troca: {de: "md1", deNome: "Ana", status: "aberta"}})));
+await t("ESC: médico oferece o próprio plantão para troca", () => assertSucceeds(updateDoc(doc(MD1, "esc_plantoes/E1"), {troca: {de: "md1", deNome: "Ana", status: "aberta", em: agora}})));
+await t("ESC: médico NÃO se coloca direto no plantão oferecido", () => assertFails(updateDoc(doc(MD2, "esc_plantoes/E1"), {medico: "md2", medicoNome: "Bruno", troca: null})));
+await t("ESC: médico de outro serviço NÃO assume a troca", () => assertFails(updateDoc(doc(MDX, "esc_plantoes/E1"), {troca: {de: "md1", deNome: "Ana", status: "aceita", para: "mdX", paraNome: "X"}})));
+await t("ESC: colega assume a troca (aguarda aprovação)", () => assertSucceeds(updateDoc(doc(MD2, "esc_plantoes/E1"), {troca: {de: "md1", deNome: "Ana", status: "aceita", para: "md2", paraNome: "Bruno", em: agora}})));
+await t("ESC: médico NÃO aprova a própria troca", () => assertFails(updateDoc(doc(MD2, "esc_plantoes/E1"), {medico: "md2", medicoNome: "Bruno", troca: null})));
+await t("ESC: coordenação aprova a troca", () => assertSucceeds(updateDoc(doc(COORD, "esc_plantoes/E1"), {medico: "md2", medicoNome: "Bruno", troca: null})));
+await t("ESC: médico NÃO cria nem apaga plantão", async () => { await assertFails(setDoc(doc(MD1, "esc_plantoes/N1"), {...{servico: "sv1", mes: "2026-12"}, status: "vago"})); await assertFails(deleteDoc(doc(MD1, "esc_plantoes/E1"))); });
+await t("ESC: coordenação cria plantões", () => assertSucceeds(setDoc(doc(COORD, "esc_plantoes/N2"), {servico: "sv1", mes: "2026-12", data: "2026-12-11", status: "vago", medico: null, troca: null})));
+await t("ESC: coordenação NÃO cria plantão em outro serviço", () => assertFails(setDoc(doc(COORD, "esc_plantoes/N3"), {servico: "sv2", mes: "2026-12", status: "vago"})));
+await t("ESC: conta vencida NÃO cria plantões", () => assertFails(setDoc(doc(COORDV, "esc_plantoes/N4"), {servico: "svV", mes: "2026-12", status: "vago"})));
+await t("ESC: médico salva a própria disponibilidade", () => assertSucceeds(setDoc(doc(MD1, "esc_disp/sv1_md1_2026-12"), {servico: "sv1", medico: "md1", medicoNome: "Ana", mes: "2026-12", dias: {"2026-12-01": ["t1"]}, obs: "", em: agora})));
+await t("ESC: médico NÃO grava disponibilidade de colega", () => assertFails(setDoc(doc(MD1, "esc_disp/sv1_md2_2026-12"), {servico: "sv1", medico: "md2", medicoNome: "B", mes: "2026-12", dias: {}, obs: "", em: agora})));
+await t("ESC: coordenação lê a disponibilidade da equipe", () => assertSucceeds(getDocs(query(collection(COORD, "esc_disp"), where("servico", "==", "sv1"), where("mes", "==", "2026-12")))));
+await t("ESC: colega NÃO lê a disponibilidade de outro médico", () => assertFails(getDoc(doc(MD2, "esc_disp/sv1_md1_2026-12"))));
+await t("ESC: coordenação cria acesso de médico", () => assertSucceeds(setDoc(doc(COORD, "esc_medicos/md9"), {servico: "sv1", nome: "N", crm: "", whatsapp: "", usuario: "n", ativo: true, criadoEm: agora})));
+await t("ESC: coordenação NÃO cria médico em outro serviço", () => assertFails(setDoc(doc(COORD, "esc_medicos/md8"), {servico: "sv2", nome: "N", usuario: "n2", ativo: true, criadoEm: agora})));
+await t("ESC: médico NÃO altera os ajustes do serviço", () => assertFails(updateDoc(doc(MD1, "esc_servicos/sv1"), {nome: "Hack"})));
+await t("ESC: médico lê os turnos do serviço", () => assertSucceeds(getDoc(doc(MD1, "esc_servicos/sv1"))));
+await t("ESC: cadastro cria conta pendente", () => assertSucceeds(setDoc(doc(dono("esc9"), "esc_contas/esc9"), {email: "e@x.com", nome: "E", whatsapp: "51999999999", status: "pendente", criadoEm: agora})));
+await t("ESC: cadastro NÃO se cria ativo", () => assertFails(setDoc(doc(dono("esc8"), "esc_contas/esc8"), {email: "e@x.com", nome: "E", whatsapp: "5199", status: "ativo", criadoEm: agora})));
+await t("ESC: coordenação NÃO se aprova", () => assertFails(updateDoc(doc(COORD, "esc_contas/sv1"), {venceEm: agora + 999*DIA})));
+await t("ESC: admin aprova conta", () => assertSucceeds(updateDoc(doc(ADM, "esc_contas/esc9"), {status: "ativo", venceEm: agora + 15*DIA})));
+
 await env.cleanup();
 console.log(`\nRegras: ${ok} passaram, ${falhas} falharam`);
 process.exit(falhas ? 1 : 0);

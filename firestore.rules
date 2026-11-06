@@ -98,5 +98,76 @@ service cloud.firestore {
         allow delete: if admin() || (donoDe(resource.data.est) && contaOk(resource.data.est));
       }
     }
+    /* ================== Escalaflux (escala de plantões) — coleções próprias, separadas do Lavaflux/Petflux ================== */
+    function escConta(s) { return get(/databases/$(database)/documents/esc_contas/$(s)).data; }
+    function escOk(s) { let c = escConta(s); return c.status == "ativo" && (!("venceEm" in c) || c.venceEm > request.time.toMillis()); }
+    function escCoord(s) { return logado() && request.auth.uid == s; }
+    function escMed(s) {
+      let m = /databases/$(database)/documents/esc_medicos/$(request.auth.uid);
+      return logado() && exists(m) && get(m).data.servico == s && get(m).data.ativo == true;
+    }
+    function escMembro(s) { return (escCoord(s) || escMed(s)) && escOk(s); }
+
+    // O que o médico pode mudar num plantão
+    function escMedAltera() {
+      let a = resource.data;
+      let b = request.resource.data;
+      let u = request.auth.uid;
+      let ch = b.diff(a).affectedKeys();
+      return (
+        // pegar plantão vago (o primeiro que gravar fica com ele)
+        (a.status == "vago" && b.status == "escalado" && b.medico == u && ch.hasOnly(["status", "medico", "medicoNome", "hist"]))
+        // oferecer o próprio plantão para troca, ou cancelar a oferta
+        || (a.medico == u && ch.hasOnly(["troca", "hist"])
+            && (b.troca == null || (b.troca.de == u && b.troca.status == "aberta" && !("para" in b.troca))))
+        // assumir um plantão oferecido por colega (fica aguardando a coordenação aprovar)
+        || (a.medico != u && ("troca" in a) && a.troca != null && a.troca.status == "aberta" && ch.hasOnly(["troca", "hist"])
+            && b.troca.de == a.troca.de && b.troca.para == u && b.troca.status == "aceita"));
+    }
+
+    match /esc_contas/{uid} {
+      allow get: if logado() && (request.auth.uid == uid || admin() || escMed(uid));
+      allow list: if admin();
+      allow create: if logado() && request.auth.uid == uid
+        && request.resource.data.status == "pendente"
+        && request.resource.data.keys().hasOnly(["email", "nome", "whatsapp", "status", "criadoEm"]);
+      allow update, delete: if admin();
+    }
+    match /esc_servicos/{uid} {
+      allow get: if admin() || escCoord(uid) || escMed(uid);
+      allow list: if admin();
+      allow create, update: if admin() || escCoord(uid);
+      allow delete: if admin();
+    }
+    match /esc_medicos/{uid} {
+      allow get: if logado() && (request.auth.uid == uid || escCoord(resource.data.servico) || admin());
+      allow list: if logado() && resource.data.servico == request.auth.uid;
+      allow create: if escCoord(request.resource.data.servico)
+        && request.resource.data.keys().hasOnly(["servico", "nome", "crm", "whatsapp", "usuario", "ativo", "criadoEm", "alteradoEm"])
+        && request.resource.data.ativo is bool;
+      allow update: if escCoord(resource.data.servico) && request.resource.data.servico == resource.data.servico
+        && request.resource.data.usuario == resource.data.usuario;
+      allow delete: if escCoord(resource.data.servico);
+    }
+    match /esc_plantoes/{id} {
+      allow read: if admin() || escMembro(resource.data.servico);
+      allow create: if escCoord(request.resource.data.servico) && escOk(request.resource.data.servico);
+      allow update: if escMembro(resource.data.servico) && request.resource.data.servico == resource.data.servico
+        && (escCoord(resource.data.servico) || escMedAltera());
+      allow delete: if escCoord(resource.data.servico) && escOk(resource.data.servico);
+    }
+    // Disponibilidade: id = serviço_médico_mês; só o próprio médico grava, a coordenação lê
+    match /esc_disp/{id} {
+      allow get: if logado() && (resource == null || resource.data.medico == request.auth.uid
+        || (escCoord(resource.data.servico) && escOk(resource.data.servico)));
+      allow list: if escCoord(resource.data.servico) && escOk(resource.data.servico);
+      allow create, update: if escMed(request.resource.data.servico) && escOk(request.resource.data.servico)
+        && request.resource.data.medico == request.auth.uid
+        && id == request.resource.data.servico + "_" + request.auth.uid + "_" + request.resource.data.mes
+        && (resource == null || resource.data.medico == request.auth.uid)
+        && request.resource.data.keys().hasOnly(["servico", "medico", "medicoNome", "mes", "dias", "obs", "em"])
+        && request.resource.data.dias.size() <= 31;
+      allow delete: if false;
+    }
   }
 }

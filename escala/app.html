@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Escalaflux</title>
+<meta name="theme-color" content="#3730a3">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<style>
+:root{--bg:#f4f4fb;--card:#fff;--ink:#14143a;--mute:#5d6080;--line:#dcdcee;--pri:#4f46e5;--pri2:#3730a3;--soft:#ebeaff;--ok:#12915a;--danger:#c63a2f;--warn:#b7791f;--zap:#128c4a}
+@media (prefers-color-scheme:dark){:root{--bg:#0c0c1d;--card:#15152e;--ink:#e8e8fb;--mute:#9a9cc0;--line:#2a2a4d;--pri:#8b85ff;--pri2:#6c63ff;--soft:#22224a;--ok:#35cf88;--danger:#ff6b5b;--warn:#f6c560;--zap:#35cf88}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 56px}
+.wrap.wide{max-width:900px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:-.03em;min-width:0}
+.brand svg{width:38px;height:38px;flex:none;filter:drop-shadow(0 3px 6px rgba(55,48,163,.25))}
+.brand .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brand .fx{color:var(--pri)}
+.brand small{display:block;font-size:13px;font-weight:600;color:var(--mute);letter-spacing:0}
+.topbts{display:flex;flex-wrap:wrap;justify-content:flex-end;margin-left:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+h2,h3{margin:0 0 6px;letter-spacing:-.01em}
+p{margin:0 0 8px}
+.mute{color:var(--mute);font-size:14px}
+input[type=text],input[type=email],input[type=password],input[type=tel],input[type=time],input:not([type]),select,textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit;margin-bottom:10px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--pri);border-color:transparent}
+label.f{font-size:13px;color:var(--mute);display:block;margin:0 0 4px 2px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>*{flex:1 1 140px}
+button,.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;font-size:15px;padding:11px 14px;border-radius:12px;cursor:pointer;text-decoration:none;text-align:center;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px}
+button.pri,.btn.pri{background:linear-gradient(135deg,var(--pri),var(--pri2));border-color:var(--pri2);color:#fff}
+button.ok,.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.zap,button.zap{background:var(--zap);border-color:var(--zap);color:#fff}
+button.ghost{background:transparent;border-color:transparent;color:var(--mute);padding:8px 10px}
+button.danger{color:var(--danger)}
+button.peq{font-size:14px;padding:6px 10px;min-height:36px}
+button:disabled,.btn.off{opacity:.45;cursor:default;pointer-events:none}
+.w100{width:100%}
+.linkbtn{background:none;border:0;color:var(--pri);font-weight:600;font-size:14px;padding:8px 0;cursor:pointer;min-height:0}
+.tabs{display:flex;background:var(--soft);border-radius:12px;padding:4px;margin:4px 0 14px;overflow-x:auto;scrollbar-width:none;gap:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:1 0 auto;border:0;background:transparent;padding:9px 10px;font-size:14px;min-height:40px;white-space:nowrap}
+.tabs button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);color:var(--pri)}
+.badge{display:inline-block;min-width:20px;padding:1px 6px;border-radius:999px;background:var(--danger);color:#fff;font-size:12px;font-weight:700;margin-left:4px}
+.hidden{display:none!important}
+.vazio{text-align:center;padding:28px 16px;color:var(--mute)}
+.erro{color:var(--danger);font-size:14px;min-height:20px}
+.okmsg{color:var(--ok);font-size:14px}
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:4px;margin:0 0 12px}
+.seg button{flex:1;border:0;background:transparent;padding:9px;font-size:15px;min-height:40px}
+.seg button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);color:var(--pri)}
+.pill{display:inline-block;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:700;white-space:nowrap}
+.pill.ab{background:#dff6ea;color:#0d7a4a}.pill.fe{background:#fde4e1;color:#a8322a}.pill.pe{background:#fff1d6;color:#8a5a00}.pill.az{background:var(--soft);color:var(--pri)}
+@media (prefers-color-scheme:dark){.pill.ab{background:#0f3a28;color:#5fe0a2}.pill.fe{background:#3d1714;color:#ff8f84}.pill.pe{background:#3a2c0c;color:#f6c560}}
+.banner{border-radius:14px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px}
+.banner .tx{flex:1 1 200px}
+.banner.info{background:var(--soft)}
+.banner.alerta{background:#fff1d6;color:#6b4500}
+@media (prefers-color-scheme:dark){.banner.alerta{background:#3a2c0c;color:#f6c560}}
+.banner button{padding:8px 14px}
+.mesnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px}
+.mesnav b{font-size:19px;text-align:center;flex:1}
+.mesnav button{min-width:48px;font-size:20px}
+.resumo{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.resumo span{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:14px}
+.resumo b{font-size:17px;margin-right:4px}
+.dia{margin-bottom:10px}
+.dia h4{margin:14px 2px 6px;font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.dia.hoje h4{color:var(--pri)}
+.dia.passado{opacity:.6}
+.pl{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px 10px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:6px;min-height:52px;font-weight:500}
+.pl .tn{font-weight:700}
+.pl .hr{color:var(--mute);font-size:13px}
+.pl .md{font-weight:700;text-align:right}
+.pl .ex{grid-column:1/-1;font-size:13px}
+.pl.vago{border-color:#e7a29a;background:#fff6f5}
+.pl.vago .md{color:var(--danger)}
+.pl.meu{border-color:var(--pri);box-shadow:inset 4px 0 0 var(--pri)}
+@media (prefers-color-scheme:dark){.pl.vago{background:#2a1517;border-color:#6b2a24}}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.item .l1{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.item .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.item .acts>*{flex:1 1 140px}
+.sec{font-size:16px;margin:18px 2px 8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border-radius:999px;padding:6px 12px;font-size:14px;border:1.5px solid var(--line);background:var(--bg);min-height:36px;font-weight:600}
+.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.dispdia{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.dispdia .d{width:82px;flex:none;font-weight:700;font-size:14px}
+.dispdia.fds .d{color:var(--pri)}
+.tab{width:100%;border-collapse:collapse;font-size:15px}
+.tab th,.tab td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line)}
+.tab td.n,.tab th.n{text-align:right;white-space:nowrap}
+.tab tfoot td{font-weight:800}
+.turno{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;background:var(--bg)}
+.codigo{font:800 26px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.18em;background:var(--soft);border-radius:12px;padding:12px 16px;display:inline-block;margin:4px 0 10px}
+.guia{border:2px solid var(--pri)}
+.guia ol{margin:6px 0 0;padding-left:22px}
+.guia li{margin:6px 0}
+.guia li.feito{color:var(--mute);text-decoration:line-through}
+.modal{position:fixed;inset:0;background:rgba(8,8,30,.55);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.modal.on{display:flex}
+.sheet{background:var(--card);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+@media(min-width:600px){.modal{align-items:center}.sheet{border-radius:20px}}
+.hist{font-size:13px;color:var(--mute);margin:8px 0 0;padding-left:18px}
+.demobar{display:none}
+body.modo-demo .demobar{display:block;background:var(--card);border:2px dashed var(--pri);border-radius:16px;padding:14px 16px;margin-bottom:14px}
+.pixkey{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:10px;word-break:break-all;margin:6px 0}
+.rod{display:flex;justify-content:center;align-items:center;gap:6px;color:var(--mute);font-size:13px;margin-top:24px}
+.rod svg{width:18px;height:18px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="lgE" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7b74ff"/><stop offset="1" stop-color="#3730a3"/></linearGradient>
+    <symbol id="logo" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="13" fill="url(#lgE)"/>
+      <rect x="10" y="13" width="28" height="25" rx="5" fill="#fff"/>
+      <path d="M10 18a5 5 0 0 1 5-5h18a5 5 0 0 1 5 5v2H10z" fill="#c9c6ff"/>
+      <rect x="16" y="9" width="3.4" height="8" rx="1.7" fill="#fff"/><rect x="28.6" y="9" width="3.4" height="8" rx="1.7" fill="#fff"/>
+      <path d="M22 23.5h4v4h4v4h-4v4h-4v-4h-4v-4h4z" fill="#4f46e5"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap" id="wrap">
+  <div class="demobar" id="demoBar" role="region" aria-label="Demonstração">
+    <h2 style="font-size:20px">Demonstração do Escalaflux</h2>
+    <p class="mute">Dados fictícios. Nada é salvo e nenhuma mensagem é enviada.</p>
+    <div class="seg" id="demoVisao" style="margin:8px 0 0"><button data-visao="coord" class="on">👩‍💼 Coordenação</button><button data-visao="m1">🩺 Médica (Dra. Ana)</button></div>
+    <p class="mute" id="demoDica" style="margin:8px 0 0"></p>
+    <a class="btn pri w100" href="app#cadastro" style="margin-top:10px">Começar meus 15 dias grátis</a>
+  </div>
+
+  <!-- Login -->
+  <section id="vLogin" class="hidden">
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span>Escala<span class="fx">flux</span></span></div></header>
+    <div class="card">
+      <div class="seg" id="segLogin"><button data-l="coord" class="on">Coordenação</button><button data-l="med">Médico</button></div>
+      <form id="fLogin">
+        <p class="mute">Acesso de quem monta a escala. <a href="/" style="color:var(--pri)">Conheça o Escalaflux</a></p>
+        <label class="f" for="lEmail">E-mail</label><input id="lEmail" type="email" autocomplete="username" required>
+        <label class="f" for="lSenha">Senha</label><input id="lSenha" type="password" autocomplete="current-password" required>
+        <div class="erro" id="lErro" role="alert"></div>
+        <button class="pri w100" type="submit">Entrar</button>
+        <button class="linkbtn" type="button" id="btEsqueci">Esqueci minha senha</button>
+      </form>
+      <form id="fMed" class="hidden">
+        <p class="mute">Use o código do serviço, o usuário e a senha que a coordenação criou para você.</p>
+        <label class="f" for="mCodigo">Código do serviço</label><input id="mCodigo" autocomplete="off" autocapitalize="none" maxlength="6" required>
+        <label class="f" for="mUsuario">Usuário</label><input id="mUsuario" autocomplete="username" autocapitalize="none" required>
+        <label class="f" for="mSenha">Senha</label><input id="mSenha" type="password" autocomplete="current-password" required>
+        <div class="erro" id="mErro" role="alert"></div>
+        <button class="pri w100" type="submit">Entrar</button>
+      </form>
+    </div>
+    <div class="card" style="text-align:center">
+      <p style="margin-bottom:4px"><b>Coordena uma escala?</b></p>
+      <p class="mute">15 dias grátis, sem cartão.</p>
+      <button class="w100" id="btIrCadastro">Criar conta do serviço</button>
+    </div>
+  </section>
+
+  <!-- Cadastro -->
+  <section id="vCadastro" class="hidden">
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span>Escala<span class="fx">flux</span></span></div></header>
+    <form class="card" id="fCad" novalidate>
+      <h2>Criar conta</h2>
+      <p class="mute oferta">15 dias grátis a partir da aprovação, sem cartão. Depois, <span id="cPreco">R$ 49,90</span> por mês, sem fidelidade.</p>
+      <label class="f" for="cNome">Nome do serviço ou da equipe *</label><input id="cNome" maxlength="50" placeholder="Ex.: Pronto-Socorro do Hospital X">
+      <label class="f" for="cWhats">WhatsApp do coordenador *</label><input id="cWhats" type="tel" inputmode="tel" placeholder="(51) 99999-0000">
+      <label class="f" for="cEmail">E-mail *</label><input id="cEmail" type="email" autocomplete="email">
+      <div class="row"><div><label class="f" for="cSenha">Senha *</label><input id="cSenha" type="password" autocomplete="new-password"></div>
+        <div><label class="f" for="cSenha2">Repita a senha *</label><input id="cSenha2" type="password" autocomplete="new-password"></div></div>
+      <div class="erro" id="cErro" role="alert"></div>
+      <button class="pri w100" id="cBt" type="submit">Criar conta</button>
+      <button class="linkbtn" type="button" id="btVoltarLogin">Já tenho conta</button>
+    </form>
+  </section>
+
+  <!-- Espera / bloqueio -->
+  <section id="vEspera" class="hidden">
+    <header class="top"><div class="brand"><svg><use href="#logo"/></svg><span>Escala<span class="fx">flux</span></span></div><div class="topbts"><button class="ghost" data-sair>Sair</button></div></header>
+    <div class="card" id="esperaBox" style="text-align:center"></div>
+  </section>
+
+  <!-- App -->
+  <section id="vApp" class="hidden">
+    <header class="top">
+      <div class="brand"><svg><use href="#logo"/></svg><div style="min-width:0"><div class="nm" id="appNome">Escalaflux</div><small id="appPapel"></small></div></div>
+      <div class="topbts"><button class="ghost" data-senha>🔑 Senha</button><button class="ghost" data-sair>Sair</button></div>
+    </header>
+    <div id="banner"></div>
+    <div id="guia"></div>
+    <nav class="tabs" id="abas" role="tablist" aria-label="Seções"></nav>
+    <div id="conteudo"></div>
+    <footer class="rod"><svg><use href="#logo"/></svg>Escalaflux · atualiza sozinho</footer>
+  </section>
+
+  <!-- Administrador -->
+  <section id="vAdmin" class="hidden">
+    <header class="top">
+      <div class="brand"><svg><use href="#logo"/></svg><div><div>Escala<span class="fx">flux</span></div><small>Administração</small></div></div>
+      <div class="topbts"><button class="ghost" id="btCob">💰 Cobrança</button><button class="ghost" data-senha>🔑 Senha</button><button class="ghost" data-sair>Sair</button></div>
+    </header>
+    <div class="resumo" id="admResumo"></div>
+    <div class="tabs" id="admFiltros"><button data-f="pendente" class="on">Aguardando</button><button data-f="ativo">Ativas</button><button data-f="inativo">Desativadas</button><button data-f="todas">Todas</button></div>
+    <div id="adminLista"></div>
+  </section>
+</div>
+
+<!-- Plantão (coordenação) -->
+<div class="modal" id="mPl" role="dialog" aria-modal="true" aria-labelledby="plTit"><div class="sheet">
+  <div class="v-head" style="display:flex;justify-content:space-between;gap:10px"><h3 id="plTit">Plantão</h3><button type="button" class="ghost" data-close aria-label="Fechar">✕</button></div>
+  <div id="plCorpo"></div>
+</div></div>
+
+<!-- Senha -->
+<div class="modal" id="mSenha" role="dialog" aria-modal="true" aria-label="Alterar senha"><div class="sheet">
+  <form id="fSenha">
+    <div style="display:flex;justify-content:space-between"><h3>Alterar senha</h3><button type="button" class="ghost" data-close aria-label="Fechar">✕</button></div>
+    <label class="f" for="snAtual">Senha atual</label><input id="snAtual" type="password" autocomplete="current-password">
+    <label class="f" for="snNova">Nova senha (mínimo 6 caracteres)</label><input id="snNova" type="password" autocomplete="new-password">
+    <label class="f" for="snNova2">Repita a nova senha</label><input id="snNova2" type="password" autocomplete="new-password">
+    <div class="erro" id="snErro" role="alert"></div>
+    <button class="pri w100" id="snBt" type="submit">Salvar nova senha</button>
+  </form>
+</div></div>
+
+<!-- Assinatura -->
+<div class="modal" id="mAssin" role="dialog" aria-modal="true" aria-label="Assinatura"><div class="sheet">
+  <div style="display:flex;justify-content:space-between"><h3>Assinatura Escalaflux</h3><button type="button" class="ghost" data-close aria-label="Fechar">✕</button></div>
+  <div id="assinCorpo"></div>
+</div></div>
+
+<!-- Cobrança (admin) -->
+<div class="modal" id="mCob" role="dialog" aria-modal="true" aria-label="Cobrança"><div class="sheet">
+  <form id="fCob">
+    <div style="display:flex;justify-content:space-between"><h3>Cobrança do Escalaflux</h3><button type="button" class="ghost" data-close aria-label="Fechar">✕</button></div>
+    <p class="mute">A chave Pix e o WhatsApp de suporte são os mesmos configurados no Lavaflux.</p>
+    <label class="f" for="cobPreco">Preço mensal (R$)</label><input id="cobPreco" placeholder="49,90" inputmode="decimal">
+    <label class="f" for="cobMp">Link de assinatura no Mercado Pago (opcional)</label><input id="cobMp" placeholder="https://www.mercadopago.com.br/subscriptions/…">
+    <div class="erro" id="cobErro"></div>
+    <button class="pri w100" type="submit">Salvar</button>
+  </form>
+</div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ================== CONFIGURAÇÃO ================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyCxUaPVTFyp0zaxOmLJjlTB2QXrBllp0DM",
+  authDomain: "lavaflux-1da77.firebaseapp.com",
+  projectId: "lavaflux-1da77",
+  storageBucket: "lavaflux-1da77.firebasestorage.app",
+  messagingSenderId: "744979919279",
+  appId: "1:744979919279:web:d70c697928294589cd7f5a"
+};
+/* ================================================= */
+const PARAMS = new URLSearchParams(location.search);
+const MODO_DEMO = PARAMS.has("demo");                 // demonstração pública: nada vai para o banco
+const EMU = PARAMS.has("emu") && /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+const DEMO = MODO_DEMO || firebaseConfig.apiKey.startsWith("COLE");
+const DIA = 864e5, DIAS_TESTE = 15, DIAS_MES = 30, PRECO_PADRAO = "49,90";
+const DOMINIO_MED = "medico.escalaflux.app";
+const DSEM = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const TURNOS_PADRAO = [
+  {id: "t1", nome: "Diurno", inicio: "07:00", fim: "19:00", valor: 0, dias: [0,1,2,3,4,5,6]},
+  {id: "t2", nome: "Noturno", inicio: "19:00", fim: "07:00", valor: 0, dias: [0,1,2,3,4,5,6]}];
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+const pad = n => String(n).padStart(2, "0");
+const mesDe = d => d.getFullYear() + "-" + pad(d.getMonth() + 1);
+const hojeStr = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+const somaMes = (m, k) => { const [y, mm] = m.split("-").map(Number); return mesDe(new Date(y, mm - 1 + k, 1)); };
+const diasNoMes = m => { const [y, mm] = m.split("-").map(Number); return new Date(y, mm, 0).getDate(); };
+const nomeMes = m => new Date(+m.slice(0,4), +m.slice(5) - 1, 1).toLocaleDateString("pt-BR", {month: "long", year: "numeric"});
+const diaSem = ds => new Date(ds + "T12:00:00").getDay();
+const fmtDia = ds => `${DSEM[diaSem(ds)]} ${ds.slice(8)}/${ds.slice(5,7)}`;
+const minutos = h => { const [a, b] = h.split(":").map(Number); return a * 60 + b; };
+const horasDe = p => { const d = (minutos(p.fim) - minutos(p.inicio) + 1440) % 1440; return (d || 1440) / 60; };
+const brl = v => (Number(v) || 0).toLocaleString("pt-BR", {style: "currency", currency: "BRL"});
+const numBR = s => { const n = parseFloat(String(s).replace(/\s|R\$/g, "").replace(/\./g, "").replace(",", ".")); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : NaN; };
+const dataBR = ms => ms ? new Date(ms).toLocaleDateString("pt-BR") : "—";
+const horaBR = ms => ms ? new Date(ms).toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit"}) : "";
+const soDigitos = s => String(s || "").replace(/\D/g, "");
+const zapNum = s => { const n = soDigitos(s); return n.length >= 10 ? (n.length <= 11 ? "55" + n : n) : ""; };
+const zapLink = (num, txt) => "https://wa.me/" + (num ? zapNum(num) : "") + "?text=" + encodeURIComponent(txt);
+const diasAte = ms => Math.ceil((ms - Date.now()) / DIA);
+const emailMed = (u, c) => `${u}.${c}@${DOMINIO_MED}`;
+function token(n = 20, alf = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"){
+  return [...crypto.getRandomValues(new Uint8Array(n))].map(x => alf[x % alf.length]).join("");
+}
+const ordemPl = (a, b) => a.data.localeCompare(b.data) || (a.ordem ?? 0) - (b.ordem ?? 0) || a.inicio.localeCompare(b.inicio);
+const VIEWS = ["vLogin","vCadastro","vEspera","vApp","vAdmin"];
+function show(id){ VIEWS.forEach(v => $("#"+v).classList.toggle("hidden", v !== id)); $("#wrap").classList.toggle("wide", id === "vAdmin"); }
+const abrir = id => $("#"+id).classList.add("on"), fechar = id => $("#"+id).classList.remove("on");
+document.addEventListener("click", e => { const b = e.target.closest("[data-close]"); if (b) b.closest(".modal").classList.remove("on"); });
+document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e => { if (e.target === m) m.classList.remove("on"); }));
+
+/* ================== Armazenamento ================== */
+let store;
+if (DEMO){
+  // Demonstração: tudo em memória, com dados fictícios. Nada é gravado.
+  const subs = new Set(), sub = f => { subs.add(f); f(); return () => subs.delete(f); }, emit = () => setTimeout(() => subs.forEach(f => f()), 0);
+  const M0 = mesDe(new Date()), M1 = somaMes(M0, 1), HOJE = hojeStr();
+  const servs = new Map([["serv1", {nome: "Pronto-Socorro Exemplo", codigo: "demo01", valoresMedicos: true, guiaOk: true,
+    turnos: [{id: "t1", nome: "Diurno", inicio: "07:00", fim: "19:00", valor: 1200, dias: [0,1,2,3,4,5,6]},
+             {id: "t2", nome: "Noturno", inicio: "19:00", fim: "07:00", valor: 1400, dias: [0,1,2,3,4,5,6]}]}]]);
+  const contas = new Map([["serv1", {email: "coordenacao@exemplo.com", nome: "Pronto-Socorro Exemplo", whatsapp: "51999990000", status: "ativo", plano: "teste", venceEm: Date.now() + 9 * DIA, criadoEm: Date.now() - 6 * DIA}],
+    ["serv2", {email: "uti@exemplo.com", nome: "UTI Adulto Exemplo", whatsapp: "51988887777", status: "pendente", criadoEm: Date.now() - 3600e3}]]);
+  const meds = new Map([
+    ["m1", {servico: "serv1", nome: "Dra. Ana Lima", crm: "CRM fictício 1001", usuario: "ana", whatsapp: "51990000001", ativo: true}],
+    ["m2", {servico: "serv1", nome: "Dr. Bruno Costa", crm: "CRM fictício 1002", usuario: "bruno", whatsapp: "51990000002", ativo: true}],
+    ["m3", {servico: "serv1", nome: "Dra. Carla Souza", crm: "CRM fictício 1003", usuario: "carla", whatsapp: "51990000003", ativo: true}],
+    ["m4", {servico: "serv1", nome: "Dr. Diego Alves", crm: "CRM fictício 1004", usuario: "diego", whatsapp: "", ativo: true}]]);
+  const pls = new Map(), disps = new Map();
+  const gerar = (m, fn) => { const s = servs.get("serv1"); for (let d = 1; d <= diasNoMes(m); d++){ const ds = `${m}-${pad(d)}`;
+    s.turnos.forEach((t, i) => { const mid = fn(d, i); const id = token(); const med = mid && meds.get(mid);
+      pls.set(id, {id, servico: "serv1", mes: m, data: ds, turno: t.id, turnoNome: t.nome, inicio: t.inicio, fim: t.fim, ordem: i, valor: t.valor,
+        status: med ? "escalado" : "vago", medico: med ? mid : null, medicoNome: med ? med.nome : "", troca: null, hist: [{acao: "criou o plantão", por: "Coordenação", em: Date.now() - 5 * DIA}], criadoEm: Date.now()}); }); } };
+  const rr = (d, i) => (d % 9 === 4 && i === 1) || d % 13 === 7 ? null : ["m1","m2","m3","m4"][(d + i * 2) % 4];
+  gerar(M0, rr);
+  if (new Date().getDate() > 20) gerar(M1, rr);
+  const fut = [...pls.values()].filter(p => p.data >= HOJE && p.status === "escalado").sort(ordemPl);
+  const pb = fut.find(p => p.medico === "m2"); if (pb) pb.troca = {de: "m2", deNome: "Dr. Bruno Costa", status: "aberta", em: Date.now() - 3600e3};
+  const pc = fut.find(p => p.medico === "m3"); if (pc) pc.troca = {de: "m3", deNome: "Dra. Carla Souza", para: "m4", paraNome: "Dr. Diego Alves", status: "aceita", em: Date.now() - 7200e3};
+  const dm = {}; for (let d = 1; d <= diasNoMes(M1); d++) if (d % 3 !== 0) dm[`${M1}-${pad(d)}`] = d % 2 ? ["t1"] : ["t1","t2"];
+  disps.set(`serv1_m2_${M1}`, {servico: "serv1", medico: "m2", medicoNome: "Dr. Bruno Costa", mes: M1, dias: dm, obs: "Prefiro não pegar noturno às sextas."});
+  let cfg = {pix: "chave-pix-de-exemplo", suporteWhats: "51900000000", escPreco: PRECO_PADRAO};
+  const papelLocal = PARAMS.get("papel");   // testes locais: ?papel=coord|m1|admin|pendente|vencido
+  let usuarioDemo = {uid: papelLocal === "admin" ? "adm" : papelLocal === "m1" ? "m1" : papelLocal === "pendente" ? "serv2" : "serv1", email: "demo@exemplo.com"};
+  if (papelLocal === "vencido") Object.assign(contas.get("serv1"), {venceEm: Date.now() - DIA});
+  let authCb = null;
+  store = {
+    trocarUsuario(uid){ usuarioDemo = {uid, email: "demo@exemplo.com"}; authCb && authCb(usuarioDemo); },
+    onAuth: cb => { authCb = cb; setTimeout(() => cb(usuarioDemo), 0); },
+    entrar: async () => {}, entrarMed: async () => {}, sair: async () => { location.href = "/"; }, esqueci: async () => {},
+    trocarSenha: async () => {}, cadastrar: async () => { throw Object.assign(new Error("demo"), {code: "demo"}); },
+    souAdmin: async uid => uid === "adm",
+    medicoGet: async uid => meds.get(uid) || null,
+    medicoWatch: (uid, cb) => sub(() => cb(meds.get(uid) || null)),
+    conta: (uid, cb) => sub(() => cb(contas.get(uid) || null)),
+    criarConta: async () => {},
+    servico: (uid, cb) => sub(() => cb(servs.get(uid) || null)),
+    salvarServico: async (uid, o) => { servs.set(uid, {...servs.get(uid), ...o}); emit(); },
+    medicos: (s, cb) => sub(() => cb([...meds].filter(([, m]) => m.servico === s).map(([uid, m]) => ({uid, ...m})))),
+    criarMedico: async (s, codigo, d) => { if ([...meds.values()].some(m => m.usuario === d.usuario)) throw Object.assign(new Error("x"), {code: "auth/email-already-in-use"});
+      meds.set(token(8), {...d, servico: s, ativo: true, criadoEm: Date.now()}); emit(); },
+    atualizarMedico: async (uid, p) => { meds.set(uid, {...meds.get(uid), ...p}); emit(); },
+    plantoes: (s, m, cb) => sub(() => cb([...pls.values()].filter(p => p.servico === s && p.mes === m).map(p => ({...p})))),
+    criarPlantoes: async arr => { arr.forEach(p => { const id = token(); pls.set(id, {...p, id}); }); emit(); },
+    atualizarPlantao: async (id, patch, ev) => { const p = pls.get(id); Object.assign(p, patch); if (ev) p.hist = [...(p.hist || []), {...ev, em: Date.now()}]; emit(); },
+    removerPlantao: async id => { pls.delete(id); emit(); },
+    disp: (s, m, cb) => sub(() => cb([...disps.values()].filter(d => d.servico === s && d.mes === m))),
+    minhaDisp: (s, uid, m, cb) => sub(() => cb(disps.get(`${s}_${uid}_${m}`) || null)),
+    salvarDisp: async d => { disps.set(`${d.servico}_${d.medico}_${d.mes}`, {...d, em: Date.now()}); emit(); },
+    contas: cb => sub(() => cb([...contas].map(([uid, c]) => ({uid, ...c})))),
+    atualizarConta: async (uid, p) => { contas.set(uid, {...contas.get(uid), ...p}); emit(); },
+    config: cb => sub(() => cb(cfg)),
+    salvarConfig: async o => { cfg = {...cfg, ...o}; emit(); }
+  };
+} else {
+  const cfgUso = EMU ? {...firebaseConfig, projectId: "demo-lavaflux"} : firebaseConfig;
+  firebase.initializeApp(cfgUso);
+  const fs = firebase.firestore(), au = firebase.auth();
+  if (EMU){ fs.useEmulator("localhost", 8080); au.useEmulator("http://localhost:9099", {disableWarnings: true}); }
+  else fs.enablePersistence({synchronizeTabs: true}).catch(() => {});
+  au.languageCode = "pt-BR";
+  const FV = firebase.firestore.FieldValue, col = n => fs.collection(n);
+  const snapDoc = (ref, cb, err) => ref.onSnapshot(d => cb(d.exists ? d.data() : null), err || (() => cb(null)));
+  const lista = (q, cb, err) => q.onSnapshot(s => cb(s.docs.map(d => ({id: d.id, uid: d.id, ...d.data()}))), err || (e => console.error(e)));
+  let app2 = null;   // segunda instância: cria o login do médico sem derrubar a sessão da coordenação
+  store = {
+    onAuth: cb => au.onAuthStateChanged(cb),
+    entrar: (e, s) => au.signInWithEmailAndPassword(e, s),
+    entrarMed: (cod, u, s) => au.signInWithEmailAndPassword(emailMed(u, cod), s),
+    sair: () => au.signOut(),
+    esqueci: e => au.sendPasswordResetEmail(e),
+    async trocarSenha(atual, nova){
+      const u = au.currentUser;
+      await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, atual));
+      await u.updatePassword(nova);
+    },
+    cadastrar: (e, s) => au.createUserWithEmailAndPassword(e, s),
+    souAdmin: async uid => { try { return (await col("admins").doc(uid).get()).exists; } catch { return false; } },
+    medicoGet: async uid => { try { const d = await col("esc_medicos").doc(uid).get(); return d.exists ? d.data() : null; } catch { return null; } },
+    medicoWatch: (uid, cb) => snapDoc(col("esc_medicos").doc(uid), cb),
+    conta: (uid, cb, err) => snapDoc(col("esc_contas").doc(uid), cb, err),
+    async criarConta(uid, email, nome, whatsapp){
+      await col("esc_contas").doc(uid).set({email, nome, whatsapp, status: "pendente", criadoEm: Date.now()});
+      await col("esc_servicos").doc(uid).set({nome, turnos: TURNOS_PADRAO, codigo: token(6, "abcdefghjkmnpqrstuvwxyz23456789"), valoresMedicos: true, criadoEm: Date.now()});
+    },
+    servico: (uid, cb) => snapDoc(col("esc_servicos").doc(uid), cb),
+    salvarServico: (uid, o) => col("esc_servicos").doc(uid).set(o, {merge: true}),
+    medicos: (s, cb, err) => lista(col("esc_medicos").where("servico", "==", s), cb, err),
+    async criarMedico(s, codigo, d, senha){
+      if (!app2){ app2 = firebase.initializeApp(cfgUso, "cadastroMedico"); if (EMU) app2.auth().useEmulator("http://localhost:9099", {disableWarnings: true}); }
+      const au2 = app2.auth(); await au2.setPersistence(firebase.auth.Auth.Persistence.NONE);
+      const cred = await au2.createUserWithEmailAndPassword(emailMed(d.usuario, codigo), senha);
+      const uid = cred.user.uid; await au2.signOut();
+      await col("esc_medicos").doc(uid).set({...d, servico: s, ativo: true, criadoEm: Date.now()});
+    },
+    atualizarMedico: (uid, p) => col("esc_medicos").doc(uid).update({...p, alteradoEm: Date.now()}),
+    plantoes: (s, m, cb, err) => lista(col("esc_plantoes").where("servico", "==", s).where("mes", "==", m), cb, err),
+    async criarPlantoes(arr){   // em lotes pequenos: cada gravação confere a assinatura do serviço nas regras
+      for (let i = 0; i < arr.length; i += 10){ const b = fs.batch(); arr.slice(i, i + 10).forEach(p => b.set(col("esc_plantoes").doc(), p)); await b.commit(); }
+    },
+    atualizarPlantao: (id, patch, ev) => col("esc_plantoes").doc(id).update({...patch, ...(ev ? {hist: FV.arrayUnion({...ev, em: Date.now()})} : {})}),
+    removerPlantao: id => col("esc_plantoes").doc(id).delete(),
+    disp: (s, m, cb) => lista(col("esc_disp").where("servico", "==", s).where("mes", "==", m), cb),
+    minhaDisp: (s, uid, m, cb) => snapDoc(col("esc_disp").doc(`${s}_${uid}_${m}`), cb),
+    salvarDisp: d => col("esc_disp").doc(`${d.servico}_${d.medico}_${d.mes}`).set({...d, em: Date.now()}),
+    contas: (cb, err) => lista(col("esc_contas"), cb, err),
+    atualizarConta: (uid, p, pagamento) => col("esc_contas").doc(uid).update(pagamento ? {...p, pagamentos: FV.arrayUnion(pagamento)} : p),
+    config: cb => snapDoc(col("config").doc("plataforma"), d => cb(d || {})),
+    async salvarConfig(o){
+      await col("config").doc("plataforma").set(o, {merge: true});
+      await col("config").doc("publico").set({escPreco: o.escPreco || PRECO_PADRAO}, {merge: true});
+    }
+  };
+}
+
+/* ================== Sessão ================== */
+const S = {u: null, papel: null, servico: null, eu: null, conta: null, serv: null, medicos: [], cfg: {}, aba: null,
+           mes: mesDe(new Date()), mesDisp: somaMes(mesDe(new Date()), 1), soVagos: false};
+const PL = new Map(), DISP = new Map(), MINHA = new Map(), dispEdit = new Map();
+const unsubs = [], subsMes = new Map();
+let cadastrando = false, ajEdit = null, ajSalvo = false, renderPendente = false;
+function pararSessao(){ unsubs.forEach(f => f && f()); unsubs.length = 0; subsMes.forEach(f => f && f()); subsMes.clear(); PL.clear(); DISP.clear(); MINHA.clear(); dispEdit.clear(); ajEdit = null; }
+function garantirMes(m){
+  if (subsMes.has("pl" + m) || !S.servico) return;
+  subsMes.set("pl" + m, null);   // marca antes de assinar: a resposta pode chegar na hora e redesenhar a tela
+  subsMes.set("pl" + m, store.plantoes(S.servico, m, l => { PL.set(m, l.sort(ordemPl)); render(); },
+    e => { console.error(e); PL.set(m, []); avisoErro("Não foi possível carregar a escala. Verifique a internet e recarregue a página."); }));
+}
+function garantirDisp(m){
+  if (!S.servico) return;
+  if (S.papel === "coord" && !subsMes.has("dp" + m)){ subsMes.set("dp" + m, null); subsMes.set("dp" + m, store.disp(S.servico, m, l => { DISP.set(m, l); render(); })); }
+  if (S.papel === "med" && !subsMes.has("md" + m)){ subsMes.set("md" + m, null); subsMes.set("md" + m, store.minhaDisp(S.servico, S.u.uid, m, d => {
+    MINHA.set(m, d); const e = dispEdit.get(m);
+    if (!e || !e.sujo) dispEdit.set(m, {dias: JSON.parse(JSON.stringify((d && d.dias) || {})), obs: (d && d.obs) || "", sujo: false});
+    render(); })); }
+}
+const avisoErro = m => { const b = $("#banner"); if (b) b.innerHTML = `<div class="banner alerta"><span class="tx">${esc(m)}</span></div>`; };
+const M0 = () => mesDe(new Date()), M1 = () => somaMes(mesDe(new Date()), 1);
+const todosPl = () => [...PL.values()].filter(Boolean).flat();
+const proximos = () => [...(PL.get(M0()) || []), ...(PL.get(M1()) || [])].filter(p => p.data >= hojeStr());
+const autor = () => S.papel === "med" ? (S.eu && S.eu.nome) || "Médico" : S.papel === "admin" ? "Administração" : "Coordenação";
+const vencida = c => c && c.venceEm && c.venceEm < Date.now();
+
+store.onAuth(async u => {
+  pararSessao(); S.u = u; S.papel = null; S.servico = null; S.eu = null; S.conta = null; S.serv = null; S.medicos = []; S.aba = null;
+  if (!u){ if (location.hash === "#cadastro") show("vCadastro"); else show("vLogin"); preencherCodigo(); return; }
+  if (location.hash === "#cadastro" && !cadastrando) history.replaceState(null, "", location.pathname + location.search);
+  if (await store.souAdmin(u.uid)){ S.papel = "admin"; iniciarAdmin(); return; }
+  const m = await store.medicoGet(u.uid);
+  if (m){
+    S.papel = "med"; S.servico = m.servico; S.eu = m;
+    unsubs.push(store.medicoWatch(u.uid, d => { S.eu = d; avaliar(); }));
+  } else { S.papel = "coord"; S.servico = u.uid; }
+  unsubs.push(store.conta(S.servico, c => {
+    if (!c && S.papel === "coord"){
+      if (cadastrando) return;
+      // não é conta do Escalaflux (por exemplo, um login do Lavaflux ou do Petflux): sai e avisa
+      store.sair().then(() => setTimeout(() => { $("#lErro").textContent = "Este e-mail não tem conta no Escalaflux. Crie a conta do serviço ou use outro e-mail."; }, 50));
+      return;
+    }
+    S.conta = c; avaliar();
+  }, () => { if (S.papel === "med") espera("med-bloq"); }));
+  unsubs.push(store.config(c => { S.cfg = c || {}; if (appAtivo) render(); else if (S.conta) avaliar(); }));
+});
+
+let appAtivo = false;
+function avaliar(){
+  const c = S.conta; if (!S.u || !c) return;
+  if (S.papel === "med" && (!S.eu || !S.eu.ativo)){ pararApp(); espera("revogado"); return; }
+  if (c.status === "ativo" && !vencida(c)){ if (!appAtivo) iniciarApp(); else render(); return; }
+  pararApp();
+  if (S.papel === "med") espera("med-bloq");
+  else espera(c.status === "ativo" ? "vencido" : c.status);
+}
+function pararApp(){ appAtivo = false; subsMes.forEach(f => f && f()); subsMes.clear(); PL.clear(); DISP.clear(); MINHA.clear(); }
+setInterval(() => { avaliar(); }, 60000);
+
+function espera(tipo){
+  show("vEspera"); const c = S.conta || {}, box = $("#esperaBox");
+  if (tipo === "pendente") box.innerHTML = `<div style="font-size:48px">⏳</div><h2>Cadastro recebido!</h2><p><b>${esc(c.nome)}</b> está aguardando aprovação.</p><p class="mute">Esta tela abre o painel sozinha assim que a conta for aprovada. Os 15 dias grátis começam a contar na aprovação.</p>`;
+  else if (tipo === "inativo") box.innerHTML = `<div style="font-size:48px">🔒</div><h2>Conta desativada</h2><p class="mute">O acesso de <b>${esc(c.nome)}</b> está desativado. Fale com o suporte do Escalaflux.</p>`;
+  else if (tipo === "vencido") box.innerHTML = `<div style="font-size:48px">⛔</div><h2>${c.plano === "assinante" ? "Mensalidade vencida" : "Teste grátis encerrado"}</h2>
+    <p>O acesso de <b>${esc(c.nome)}</b> venceu em ${dataBR(c.venceEm)} e a escala foi pausada para a equipe.</p><p class="mute">Os dados continuam guardados. Assine para voltar a usar.</p>${pagamentoHtml()}`;
+  else if (tipo === "med-bloq") box.innerHTML = `<div style="font-size:48px">⏸️</div><h2>Escala pausada</h2><p class="mute">O acesso ao Escalaflux deste serviço está pausado no momento. Fale com a coordenação.</p>`;
+  else if (tipo === "revogado") box.innerHTML = `<div style="font-size:48px">🔒</div><h2>Acesso revogado</h2><p class="mute">Este acesso não está mais ativo. Fale com a coordenação do serviço.</p>`;
+}
+
+/* ================== Login e cadastro ================== */
+function preencherCodigo(){
+  const cod = PARAMS.get("medico");
+  if (cod){ $("#mCodigo").value = cod.toLowerCase(); trocarLogin("med"); }
+}
+function trocarLogin(t){
+  document.querySelectorAll("#segLogin button").forEach(b => b.classList.toggle("on", b.dataset.l === t));
+  $("#fLogin").classList.toggle("hidden", t !== "coord"); $("#fMed").classList.toggle("hidden", t !== "med");
+}
+$("#segLogin").onclick = e => { const b = e.target.closest("button"); if (b) trocarLogin(b.dataset.l); };
+$("#fLogin").onsubmit = async e => {
+  e.preventDefault(); $("#lErro").textContent = "";
+  try { await store.entrar($("#lEmail").value.trim(), $("#lSenha").value); }
+  catch(err){ $("#lErro").textContent = ["auth/invalid-credential","auth/wrong-password","auth/user-not-found","auth/invalid-login-credentials"].includes(err.code) ? "E-mail ou senha incorretos." : "Não foi possível entrar. Verifique a internet e tente de novo."; }
+};
+$("#fMed").onsubmit = async e => {
+  e.preventDefault(); $("#mErro").textContent = "";
+  const cod = $("#mCodigo").value.trim().toLowerCase(), u = $("#mUsuario").value.trim().toLowerCase();
+  if (!/^[a-z0-9]{6}$/.test(cod)) return $("#mErro").textContent = "O código do serviço tem 6 letras ou números.";
+  try { await store.entrarMed(cod, u, $("#mSenha").value); }
+  catch(err){ $("#mErro").textContent = err.code && err.code.startsWith("auth/") && err.code !== "auth/network-request-failed" ? "Código, usuário ou senha incorretos." : "Não foi possível entrar. Verifique a internet e tente de novo."; }
+};
+$("#btEsqueci").onclick = async () => {
+  const e = $("#lEmail").value.trim(); if (!e) return $("#lErro").textContent = "Digite seu e-mail acima e toque de novo em \"Esqueci minha senha\".";
+  try { await store.esqueci(e); $("#lErro").innerHTML = `<span class="okmsg">Se este e-mail tiver conta, você vai receber um link para criar uma nova senha.</span>`; }
+  catch { $("#lErro").textContent = "Não foi possível enviar agora. Tente de novo."; }
+};
+$("#btIrCadastro").onclick = () => { location.hash = "cadastro"; show("vCadastro"); };
+$("#btVoltarLogin").onclick = () => { history.replaceState(null, "", location.pathname + location.search); show("vLogin"); };
+$("#fCad").onsubmit = async e => {
+  e.preventDefault();
+  const nome = $("#cNome").value.trim(), whats = soDigitos($("#cWhats").value), email = $("#cEmail").value.trim(), s1 = $("#cSenha").value, s2 = $("#cSenha2").value;
+  const erro = m => $("#cErro").textContent = m;
+  if (!nome) return erro("Informe o nome do serviço ou da equipe.");
+  if (whats.length < 10) return erro("Informe o WhatsApp com DDD.");
+  if (!/^\S+@\S+\.\S+$/.test(email)) return erro("Informe um e-mail válido.");
+  if (s1.length < 6) return erro("A senha precisa ter pelo menos 6 caracteres.");
+  if (s1 !== s2) return erro("As senhas não são iguais.");
+  erro(""); cadastrando = true; $("#cBt").disabled = true; $("#cBt").textContent = "Criando conta…";
+  try { const r = await store.cadastrar(email, s1); await store.criarConta(r.user.uid, email, nome, whats); cadastrando = false; history.replaceState(null, "", location.pathname + location.search); S.conta = null; }
+  catch(err){
+    cadastrando = false;
+    erro(({"auth/email-already-in-use": "Este e-mail já está cadastrado (no Escalaflux, no Lavaflux ou no Petflux). Se já é cliente do Escalaflux, volte e entre; se não, use outro e-mail.",
+      "auth/weak-password": "Senha fraca: use pelo menos 6 caracteres.", "auth/invalid-email": "E-mail inválido.", demo: "Na demonstração não é possível criar contas.",
+      "auth/network-request-failed": "Sem conexão. Verifique a internet: seus dados continuam preenchidos."})[err.code] || "Não foi possível criar a conta agora. Tente de novo.");
+  } finally { $("#cBt").disabled = false; $("#cBt").textContent = "Criar conta"; }
+};
+document.querySelectorAll("[data-sair]").forEach(b => b.onclick = () => store.sair());
+document.querySelectorAll("[data-senha]").forEach(b => b.onclick = () => { ["snAtual","snNova","snNova2"].forEach(i => $("#"+i).value = ""); $("#snErro").textContent = ""; abrir("mSenha"); });
+$("#fSenha").onsubmit = async e => {
+  e.preventDefault(); const a = $("#snAtual").value, n = $("#snNova").value, n2 = $("#snNova2").value, er = m => $("#snErro").innerHTML = m;
+  if (n.length < 6) return er("A nova senha precisa ter pelo menos 6 caracteres."); if (n !== n2) return er("As senhas novas não são iguais.");
+  $("#snBt").disabled = true;
+  try { await store.trocarSenha(a, n); er(`<span class="okmsg">Senha alterada.</span>`); }
+  catch(err){ er(["auth/invalid-credential","auth/wrong-password","auth/invalid-login-credentials"].includes(err.code) ? "Senha atual incorreta." : "Não foi possível alterar agora. Tente de novo."); }
+  finally { $("#snBt").disabled = false; }
+};
+
+/* ================== Pagamento ================== */
+const precoTx = () => "R$ " + ((S.cfg && S.cfg.escPreco) || PRECO_PADRAO);
+function pagamentoHtml(){
+  const c = S.cfg || {}, sup = zapNum(c.suporteWhats);
+  return `<div style="text-align:left;margin-top:12px"><p><b>${precoTx()} por mês</b>, sem fidelidade.</p>
+    ${c.escMpLink ? `<a class="btn pri w100" href="${esc(c.escMpLink)}" target="_blank" rel="noopener">💳 Assinar com cartão (Mercado Pago)</a>` : ""}
+    ${c.pix ? `<p style="margin:12px 0 0">Ou pague por Pix:</p><div class="pixkey" id="pixChave">${esc(c.pix)}</div><button class="w100" data-copiar="${esc(c.pix)}">Copiar chave Pix</button>` : ""}
+    ${sup ? `<a class="btn zap w100" style="margin-top:8px" target="_blank" rel="noopener" href="${zapLink(sup, `Olá! Segue o comprovante da assinatura do Escalaflux (${S.conta ? S.conta.nome : ""}).`)}">Enviar comprovante no WhatsApp</a>` : ""}
+    ${!c.pix && !c.escMpLink ? `<p class="mute">Formas de pagamento em configuração. Fale com o suporte do Escalaflux.</p>` : ""}
+    <p class="mute" style="margin-top:8px">A liberação é feita assim que o pagamento é confirmado.</p></div>`;
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-copiar]"); if (!b) return;
+  try { await navigator.clipboard.writeText(b.dataset.copiar); const t = b.textContent; b.textContent = "✓ Copiado"; setTimeout(() => b.textContent = t, 1500); } catch {}
+});
+
+/* ================== App ================== */
+const ABAS_COORD = [["escala","📅 Escala"],["trocas","🔁 Vagas e trocas"],["disp","🗓️ Disponibilidade"],["medicos","🩺 Médicos"],["fech","💰 Fechamento"],["ajustes","⚙️ Ajustes"]];
+const ABAS_MED = [["meus","📅 Meus plantões"],["vagas","🆓 Vagas"],["trocas","🔁 Trocas"],["disp","🗓️ Disponibilidade"],["escala","👥 Escala"]];
+function iniciarApp(){
+  appAtivo = true; show("vApp");
+  S.aba = S.aba || (S.papel === "med" ? "meus" : "escala"); S.rolar = S.aba === "escala";
+  unsubs.push(store.servico(S.servico, s => { S.serv = s; render(); }));
+  if (S.papel === "coord") unsubs.push(store.medicos(S.servico, l => { S.medicos = l.sort((a, b) => a.nome.localeCompare(b.nome)); render(); }));
+  garantirMes(M0()); garantirMes(M1());
+  render();
+}
+document.addEventListener("focusout", () => { if (renderPendente) setTimeout(() => { if (!editando()) { renderPendente = false; render(); } }, 0); });
+const editando = () => { const a = document.activeElement; return a && $("#conteudo").contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); };
+function render(){
+  if (!appAtivo) return;
+  if (editando()){ renderPendente = true; return; }
+  const sv = S.serv || {};
+  $("#appNome").textContent = sv.nome || (S.conta && S.conta.nome) || "Escalaflux";
+  $("#appPapel").textContent = S.papel === "med" ? `${(S.eu && S.eu.nome) || ""} · médico` : "Coordenação da escala";
+  if (!MODO_DEMO) document.title = (sv.nome ? sv.nome + " · " : "") + "Escalaflux";
+  renderBanner(); renderGuia();
+  const abas = S.papel === "med" ? ABAS_MED : ABAS_COORD;
+  const pend = S.papel === "coord" ? proximos().filter(p => p.troca && p.troca.status === "aceita").length
+    : proximos().filter(p => p.status === "vago").length;
+  $("#abas").innerHTML = abas.map(([k, t]) => `<button role="tab" data-aba="${k}" class="${S.aba === k ? "on" : ""}" aria-selected="${S.aba === k}">${t}${(S.papel === "coord" && k === "trocas" || S.papel === "med" && k === "vagas") && pend ? `<span class="badge">${pend}</span>` : ""}</button>`).join("");
+  const f = {escala: S.papel === "med" ? abaEscalaMed : abaEscala, trocas: S.papel === "med" ? abaTrocasMed : abaTrocas, disp: S.papel === "med" ? abaDispMed : abaDisp,
+             medicos: abaMedicos, fech: abaFech, ajustes: abaAjustes, meus: abaMeus, vagas: abaVagas}[S.aba];
+  $("#conteudo").innerHTML = f ? f() : "";
+  if (S.rolar){ const h = $("#conteudo .dia.hoje"); if (h){ S.rolar = false; h.scrollIntoView({block: "start"}); } }
+}
+$("#abas").onclick = e => { const b = e.target.closest("[data-aba]"); if (!b) return; S.aba = b.dataset.aba; ajEdit = null; ajSalvo = false; window.scrollTo({top: 0}); S.rolar = b.dataset.aba === "escala"; render(); };
+
+function renderBanner(){
+  const c = S.conta, el = $("#banner");
+  if (S.papel !== "coord" || !c || !c.venceEm){ el.innerHTML = ""; return; }
+  const d = diasAte(c.venceEm);
+  if (c.plano !== "assinante") el.innerHTML = `<div class="banner ${d <= 3 ? "alerta" : "info"}"><span class="tx">🎁 <b>Teste grátis</b>: termina em ${d} dia${d === 1 ? "" : "s"} (${dataBR(c.venceEm)}).</span><button class="pri" data-assinar>Assinar</button></div>`;
+  else el.innerHTML = d <= 5 ? `<div class="banner alerta"><span class="tx">Mensalidade vence em ${d} dia${d === 1 ? "" : "s"} (${dataBR(c.venceEm)}).</span><button class="pri" data-assinar>Pagar</button></div>` : "";
+}
+document.addEventListener("click", e => { if (e.target.closest("[data-assinar]")){ $("#assinCorpo").innerHTML = pagamentoHtml(); abrir("mAssin"); } });
+
+function renderGuia(){
+  const el = $("#guia"), sv = S.serv || {};
+  if (S.papel !== "coord" || sv.guiaOk || MODO_DEMO){ el.innerHTML = ""; return; }
+  const p1 = !!sv.turnosConferidos, p2 = S.medicos.length > 0, p3 = (PL.get(M0()) || []).length + (PL.get(M1()) || []).length > 0;
+  if (p1 && p2 && p3){ el.innerHTML = ""; return; }
+  el.innerHTML = `<div class="card guia"><div style="display:flex;justify-content:space-between;gap:8px"><h3>Primeiros passos</h3><button class="ghost peq" data-act="guiaOk">Ocultar</button></div><ol>
+    <li class="${p1 ? "feito" : ""}">Confira os turnos e os valores em <button class="linkbtn" data-ir="ajustes">⚙️ Ajustes</button></li>
+    <li class="${p2 ? "feito" : ""}">Crie o acesso dos médicos em <button class="linkbtn" data-ir="medicos">🩺 Médicos</button></li>
+    <li class="${p3 ? "feito" : ""}">Gere a escala do mês em <button class="linkbtn" data-ir="escala">📅 Escala</button> e escale os médicos</li></ol></div>`;
+}
+
+const mesNav = (k = "mes") => `<div class="mesnav"><button data-act="${k}" data-k="-1" aria-label="Mês anterior">‹</button><b>${esc(cap(nomeMes(S[k === "mes" ? "mes" : "mesDisp"])))}</b><button data-act="${k}" data-k="1" aria-label="Próximo mês">›</button></div>`;
+const carregando = `<div class="card vazio">Carregando…</div>`;
+const turnosAtivos = () => ((S.serv && S.serv.turnos) || []);
+function diasHtml(l, opts = {}){
+  const hoje = hojeStr(), porDia = new Map();
+  l.forEach(p => { if (!porDia.has(p.data)) porDia.set(p.data, []); porDia.get(p.data).push(p); });
+  return [...porDia].map(([ds, ps]) => `<div class="dia ${ds === hoje ? "hoje" : ""} ${ds < hoje ? "passado" : ""}"><h4><span>${fmtDia(ds)}${ds === hoje ? " · hoje" : ""}</span>${opts.mais ? `<button class="ghost peq" data-act="novoPl" data-d="${ds}">+ plantão</button>` : ""}</h4>
+    ${ps.map(p => plBtn(p, opts)).join("")}</div>`).join("");
+}
+function plBtn(p, opts){
+  const vago = p.status === "vago", meu = S.papel === "med" && p.medico === S.u.uid;
+  const ex = p.troca ? (p.troca.status === "aceita" ? `<span class="ex pill pe">🔁 Troca: ${esc(p.troca.paraNome)} assume · aguarda aprovação</span>` : `<span class="ex pill az">🔁 Oferecido para troca</span>`) : "";
+  const tag = opts.clicavel ? "button" : "div";
+  return `<${tag} class="pl ${vago ? "vago" : ""} ${meu ? "meu" : ""}" ${opts.clicavel ? `data-act="abrirPl" data-id="${p.id}"` : ""}><span class="tn">${esc(p.turnoNome)}</span><span class="hr">${p.inicio}–${p.fim}</span><span class="md">${vago ? "Vago" : esc(p.medicoNome)}</span>${ex}</${tag}>`;
+}
+
+/* ---------- Coordenação: escala ---------- */
+function abaEscala(){
+  garantirMes(S.mes); garantirDisp(S.mes);
+  const l = PL.get(S.mes); if (!l) return mesNav() + carregando;
+  if (!l.length){
+    const ts = turnosAtivos();
+    return mesNav() + `<div class="card vazio"><h3>A escala de ${esc(nomeMes(S.mes))} ainda não foi criada</h3>
+      <p>Os plantões são criados a partir dos turnos: ${ts.length ? ts.map(t => `<b>${esc(t.nome)}</b> ${t.inicio}–${t.fim}`).join(", ") : "nenhum turno cadastrado"}. Todos começam vagos; depois você escala os médicos.</p>
+      <button class="pri" data-act="gerar" ${ts.length ? "" : "disabled"}>Gerar a escala de ${esc(nomeMes(S.mes).split(" ")[0])}</button>
+      ${ts.length ? "" : `<p class="mute" style="margin-top:8px">Cadastre os turnos em ⚙️ Ajustes.</p>`}</div>`;
+  }
+  const vagos = l.filter(p => p.status === "vago"), trocas = l.filter(p => p.troca && p.troca.status === "aceita");
+  const mostra = S.soVagos ? vagos : l;
+  return mesNav() + `<div class="resumo"><span><b>${l.length}</b>plantões</span><span><b style="color:var(--danger)">${vagos.length}</b>vagos</span><span><b>${trocas.length}</b>trocas para aprovar</span></div>
+    <div class="row" style="margin-bottom:6px"><button data-act="soVagos" class="${S.soVagos ? "pri" : ""}">${S.soVagos ? "Mostrar todos" : "Mostrar só os vagos"}</button>
+    ${vagos.length ? `<a class="btn zap" target="_blank" rel="noopener" href="${MODO_DEMO ? "#" : zapLink("", msgVagas(vagos))}" ${MODO_DEMO ? `onclick="alert('Na demonstração o WhatsApp não é aberto.');return false"` : ""}>📲 Avisar vagas no WhatsApp</a>` : ""}</div>
+    <p class="mute">Toque em um plantão para escalar um médico, mudar o valor ou aprovar uma troca.</p>
+    ${mostra.length ? diasHtml(mostra, {clicavel: true, mais: !S.soVagos}) : `<div class="card vazio">Nenhum plantão vago neste mês. 🎉</div>`}`;
+}
+function msgVagas(vagos){
+  const nome = (S.serv && S.serv.nome) || "o serviço", futuros = vagos.filter(p => p.data >= hojeStr()).slice(0, 25);
+  return `Plantões vagos — ${nome}:\n` + futuros.map(p => `• ${fmtDia(p.data)} ${p.turnoNome} (${p.inicio}–${p.fim})`).join("\n") +
+    `\n\nPara pegar, entre no Escalaflux: ${location.origin + location.pathname}`;
+}
+async function gerarMes(){
+  const ts = turnosAtivos(), arr = [], agora = Date.now();
+  for (let d = 1; d <= diasNoMes(S.mes); d++){
+    const ds = `${S.mes}-${pad(d)}`, dw = diaSem(ds);
+    ts.forEach((t, i) => { if ((t.dias || [0,1,2,3,4,5,6]).includes(dw)) arr.push({servico: S.servico, mes: S.mes, data: ds, turno: t.id, turnoNome: t.nome, inicio: t.inicio, fim: t.fim, ordem: i,
+      valor: Number(t.valor) || 0, status: "vago", medico: null, medicoNome: "", troca: null, hist: [{acao: "criou o plantão", por: autor(), em: agora}], criadoEm: agora}); });
+  }
+  if (!confirm(`Criar ${arr.length} plantões vagos para ${nomeMes(S.mes)}?`)) return;
+  await store.criarPlantoes(arr);
+}
+
+/* modal do plantão */
+let plAtual = null;
+function acharPl(id){ return todosPl().find(p => p.id === id); }
+function dispDe(medUid, ds, turno){ const d = (DISP.get(ds.slice(0, 7)) || []).find(x => x.medico === medUid); return !!(d && d.dias && (d.dias[ds] || []).includes(turno)); }
+function abrirPl(id, novoDia){
+  plAtual = id ? acharPl(id) : null; if (id && !plAtual) return;
+  const p = plAtual, ds = p ? p.data : novoDia, dia = (PL.get(ds.slice(0, 7)) || []).filter(x => x.data === ds);
+  const ocupados = new Set(dia.filter(x => x.medico && (!p || x.id !== p.id)).map(x => x.medico));
+  $("#plTit").textContent = p ? `${fmtDia(ds)} · ${p.turnoNome} ${p.inicio}–${p.fim}` : `Novo plantão · ${fmtDia(ds)}`;
+  const opts = S.medicos.filter(m => m.ativo || (p && p.medico === m.uid)).map(m => {
+    const disp = p ? dispDe(m.uid, ds, p.turno) : false, oc = ocupados.has(m.uid);
+    return `<option value="${m.uid}" ${p && p.medico === m.uid ? "selected" : ""}>${esc(m.nome)}${disp ? " ✓ disponível" : ""}${oc ? " (já tem plantão neste dia)" : ""}</option>`; }).join("");
+  const tr = p && p.troca;
+  $("#plCorpo").innerHTML = `
+    ${p ? "" : `<label class="f" for="plTurno">Turno</label><select id="plTurno">${turnosAtivos().map(t => `<option value="${t.id}">${esc(t.nome)} ${t.inicio}–${t.fim}</option>`).join("")}</select>`}
+    ${tr ? `<div class="banner ${tr.status === "aceita" ? "alerta" : "info"}" style="display:block"><b>🔁 Troca ${tr.status === "aceita" ? "aguardando sua aprovação" : "oferecida"}</b><br>
+      ${esc(tr.deNome)} ofereceu este plantão${tr.status === "aceita" ? `; <b>${esc(tr.paraNome)}</b> aceitou assumir.` : ". Nenhum colega aceitou ainda."}
+      <div class="row" style="margin-top:8px">${tr.status === "aceita" ? `<button class="ok" data-act="aprovar" data-id="${p.id}">Aprovar troca</button>` : ""}<button data-act="recusar" data-id="${p.id}">${tr.status === "aceita" ? "Recusar" : "Cancelar oferta"}</button></div></div>` : ""}
+    <label class="f" for="plMed">Médico</label><select id="plMed"><option value="">— Vago —</option>${opts}</select>
+    <label class="f" for="plValor">Valor do plantão (R$)</label><input id="plValor" inputmode="decimal" value="${p ? String(p.valor ?? 0).replace(".", ",") : String((turnosAtivos()[0] || {}).valor || 0).replace(".", ",")}">
+    <div class="erro" id="plErro"></div>
+    <button class="pri w100" data-act="salvarPl">Salvar</button>
+    ${p ? `<button class="ghost danger w100" data-act="excluirPl" style="margin-top:6px">Excluir este plantão</button>
+      <details style="margin-top:10px"><summary class="mute">📋 Histórico</summary><ul class="hist">${(p.hist || []).slice().reverse().map(h => `<li>${dataBR(h.em)} ${horaBR(h.em)} — ${esc(h.por)} ${esc(h.acao)}</li>`).join("")}</ul></details>` : ""}`;
+  abrir("mPl");
+}
+$("#mPl").addEventListener("click", async e => {
+  const b = e.target.closest("[data-act]"); if (!b) return; const act = b.dataset.act, p = plAtual;
+  try {
+    if (act === "salvarPl"){
+      const mid = $("#plMed").value, m = S.medicos.find(x => x.uid === mid), valor = numBR($("#plValor").value);
+      if (isNaN(valor)) return $("#plErro").textContent = "Valor inválido.";
+      if (!p){
+        const t = turnosAtivos().find(x => x.id === $("#plTurno").value) || turnosAtivos()[0]; const ds = $("#plTit").textContent.match(/(\d\d)\/(\d\d)/);
+        const dia = novoDiaAtual, agora = Date.now();
+        await store.criarPlantoes([{servico: S.servico, mes: dia.slice(0, 7), data: dia, turno: t.id, turnoNome: t.nome, inicio: t.inicio, fim: t.fim, ordem: turnosAtivos().indexOf(t), valor,
+          status: m ? "escalado" : "vago", medico: m ? m.uid : null, medicoNome: m ? m.nome : "", troca: null, hist: [{acao: m ? `criou o plantão extra e escalou ${m.nome}` : "criou o plantão extra", por: autor(), em: agora}], criadoEm: agora}]);
+      } else {
+        const patch = {valor, medico: m ? m.uid : null, medicoNome: m ? m.nome : "", status: m ? "escalado" : "vago"};
+        const mudou = (p.medico || "") !== mid;
+        if (mudou && p.troca) patch.troca = null;
+        const acao = mudou ? (m ? `escalou ${m.nome}` : `deixou vago${p.medicoNome ? ` (era ${p.medicoNome})` : ""}`) : (valor !== p.valor ? `alterou o valor para ${brl(valor)}` : "");
+        await store.atualizarPlantao(p.id, patch, acao ? {acao, por: autor()} : null);
+      }
+      fechar("mPl");
+    } else if (act === "excluirPl"){
+      if (confirm("Excluir este plantão da escala?")){ await store.removerPlantao(p.id); fechar("mPl"); }
+    } else if (act === "aprovar"){
+      await store.atualizarPlantao(p.id, {medico: p.troca.para, medicoNome: p.troca.paraNome, status: "escalado", troca: null}, {acao: `aprovou a troca: ${p.troca.deNome} → ${p.troca.paraNome}`, por: autor()}); fechar("mPl");
+    } else if (act === "recusar"){
+      await store.atualizarPlantao(p.id, {troca: null}, {acao: p.troca.status === "aceita" ? "recusou a troca" : "cancelou a oferta de troca", por: autor()}); fechar("mPl");
+    }
+  } catch(err){ console.error(err); $("#plErro").textContent = "Não foi possível salvar. Verifique a internet e tente de novo."; }
+});
+let novoDiaAtual = null;
+
+/* ---------- Coordenação: vagas e trocas ---------- */
+function abaTrocas(){
+  garantirMes(M0()); garantirMes(M1());
+  if (!PL.get(M0()) || !PL.get(M1())) return carregando;
+  const px = proximos(), aceitas = px.filter(p => p.troca && p.troca.status === "aceita"), abertas = px.filter(p => p.troca && p.troca.status === "aberta"), vagos = px.filter(p => p.status === "vago");
+  const it = (p, acts) => `<div class="item"><div class="l1"><div><b>${fmtDia(p.data)} · ${esc(p.turnoNome)}</b> <span class="mute">${p.inicio}–${p.fim}</span></div>${p.status === "vago" ? `<span class="pill fe">Vago</span>` : ""}</div>${acts}</div>`;
+  return `<h3 class="sec">Trocas aguardando sua aprovação (${aceitas.length})</h3>
+    ${aceitas.length ? aceitas.map(p => it(p, `<p style="margin:6px 0 0">${esc(p.troca.deNome)} → <b>${esc(p.troca.paraNome)}</b></p><div class="acts"><button class="ok" data-act="aprovarL" data-id="${p.id}">Aprovar troca</button><button data-act="recusarL" data-id="${p.id}">Recusar</button></div>`)).join("") : `<p class="mute">Nenhuma troca pendente.</p>`}
+    <h3 class="sec">Oferecidos para troca, sem colega ainda (${abertas.length})</h3>
+    ${abertas.length ? abertas.map(p => it(p, `<p class="mute" style="margin:6px 0 0">${esc(p.troca.deNome)} quer passar este plantão.</p>`)).join("") : `<p class="mute">Nenhum.</p>`}
+    <h3 class="sec">Plantões vagos a partir de hoje (${vagos.length})</h3>
+    ${vagos.length ? `<a class="btn zap w100" style="margin-bottom:8px" target="_blank" rel="noopener" href="${MODO_DEMO ? "#" : zapLink("", msgVagas(vagos))}" ${MODO_DEMO ? `onclick="alert('Na demonstração o WhatsApp não é aberto.');return false"` : ""}>📲 Avisar vagas no WhatsApp</a>` +
+      vagos.map(p => it(p, `<div class="acts"><button data-act="abrirPl" data-id="${p.id}">Escalar médico</button></div>`)).join("") : `<p class="mute">Nenhum plantão vago. 🎉</p>`}
+    <p class="mute" style="margin-top:12px">Os médicos veem os vagos na aba Vagas e o primeiro que pegar fica com o plantão.</p>`;
+}
+
+/* ---------- Coordenação: disponibilidade ---------- */
+function abaDisp(){
+  garantirDisp(S.mes); const l = DISP.get(S.mes); if (!l) return mesNav() + carregando;
+  const ativos = S.medicos.filter(m => m.ativo), nomeT = id => (turnosAtivos().find(t => t.id === id) || {nome: id}).nome;
+  const link = location.origin + location.pathname;
+  return mesNav() + `<p class="mute">Os médicos informam em quais dias e turnos podem trabalhar. Ao escalar, os disponíveis aparecem com ✓.</p>
+    <a class="btn zap w100" style="margin-bottom:12px" target="_blank" rel="noopener" href="${MODO_DEMO ? "#" : zapLink("", `Olá, equipe! Informem a disponibilidade de ${nomeMes(S.mes)} no Escalaflux, na aba Disponibilidade: ${link}`)}" ${MODO_DEMO ? `onclick="alert('Na demonstração o WhatsApp não é aberto.');return false"` : ""}>📲 Pedir disponibilidade no WhatsApp</a>
+    ${ativos.length ? ativos.map(m => { const d = l.find(x => x.medico === m.uid), dias = d ? Object.entries(d.dias || {}).filter(([, v]) => v.length).sort() : [];
+      const n = dias.reduce((s, [, v]) => s + v.length, 0);
+      return `<div class="item"><div class="l1"><b>${esc(m.nome)}</b>${d ? `<span class="pill ab">${n} turno${n === 1 ? "" : "s"}</span>` : `<span class="pill pe">Ainda não informou</span>`}</div>
+        ${d && d.obs ? `<p class="mute" style="margin:6px 0 0">💬 ${esc(d.obs)}</p>` : ""}
+        ${dias.length ? `<details style="margin-top:6px"><summary class="mute">Ver dias</summary><p style="margin:6px 0 0;font-size:14px">${dias.map(([ds, v]) => `${fmtDia(ds)}: ${v.map(nomeT).join(", ")}`).join("<br>")}</p></details>` : ""}</div>`; }).join("")
+      : `<div class="card vazio">Cadastre os médicos na aba 🩺 Médicos.</div>`}`;
+}
+
+/* ---------- Coordenação: médicos ---------- */
+function abaMedicos(){
+  const sv = S.serv || {}, cod = sv.codigo || "", link = `${location.origin + location.pathname}?medico=${cod}`;
+  const contMes = uid => (PL.get(M0()) || []).filter(p => p.medico === uid).length;
+  return `<div class="card"><h3>Acesso dos médicos</h3><p class="mute">Cada médico entra com login próprio e vê os próprios plantões, as vagas, as trocas e a escala completa. Não vê ajustes, valores dos colegas nem a assinatura.</p>
+      <p style="margin:8px 0 0">Envie este código ao médico:</p><div class="codigo" id="medCodigo">${esc(cod)}</div>
+      <div class="row"><button data-copiar="${esc(cod)}">📋 Copiar código</button><button data-copiar="${esc(link)}">🔗 Copiar link de acesso</button></div>
+      <p class="mute" style="margin-top:6px">O link já abre com o código preenchido.</p></div>
+    <form class="card" id="fNovoMed"><h3>Novo médico</h3>
+      <div class="row"><div><label class="f" for="nmNome">Nome *</label><input id="nmNome" maxlength="40" placeholder="Dra. Ana Lima"></div><div><label class="f" for="nmCrm">CRM</label><input id="nmCrm" maxlength="20" placeholder="CRM/UF 00000"></div></div>
+      <div class="row"><div><label class="f" for="nmWhats">WhatsApp</label><input id="nmWhats" type="tel" inputmode="tel" placeholder="(51) 99999-0000"></div><div><label class="f" for="nmUsuario">Usuário *</label><input id="nmUsuario" maxlength="20" autocapitalize="none" placeholder="ana"></div></div>
+      <label class="f" for="nmSenha">Senha inicial * (mínimo 6 caracteres)</label><input id="nmSenha" type="text" autocomplete="off">
+      <div class="erro" id="nmErro"></div><button class="pri w100" id="nmBt" type="submit">Criar acesso</button></form>
+    <h3 class="sec">Equipe (${S.medicos.length})</h3>
+    ${S.medicos.length ? S.medicos.map(m => `<div class="item"><div class="l1"><div><b>${esc(m.nome)}</b><div class="mute">${esc(m.crm || "CRM não informado")} · usuário <b>${esc(m.usuario)}</b>${m.whatsapp ? " · " + esc(m.whatsapp) : ""}</div></div>${m.ativo ? `<span class="pill ab">Ativo</span>` : `<span class="pill fe">Revogado</span>`}</div>
+      <p class="mute" style="margin:6px 0 0">${contMes(m.uid)} plantões em ${esc(nomeMes(M0()))}</p>
+      <div class="acts">${m.ativo ? `<button class="danger" data-act="revogar" data-id="${m.uid}">Revogar acesso</button>` : `<button data-act="reativar" data-id="${m.uid}">Reativar acesso</button>`}
+      ${m.whatsapp && !MODO_DEMO ? `<a class="btn" target="_blank" rel="noopener" href="${zapLink(m.whatsapp, `Olá, ${m.nome}! Seu acesso ao Escalaflux de ${sv.nome || "nosso serviço"}: ${link} — usuário: ${m.usuario}. A senha eu te passo em separado.`)}">📲 Enviar acesso</a>` : ""}</div></div>`).join("")
+      : `<div class="card vazio">Nenhum médico cadastrado ainda.</div>`}`;
+}
+document.addEventListener("submit", async e => {
+  if (e.target.id !== "fNovoMed") return; e.preventDefault();
+  const nome = $("#nmNome").value.trim(), crm = $("#nmCrm").value.trim(), whatsapp = soDigitos($("#nmWhats").value), usuario = $("#nmUsuario").value.trim().toLowerCase(), senha = $("#nmSenha").value;
+  const er = m => $("#nmErro").innerHTML = m;
+  if (!nome) return er("Informe o nome."); if (!/^[a-z0-9]{3,20}$/.test(usuario)) return er("Usuário: de 3 a 20 letras minúsculas ou números, sem espaço.");
+  if (senha.length < 6) return er("A senha precisa ter pelo menos 6 caracteres.");
+  $("#nmBt").disabled = true; $("#nmBt").textContent = "Criando…";
+  try { await store.criarMedico(S.servico, S.serv.codigo, {nome, crm, whatsapp, usuario}, senha); renderPendente = false; ["nmNome","nmCrm","nmWhats","nmUsuario","nmSenha"].forEach(i => { const x = $("#"+i); if (x) x.value = ""; });
+    document.activeElement && document.activeElement.blur(); render(); er(`<span class="okmsg">Acesso criado para ${esc(nome)}. Envie o código, o usuário e a senha ao médico.</span>`); }
+  catch(err){ er(err.code === "auth/email-already-in-use" ? "Este usuário já existe neste serviço. Escolha outro." : err.code === "auth/weak-password" ? "Senha fraca: use pelo menos 6 caracteres." : "Não foi possível criar o acesso. Verifique a internet e tente de novo."); }
+  finally { const bt = $("#nmBt"); if (bt){ bt.disabled = false; bt.textContent = "Criar acesso"; } }
+});
+
+/* ---------- Coordenação: fechamento ---------- */
+function abaFech(){
+  garantirMes(S.mes); const l = PL.get(S.mes); if (!l) return mesNav() + carregando;
+  const esc_ = l.filter(p => p.status === "escalado"), por = new Map();
+  esc_.forEach(p => { const o = por.get(p.medico) || {nome: p.medicoNome, n: 0, h: 0, v: 0, lista: []}; o.n++; o.h += horasDe(p); o.v += Number(p.valor) || 0; o.lista.push(p); por.set(p.medico, o); });
+  const linhas = [...por].sort((a, b) => a[1].nome.localeCompare(b[1].nome)), tot = linhas.reduce((s, [, o]) => ({n: s.n + o.n, h: s.h + o.h, v: s.v + o.v}), {n: 0, h: 0, v: 0});
+  const vagos = l.filter(p => p.status === "vago").length;
+  return mesNav() + (l.length ? `<div class="card" style="overflow-x:auto"><table class="tab"><thead><tr><th>Médico</th><th class="n">Plantões</th><th class="n">Horas</th><th class="n">Total</th></tr></thead>
+    <tbody>${linhas.map(([uid, o]) => `<tr><td>${esc(o.nome)}</td><td class="n">${o.n}</td><td class="n">${o.h}h</td><td class="n">${brl(o.v)}</td></tr>`).join("")}</tbody>
+    <tfoot><tr><td>Total</td><td class="n">${tot.n}</td><td class="n">${tot.h}h</td><td class="n">${brl(tot.v)}</td></tr></tfoot></table>
+    ${vagos ? `<p class="mute" style="margin-top:8px">${vagos} plantão(ões) vago(s) não entram no total.</p>` : ""}</div>
+    <button class="w100" data-act="csv">⬇️ Baixar planilha do mês (CSV)</button>
+    <h3 class="sec">Resumo para cada médico</h3>
+    ${linhas.map(([uid, o]) => { const m = S.medicos.find(x => x.uid === uid) || {};
+      const txt = `Olá, ${o.nome}! Seus plantões em ${nomeMes(S.mes)} (${(S.serv && S.serv.nome) || ""}):\n` + o.lista.map(p => `• ${fmtDia(p.data)} ${p.turnoNome} ${p.inicio}–${p.fim} — ${brl(p.valor)}`).join("\n") + `\nTotal: ${o.n} plantões, ${o.h}h, ${brl(o.v)}.`;
+      return `<div class="item"><div class="l1"><b>${esc(o.nome)}</b><span>${brl(o.v)}</span></div><div class="acts">${m.whatsapp && !MODO_DEMO ? `<a class="btn zap" target="_blank" rel="noopener" href="${zapLink(m.whatsapp, txt)}">📲 Enviar resumo</a>` : ""}<button data-copiar="${esc(txt)}">📋 Copiar resumo</button></div></div>`; }).join("")}`
+    : `<div class="card vazio">Sem escala neste mês.</div>`);
+}
+function baixarCsv(){
+  const l = (PL.get(S.mes) || []).filter(p => p.status === "escalado"), crm = uid => ((S.medicos.find(m => m.uid === uid) || {}).crm || "");
+  const q = s => `"${String(s ?? "").replace(/"/g, '""')}"`;
+  const linhas = [["Data","Dia","Turno","Início","Fim","Horas","Médico","CRM","Valor"].map(q).join(";"),
+    ...l.map(p => [p.data.split("-").reverse().join("/"), DSEM[diaSem(p.data)], p.turnoNome, p.inicio, p.fim, String(horasDe(p)).replace(".", ","), p.medicoNome, crm(p.medico), String(p.valor || 0).replace(".", ",")].map(q).join(";"))];
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + linhas.join("\r\n")], {type: "text/csv;charset=utf-8"}));
+  a.download = `escala-${S.mes}.csv`; document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------- Coordenação: ajustes ---------- */
+function abaAjustes(){
+  const sv = S.serv || {}; if (!ajEdit) ajEdit = {nome: sv.nome || "", valoresMedicos: sv.valoresMedicos !== false, turnos: JSON.parse(JSON.stringify(sv.turnos || []))};
+  const c = S.conta || {};
+  return `<div class="card"><h3>Serviço</h3><label class="f" for="ajNome">Nome do serviço ou da equipe</label><input id="ajNome" data-aj="nome" maxlength="50" value="${esc(ajEdit.nome)}">
+      <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" data-aj="valoresMedicos" ${ajEdit.valoresMedicos ? "checked" : ""}> Médicos veem o valor dos próprios plantões</label></div>
+    <div class="card"><h3>Turnos</h3><p class="mute">Usados para gerar a escala de cada mês. Mudanças valem para as próximas escalas geradas; para um plantão já criado, altere direto nele.</p>
+      ${ajEdit.turnos.map((t, i) => `<div class="turno"><div class="row"><div><label class="f">Nome</label><input data-t="${i}" data-c="nome" value="${esc(t.nome)}" maxlength="25"></div>
+        <div><label class="f">Valor (R$)</label><input data-t="${i}" data-c="valor" inputmode="decimal" value="${String(t.valor ?? 0).replace(".", ",")}"></div></div>
+        <div class="row"><div><label class="f">Início</label><input type="time" data-t="${i}" data-c="inicio" value="${t.inicio}"></div><div><label class="f">Fim</label><input type="time" data-t="${i}" data-c="fim" value="${t.fim}"></div></div>
+        <label class="f">Dias da semana</label><div class="chips">${DSEM.map((d, k) => `<button type="button" class="chip ${(t.dias || []).includes(k) ? "on" : ""}" data-act="tDia" data-t="${i}" data-k="${k}">${d}</button>`).join("")}</div>
+        <button class="ghost danger peq" data-act="tRem" data-t="${i}" style="margin-top:8px">Remover turno</button></div>`).join("")}
+      <button class="w100" data-act="tAdd">+ Adicionar turno</button></div>
+    <div class="erro" id="ajErro">${ajSalvo ? `<span class="okmsg">✓ Ajustes salvos.</span>` : ""}</div><button class="pri w100" data-act="ajSalvar">Salvar ajustes</button>
+    <div class="card" style="margin-top:14px"><h3>Conta</h3><p class="mute">E-mail: ${esc(c.email || "")}<br>Plano: ${c.plano === "assinante" ? "assinatura mensal" : "teste grátis"} · válido até ${dataBR(c.venceEm)}</p><button data-assinar>Ver formas de pagamento</button></div>`;
+}
+document.addEventListener("input", e => {
+  if (!ajEdit) return; const t = e.target; ajSalvo = false;
+  if (t.dataset.aj) ajEdit[t.dataset.aj] = t.type === "checkbox" ? t.checked : t.value;
+  else if (t.dataset.t !== undefined && t.dataset.c) ajEdit.turnos[+t.dataset.t][t.dataset.c] = t.value;
+});
+document.addEventListener("change", e => { const t = e.target; if (ajEdit && t.dataset.aj && t.type === "checkbox") ajEdit[t.dataset.aj] = t.checked; });
+
+/* ---------- Médico ---------- */
+const meusDoMes = m => (PL.get(m) || []).filter(p => p.medico === S.u.uid || (p.troca && p.troca.para === S.u.uid));
+function abaMeus(){
+  garantirMes(S.mes); const l = PL.get(S.mes); if (!l) return mesNav() + carregando;
+  const meus = meusDoMes(S.mes), ver = S.serv && S.serv.valoresMedicos !== false, hoje = hojeStr();
+  const fixos = meus.filter(p => p.medico === S.u.uid), tot = fixos.reduce((s, p) => ({h: s.h + horasDe(p), v: s.v + (Number(p.valor) || 0)}), {h: 0, v: 0});
+  return mesNav() + `<div class="resumo"><span><b>${fixos.length}</b>plantões</span><span><b>${tot.h}</b>horas</span>${ver ? `<span><b>${brl(tot.v)}</b>no mês</span>` : ""}</div>
+    ${meus.length ? [...meus.filter(p => p.data >= hoje), ...meus.filter(p => p.data < hoje)].map((p, i, arr) => { const meu = p.medico === S.u.uid, tr = p.troca, fut = p.data >= hoje;
+      let st = "", acts = "";
+      if (!meu) st = `<p class="mute" style="margin:6px 0 0">🔁 Você aceitou assumir este plantão de ${esc(tr.deNome)}. Aguardando a coordenação.</p>`;
+      else if (tr && tr.status === "aceita") st = `<p class="mute" style="margin:6px 0 0">🔁 ${esc(tr.paraNome)} aceitou assumir. Aguardando a coordenação.</p>`;
+      else if (tr) { st = `<p class="mute" style="margin:6px 0 0">🔁 Oferecido para troca. Os colegas veem na aba Trocas.</p>`; acts = `<button data-act="cancelarOferta" data-id="${p.id}">Cancelar oferta</button>`; }
+      else if (fut) acts = `<button data-act="oferecer" data-id="${p.id}">🔁 Oferecer para troca</button>`;
+      if (meu && tr && tr.status === "aceita" && fut) acts = `<button data-act="cancelarOferta" data-id="${p.id}">Cancelar troca</button>`;
+      const tit = !fut && (i === 0 || arr[i - 1].data >= hoje) ? `<h3 class="sec">Já realizados</h3>` : "";
+      return tit + `<div class="item" style="${fut ? "" : "opacity:.6"}"><div class="l1"><div><b>${fmtDia(p.data)} · ${esc(p.turnoNome)}</b><div class="mute">${p.inicio}–${p.fim} · ${horasDe(p)}h</div></div>${ver && meu ? `<b>${brl(p.valor)}</b>` : ""}</div>${st}${acts ? `<div class="acts">${acts}</div>` : ""}</div>`; }).join("")
+      : `<div class="card vazio">Você não tem plantões em ${esc(nomeMes(S.mes))}.<br><button class="linkbtn" data-ir="vagas">Ver plantões vagos</button></div>`}`;
+}
+function abaVagas(){
+  garantirMes(M0()); garantirMes(M1()); if (!PL.get(M0()) || !PL.get(M1())) return carregando;
+  const v = proximos().filter(p => p.status === "vago"), ver = S.serv && S.serv.valoresMedicos !== false;
+  return `<p class="mute">Plantões vagos a partir de hoje. O primeiro médico que pegar fica com o plantão.</p>
+    ${v.length ? v.map(p => `<div class="item"><div class="l1"><div><b>${fmtDia(p.data)} · ${esc(p.turnoNome)}</b><div class="mute">${p.inicio}–${p.fim} · ${horasDe(p)}h</div></div>${ver ? `<b>${brl(p.valor)}</b>` : ""}</div>
+      <div class="acts"><button class="pri" data-act="pegar" data-id="${p.id}">Pegar este plantão</button></div></div>`).join("") : `<div class="card vazio">Nenhum plantão vago no momento.</div>`}`;
+}
+function abaTrocasMed(){
+  garantirMes(M0()); garantirMes(M1()); if (!PL.get(M0()) || !PL.get(M1())) return carregando;
+  const px = proximos(), abertas = px.filter(p => p.troca && p.troca.status === "aberta" && p.medico !== S.u.uid);
+  const minhas = px.filter(p => p.troca && (p.troca.de === S.u.uid || p.troca.para === S.u.uid));
+  return `<p class="mute">Plantões que colegas querem passar. Ao assumir, a troca vai para a aprovação da coordenação.</p>
+    ${abertas.length ? abertas.map(p => `<div class="item"><div class="l1"><div><b>${fmtDia(p.data)} · ${esc(p.turnoNome)}</b><div class="mute">${p.inicio}–${p.fim} · de ${esc(p.troca.deNome)}</div></div></div>
+      <div class="acts"><button class="pri" data-act="assumir" data-id="${p.id}">Assumir este plantão</button></div></div>`).join("") : `<div class="card vazio">Nenhum plantão oferecido para troca.</div>`}
+    <h3 class="sec">Suas trocas em andamento (${minhas.length})</h3>
+    ${minhas.length ? minhas.map(p => `<div class="item"><b>${fmtDia(p.data)} · ${esc(p.turnoNome)}</b><div class="mute">${p.troca.status === "aceita" ? `${esc(p.troca.deNome)} → ${esc(p.troca.paraNome)} · aguardando a coordenação` : "Oferecido, aguardando um colega"}</div></div>`).join("") : `<p class="mute">Nenhuma.</p>`}`;
+}
+function abaDispMed(){
+  const m = S.mesDisp; garantirDisp(m); garantirMes(m);
+  const e = dispEdit.get(m); if (!e) return mesNav("mesDisp") + carregando;
+  const ts = turnosAtivos(), salvo = MINHA.get(m);
+  let html = "";
+  for (let d = 1; d <= diasNoMes(m); d++){
+    const ds = `${m}-${pad(d)}`, dw = diaSem(ds), tsd = ts.filter(t => (t.dias || []).includes(dw)); if (!tsd.length) continue;
+    html += `<div class="dispdia ${dw === 0 || dw === 6 ? "fds" : ""}"><span class="d">${fmtDia(ds)}</span><div class="chips">${tsd.map(t => `<button class="chip ${(e.dias[ds] || []).includes(t.id) ? "on" : ""}" data-act="dTog" data-d="${ds}" data-t="${t.id}" aria-pressed="${(e.dias[ds] || []).includes(t.id)}">${esc(t.nome)}</button>`).join("")}</div></div>`;
+  }
+  const n = Object.values(e.dias).reduce((s, v) => s + v.length, 0);
+  return mesNav("mesDisp") + `<p class="mute">Marque os turnos em que você pode trabalhar. A coordenação vê isso ao montar a escala.</p>
+    <div class="row" style="margin-bottom:8px"><button data-act="dTodos">Marcar todos</button><button data-act="dLimpar">Limpar</button></div>
+    <div class="card">${html || `<p class="mute">Nenhum turno cadastrado pela coordenação.</p>`}</div>
+    <label class="f" for="dObs">Observação para a coordenação</label><textarea id="dObs" maxlength="300" placeholder="Ex.: prefiro não pegar noturno às sextas">${esc(e.obs)}</textarea>
+    <div class="erro" id="dErro">${salvo && !e.sujo ? `<span class="okmsg">✓ Salva em ${dataBR(salvo.em)} às ${horaBR(salvo.em)}.</span>` : e.sujo ? `<span class="mute">Alterações não salvas.</span>` : ""}</div>
+    <button class="pri w100" data-act="dSalvar">Salvar disponibilidade (${n} turno${n === 1 ? "" : "s"})</button>`;
+}
+function abaEscalaMed(){
+  garantirMes(S.mes); const l = PL.get(S.mes); if (!l) return mesNav() + carregando;
+  return mesNav() + (l.length ? `<p class="mute">Escala completa do serviço. Seus plantões aparecem destacados.</p>` + diasHtml(l, {}) : `<div class="card vazio">A escala de ${esc(nomeMes(S.mes))} ainda não foi publicada.</div>`);
+}
+
+/* ---------- Ações do conteúdo ---------- */
+$("#vApp").addEventListener("click", async e => {
+  const ir = e.target.closest("[data-ir]"); if (ir){ S.aba = ir.dataset.ir; ajEdit = null; render(); return; }
+  const b = e.target.closest("[data-act]"); if (!b || b.closest(".modal")) return;
+  const act = b.dataset.act, id = b.dataset.id, p = id ? acharPl(id) : null;
+  try {
+    if (act === "mes"){ S.mes = somaMes(S.mes, +b.dataset.k); render(); }
+    else if (act === "mesDisp"){ S.mesDisp = somaMes(S.mesDisp, +b.dataset.k); render(); }
+    else if (act === "soVagos"){ S.soVagos = !S.soVagos; render(); }
+    else if (act === "gerar") await gerarMes();
+    else if (act === "abrirPl") abrirPl(id);
+    else if (act === "novoPl"){ novoDiaAtual = b.dataset.d; abrirPl(null, b.dataset.d); }
+    else if (act === "guiaOk") await store.salvarServico(S.servico, {guiaOk: true});
+    else if (act === "aprovarL") await store.atualizarPlantao(id, {medico: p.troca.para, medicoNome: p.troca.paraNome, status: "escalado", troca: null}, {acao: `aprovou a troca: ${p.troca.deNome} → ${p.troca.paraNome}`, por: autor()});
+    else if (act === "recusarL") await store.atualizarPlantao(id, {troca: null}, {acao: "recusou a troca", por: autor()});
+    else if (act === "revogar"){ const m = S.medicos.find(x => x.uid === id); if (confirm(`Revogar o acesso de ${m.nome}? Os plantões já escalados continuam na escala.`)) await store.atualizarMedico(id, {ativo: false}); }
+    else if (act === "reativar") await store.atualizarMedico(id, {ativo: true});
+    else if (act === "csv") baixarCsv();
+    else if (act === "tDia"){ const t = ajEdit.turnos[+b.dataset.t], k = +b.dataset.k; t.dias = (t.dias || []).includes(k) ? t.dias.filter(x => x !== k) : [...(t.dias || []), k].sort(); render(); }
+    else if (act === "tRem"){ ajEdit.turnos.splice(+b.dataset.t, 1); render(); }
+    else if (act === "tAdd"){ ajEdit.turnos.push({id: "t" + token(5, "abcdefghjkmnpqrstuvwxyz23456789"), nome: "Novo turno", inicio: "07:00", fim: "13:00", valor: 0, dias: [1,2,3,4,5]}); render(); }
+    else if (act === "ajSalvar"){
+      const er = m => $("#ajErro").textContent = m, nome = ajEdit.nome.trim();
+      if (!nome) return er("Informe o nome do serviço.");
+      const turnos = [];
+      for (const t of ajEdit.turnos){ const v = numBR(t.valor); if (!t.nome.trim()) return er("Todo turno precisa de um nome."); if (isNaN(v)) return er(`Valor inválido no turno ${t.nome}.`);
+        if (!/^\d\d:\d\d$/.test(t.inicio) || !/^\d\d:\d\d$/.test(t.fim)) return er(`Horário inválido no turno ${t.nome}.`); if (!(t.dias || []).length) return er(`Escolha ao menos um dia para o turno ${t.nome}.`);
+        turnos.push({id: t.id, nome: t.nome.trim(), inicio: t.inicio, fim: t.fim, valor: v, dias: t.dias}); }
+      await store.salvarServico(S.servico, {nome, valoresMedicos: !!ajEdit.valoresMedicos, turnos, turnosConferidos: true});
+      ajEdit = null; ajSalvo = true; render();
+    }
+    // médico
+    else if (act === "pegar"){
+      const outros = todosPl().filter(x => x.medico === S.u.uid && x.data === p.data);
+      if (!confirm(outros.length ? `Você já tem plantão em ${fmtDia(p.data)} (${outros.map(x => x.turnoNome).join(", ")}). Pegar também o ${p.turnoNome}?` : `Pegar o plantão ${p.turnoNome} de ${fmtDia(p.data)}, ${p.inicio}–${p.fim}?`)) return;
+      try { await store.atualizarPlantao(id, {status: "escalado", medico: S.u.uid, medicoNome: S.eu.nome}, {acao: "pegou o plantão vago", por: autor()}); }
+      catch { alert("Outro médico pegou este plantão antes de você."); }
+    }
+    else if (act === "oferecer"){ if (confirm(`Oferecer o plantão de ${fmtDia(p.data)} (${p.turnoNome}) para troca? Você continua escalado até a coordenação aprovar a troca com um colega.`))
+      await store.atualizarPlantao(id, {troca: {de: S.u.uid, deNome: S.eu.nome, status: "aberta", em: Date.now()}}, {acao: "ofereceu o plantão para troca", por: autor()}); }
+    else if (act === "cancelarOferta") await store.atualizarPlantao(id, {troca: null}, {acao: "cancelou a oferta de troca", por: autor()});
+    else if (act === "assumir"){
+      if (!confirm(`Assumir o plantão de ${esc(p.troca.deNome)} em ${fmtDia(p.data)} (${p.turnoNome})? A coordenação precisa aprovar.`)) return;
+      try { await store.atualizarPlantao(id, {troca: {...p.troca, para: S.u.uid, paraNome: S.eu.nome, status: "aceita", aceitoEm: Date.now()}}, {acao: "aceitou assumir o plantão", por: autor()}); }
+      catch { alert("Não foi possível: outro colega pode ter aceitado antes."); }
+    }
+    else if (act === "dTog"){ const e2 = dispEdit.get(S.mesDisp), ds = b.dataset.d, t = b.dataset.t, cur = e2.dias[ds] || [];
+      e2.dias[ds] = cur.includes(t) ? cur.filter(x => x !== t) : [...cur, t]; if (!e2.dias[ds].length) delete e2.dias[ds]; e2.sujo = true; render(); }
+    else if (act === "dTodos" || act === "dLimpar"){ const e2 = dispEdit.get(S.mesDisp); e2.dias = {}; e2.sujo = true;
+      if (act === "dTodos") for (let d = 1; d <= diasNoMes(S.mesDisp); d++){ const ds = `${S.mesDisp}-${pad(d)}`, ts = turnosAtivos().filter(t => (t.dias || []).includes(diaSem(ds))).map(t => t.id); if (ts.length) e2.dias[ds] = ts; }
+      render(); }
+    else if (act === "dSalvar"){ const e2 = dispEdit.get(S.mesDisp); e2.obs = $("#dObs").value.trim();
+      await store.salvarDisp({servico: S.servico, medico: S.u.uid, medicoNome: S.eu.nome, mes: S.mesDisp, dias: e2.dias, obs: e2.obs}); e2.sujo = false; render(); }
+  } catch(err){ console.error(err); alert("Não foi possível concluir. Verifique a internet e tente de novo."); }
+});
+document.addEventListener("input", e => { if (e.target.id === "dObs"){ const e2 = dispEdit.get(S.mesDisp); if (e2){ e2.obs = e.target.value; e2.sujo = true; } } });
+
+/* ================== Administrador ================== */
+let admContas = [], admFiltro = "pendente";
+function iniciarAdmin(){
+  show("vAdmin"); document.title = "Escalaflux · Admin";
+  unsubs.push(store.config(c => { S.cfg = c || {}; }));
+  unsubs.push(store.contas(l => { admContas = l; renderAdmin(); }, e => { $("#adminLista").innerHTML = `<div class="card vazio">Erro ao carregar contas: ${esc(e.message)}</div>`; }));
+}
+const ROT = {pendente: ["pe","Aguardando aprovação"], ativo: ["ab","Ativa"], inativo: ["fe","Desativada"]};
+function renderAdmin(){
+  const venc = c => c.status === "ativo" && vencida(c);
+  $("#admResumo").innerHTML = `<span><b>${admContas.filter(c => c.status === "pendente").length}</b>aguardando</span><span><b>${admContas.filter(c => c.status === "ativo" && !vencida(c)).length}</b>ativas</span><span><b>${admContas.filter(venc).length}</b>vencidas</span>`;
+  document.querySelectorAll("#admFiltros button").forEach(b => b.classList.toggle("on", b.dataset.f === admFiltro));
+  const l = admContas.filter(c => admFiltro === "todas" || c.status === admFiltro).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+  $("#adminLista").innerHTML = l.length ? l.map(c => { const [cls, txt] = venc(c) ? ["fe","Vencida"] : ROT[c.status] || ["pe", c.status];
+    return `<div class="item"><div class="l1"><div><b>${esc(c.nome)}</b><div class="mute">${esc(c.email)} · WhatsApp ${esc(c.whatsapp || "—")}<br>Cadastro: ${dataBR(c.criadoEm)}${c.venceEm ? ` · ${c.plano === "assinante" ? "pago até" : "teste até"} ${dataBR(c.venceEm)}` : ""}</div></div><span class="pill ${cls}">${txt}</span></div>
+      <div class="acts">${c.status === "pendente" ? `<button class="ok" data-adm="aprovar" data-u="${c.uid}">Aprovar (15 dias grátis)</button><button data-adm="recusar" data-u="${c.uid}">Recusar</button>` : ""}
+      ${c.status === "ativo" ? `<button class="ok" data-adm="pago" data-u="${c.uid}">Registrar pagamento (+30 dias)</button><button class="danger" data-adm="desativar" data-u="${c.uid}">Desativar</button>` : ""}
+      ${c.status === "inativo" ? `<button data-adm="reativar" data-u="${c.uid}">Reativar</button>` : ""}
+      ${c.whatsapp && !MODO_DEMO ? `<a class="btn zap" target="_blank" rel="noopener" href="${zapLink(c.whatsapp, `Olá, ${c.nome}! Aqui é do Escalaflux.`)}">WhatsApp</a>` : ""}</div></div>`; }).join("")
+    : `<div class="card vazio">Nenhuma conta ${admFiltro === "todas" ? "" : "nesta situação"}.</div>`;
+}
+$("#admFiltros").onclick = e => { const b = e.target.closest("[data-f]"); if (b){ admFiltro = b.dataset.f; renderAdmin(); } };
+$("#adminLista").onclick = async e => {
+  const b = e.target.closest("[data-adm]"); if (!b) return; const c = admContas.find(x => x.uid === b.dataset.u), a = b.dataset.adm;
+  try {
+    if (a === "aprovar") await store.atualizarConta(c.uid, {status: "ativo", plano: "teste", venceEm: Date.now() + DIAS_TESTE * DIA, aprovadoEm: Date.now()});
+    else if (a === "recusar"){ if (confirm(`Recusar o cadastro de ${c.nome}?`)) await store.atualizarConta(c.uid, {status: "inativo"}); }
+    else if (a === "desativar"){ if (confirm(`Desativar ${c.nome}? A equipe perde o acesso na hora.`)) await store.atualizarConta(c.uid, {status: "inativo"}); }
+    else if (a === "reativar") await store.atualizarConta(c.uid, {status: "ativo", ...(vencida(c) || !c.venceEm ? {venceEm: Date.now() + 2 * DIA} : {})});
+    else if (a === "pago"){ const base = Math.max(Date.now(), c.venceEm || 0), ate = base + DIAS_MES * DIA;
+      if (confirm(`Registrar pagamento de ${c.nome}? O acesso fica liberado até ${dataBR(ate)}.`)) await store.atualizarConta(c.uid, {plano: "assinante", venceEm: ate}, {em: Date.now(), ate}); }
+  } catch(err){ alert("Não foi possível salvar: " + err.message); }
+};
+$("#btCob").onclick = () => { $("#cobPreco").value = S.cfg.escPreco || PRECO_PADRAO; $("#cobMp").value = S.cfg.escMpLink || ""; $("#cobErro").textContent = ""; abrir("mCob"); };
+$("#fCob").onsubmit = async e => {
+  e.preventDefault(); const p = $("#cobPreco").value.trim(), mp = $("#cobMp").value.trim();
+  if (!/^\d{1,4}(,\d{2})?$/.test(p)) return $("#cobErro").textContent = "Preço no formato 49,90.";
+  if (mp && !/^https:\/\//.test(mp)) return $("#cobErro").textContent = "O link precisa começar com https://";
+  try { await store.salvarConfig({escPreco: p, escMpLink: mp}); fechar("mCob"); } catch(err){ $("#cobErro").textContent = "Não foi possível salvar: " + err.message; }
+};
+
+/* ================== Demonstração ================== */
+if (MODO_DEMO){
+  document.body.classList.add("modo-demo"); document.title = "Demonstração · Escalaflux";
+  const dica = v => $("#demoDica").textContent = v === "coord"
+    ? "Toque em um plantão vago para escalar alguém, aprove a troca em 🔁 Vagas e trocas e veja o 💰 Fechamento."
+    : "Pegue um plantão vago, ofereça um dos seus para troca e marque sua disponibilidade do próximo mês.";
+  dica("coord");
+  $("#demoVisao").onclick = e => { const b = e.target.closest("[data-visao]"); if (!b) return;
+    document.querySelectorAll("#demoVisao button").forEach(x => x.classList.toggle("on", x === b)); dica(b.dataset.visao);
+    appAtivo = false; S.aba = null; S.mes = mesDe(new Date()); store.trocarUsuario(b.dataset.visao === "coord" ? "serv1" : b.dataset.visao); };
+}
+$("#cPreco").textContent = "R$ " + PRECO_PADRAO;
+</script>
+</body>
+</html>
