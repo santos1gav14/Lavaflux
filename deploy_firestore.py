@@ -47,24 +47,25 @@ code, _ = call("POST", IDX, {
 }, ok_codes=(200, 409))
 print("Índice já existia" if code == 409 else "Índice criado (pode levar alguns minutos para ficar pronto)")
 
-# 3) Exclusão automática (TTL): apaga o veículo quando "expiraEm" passa (90 dias após concluir)
-FIELD = f"https://firestore.googleapis.com/v1/projects/{P}/databases/(default)/collectionGroups/lavagens/fields/expiraEm"
+# 3) Exclusão automática (TTL): apaga o veículo e sua parte privada quando "expiraEm" passa (90 dias após concluir)
 h = {"Authorization": "Bearer " + T, "Content-Type": "application/json"}
 if QP:
     h["x-goog-user-project"] = QP
-try:
-    with urllib.request.urlopen(urllib.request.Request(FIELD, headers=h)) as r:
-        atual = json.loads(r.read())
-except urllib.error.HTTPError:
-    atual = {}
-estado = (atual.get("ttlConfig") or {}).get("state")
-if estado in ("ACTIVE", "CREATING"):
-    print(f"Exclusão automática já configurada ({estado})")
-else:
+for grupo in ("lavagens", "privado"):
+    FIELD = f"https://firestore.googleapis.com/v1/projects/{P}/databases/(default)/collectionGroups/{grupo}/fields/expiraEm"
+    try:
+        with urllib.request.urlopen(urllib.request.Request(FIELD, headers=h)) as r:
+            atual = json.loads(r.read())
+    except urllib.error.HTTPError:
+        atual = {}
+    estado = (atual.get("ttlConfig") or {}).get("state")
+    if estado in ("ACTIVE", "CREATING"):
+        print(f"Exclusão automática ({grupo}) já configurada ({estado})")
+        continue
     req = urllib.request.Request(FIELD + "?updateMask=ttlConfig", data=json.dumps({"ttlConfig": {}}).encode(), method="PATCH", headers=h)
     try:
         urllib.request.urlopen(req).read()
-        print("Exclusão automática ativada (leva até 24 h para começar a valer)")
+        print(f"Exclusão automática ({grupo}) ativada (leva até 24 h para começar a valer)")
     except urllib.error.HTTPError as e:
         msg = e.read().decode()
-        print("AVISO: exclusão automática nativa exige o plano Blaze; até lá o app faz a limpeza." if "billing" in msg else f"AVISO: não foi possível ativar a exclusão automática ({e.code}): {msg[:300]}")
+        print(f"AVISO ({grupo}): exclusão automática nativa exige o plano Blaze; até lá o app faz a limpeza." if "billing" in msg else f"AVISO ({grupo}): não foi possível ativar a exclusão automática ({e.code}): {msg[:300]}")
